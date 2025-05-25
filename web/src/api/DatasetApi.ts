@@ -1,16 +1,13 @@
-import { getBackendApiUrl, isBackendAvailable } from '../utils/config';
+import { getBackendApiUrl } from '../utils/config';
 import { Dataset, LOCAL_STORAGE_DATASET_PREFIX } from './Modules';
 import { getCurrentUser } from './UserApi';
 
-const DATASET_API_BASE_URL = '/api/datasets';
+const DATASET_API_BASE_URL = '/datasets';
 
 /**
  * 获取数据集详情
  */
 export async function getDatasetById(datasetId: string): Promise<Dataset> {
-  if (!isBackendAvailable()) {
-    return getLocalDatasetById(datasetId);
-  }
   return await getDatasetByApi(datasetId);
 }
 
@@ -70,9 +67,6 @@ function getLocalDatasetById(datasetId: string): Dataset {
  * 获取数据集中的数据项列表
  */
 export async function getDatasetItems(datasetId: string): Promise<any[]> {
-  if (!isBackendAvailable()) {
-    return getLocalDatasetItems(datasetId);
-  }
   return await getDatasetItemsByApi(datasetId);
 }
 
@@ -113,9 +107,6 @@ function getLocalDatasetItems(datasetId: string): any[] {
  * 添加数据项到数据集
  */
 export async function addDatasetItem(datasetId: string, item: any): Promise<any> {
-  if (!isBackendAvailable()) {
-    return addLocalDatasetItem(datasetId, item);
-  }
   return await addDatasetItemByApi(datasetId, item);
 }
 
@@ -192,9 +183,6 @@ export async function updateDatasetItem(
   itemId: string,
   item: any
 ): Promise<any> {
-  if (!isBackendAvailable()) {
-    return updateLocalDatasetItem(datasetId, itemId, item);
-  }
   return await updateDatasetItemByApi(datasetId, itemId, item);
 }
 
@@ -272,9 +260,6 @@ function updateLocalDatasetItem(datasetId: string, itemId: string, item: any): a
  * 删除数据集中的数据项
  */
 export async function deleteDatasetItem(datasetId: string, itemId: string): Promise<boolean> {
-  if (!isBackendAvailable()) {
-    return deleteLocalDatasetItem(datasetId, itemId);
-  }
   return await deleteDatasetItemByApi(datasetId, itemId);
 }
 
@@ -347,10 +332,6 @@ export async function createDataset(dataset: Partial<Dataset>): Promise<Dataset>
     updatedAt: new Date()
   };
 
-  if (!isBackendAvailable()) {
-    return createLocalDataset(datasetData as Dataset);
-  }
-
   return await createDatasetByApi(datasetData as Dataset);
 }
 
@@ -407,9 +388,6 @@ function createLocalDataset(dataset: Dataset): Dataset {
  * 更新数据集
  */
 export async function updateDataset(dataset: Dataset): Promise<Dataset> {
-  if (!isBackendAvailable()) {
-    return updateLocalDataset(dataset);
-  }
   return await updateDatasetByApi(dataset);
 }
 
@@ -479,9 +457,6 @@ function updateLocalDataset(dataset: Dataset): Dataset {
  * 删除数据集
  */
 export async function deleteDataset(datasetId: string): Promise<boolean> {
-  if (!isBackendAvailable()) {
-    return deleteLocalDataset(datasetId);
-  }
   return await deleteDatasetByApi(datasetId);
 }
 

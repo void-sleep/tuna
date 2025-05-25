@@ -1,5 +1,4 @@
 import './App.css';
-import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -103,7 +102,7 @@ function App() {
             }}>
               <Link
                 color="inherit"
-                href="https://github.com/l10178/tuna"
+                href="https://github.com/void-sleep/"
                 target="_blank"
                 sx={{
                   display: 'flex',

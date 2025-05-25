@@ -4,16 +4,8 @@
 
 /**
  * Gets the backend API URL from environment variables
- * @returns The backend API URL or null if not set
+ * @returns The backend API URL
  */
-export function getBackendApiUrl(): string | null {
-  return process.env.REACT_APP_BACKEND_API_URL || null;
-}
-
-/**
- * Checks if the backend API is available
- * @returns true if the backend API URL is set
- */
-export function isBackendAvailable(): boolean {
-  return getBackendApiUrl() !== null;
+export function getBackendApiUrl(): string {
+  return process.env.REACT_APP_BACKEND_API_URL || '/tuna-api';
 }

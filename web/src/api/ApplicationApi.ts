@@ -1,4 +1,4 @@
-import { getBackendApiUrl, isBackendAvailable } from '../utils/config';
+import { getBackendApiUrl } from '../utils/config';
 import { Application, LOCAL_STORAGE_APPS } from './Modules';
 import { getCurrentUser } from './UserApi';
 import { anonymousDataset01, defaultApplications } from './MockApi';
@@ -7,7 +7,7 @@ import {
   deleteDataset
 } from './DatasetApi';
 
-const APPLICATION_API_BASE_URL = '/api/applications';
+const APPLICATION_API_BASE_URL = '/applications';
 
 /**
  * 获取当前用户的应用列表
@@ -22,9 +22,6 @@ export async function getCurrentUserApplications(): Promise<Application[]> {
  * 根据用户ID获取应用列表
  */
 async function getApplicationsByUserId(userId: string): Promise<Application[]> {
-  if (!isBackendAvailable()) {
-    return getLocalApplications();
-  }
   return await getApplicationsByApi(userId);
 }
 
@@ -84,17 +81,10 @@ export async function createApplication(application: Partial<Application>): Prom
     appData.datasetId = dataset.id;
 
     // 创建带有数据集ID的应用
-    if (!isBackendAvailable()) {
-      return createLocalApplication(appData as Application);
-    }
-
     return await createApplicationByApi(appData as Application);
   } catch (error) {
     console.error('Error creating dataset for application:', error);
     // 如果创建数据集失败，仍然继续创建应用，但没有关联数据集
-    if (!isBackendAvailable()) {
-      return createLocalApplication(appData as Application);
-    }
     return await createApplicationByApi(appData as Application);
   }
 }
@@ -156,9 +146,6 @@ function createLocalApplication(application: Application): Application {
  * 删除应用
  */
 export async function deleteApplication(applicationId: string): Promise<boolean> {
-  if (!isBackendAvailable()) {
-    return deleteLocalApplication(applicationId);
-  }
   return await deleteApplicationByApi(applicationId);
 }
 
@@ -224,9 +211,6 @@ function deleteLocalApplication(applicationId: string): boolean {
  * 获取应用详情
  */
 export async function getApplicationById(applicationId: string): Promise<Application> {
-  if (!isBackendAvailable()) {
-    return getLocalApplicationById(applicationId);
-  }
   return await getApplicationByApi(applicationId);
 }
 
@@ -264,9 +248,6 @@ function getLocalApplicationById(applicationId: string): Application {
  * 更新应用
  */
 export async function updateApplication(application: Application): Promise<Application> {
-  if (!isBackendAvailable()) {
-    return updateLocalApplication(application);
-  }
   return await updateApplicationByApi(application);
 }
 
