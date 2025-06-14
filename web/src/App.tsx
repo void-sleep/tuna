@@ -17,6 +17,7 @@ import ApplicationShake from './components/ApplicationShake';
 import ApplicationsPage from './components/ApplicationsPage';
 import ExplorePage from './components/ExplorePage';
 import ApplicationEditor from './components/ApplicationEditor';
+import UserInfo from './components/UserInfo';
 import { useColorMode } from './theme/ThemeContext';
 import logoImage from './logo.svg';
 
@@ -100,6 +101,7 @@ function App() {
               justifyContent: 'center',
               alignItems: 'center'
             }}>
+
               <Link
                 color="inherit"
                 href="https://github.com/void-sleep/"
@@ -119,6 +121,7 @@ function App() {
               >
                 {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
               </IconButton>
+              <UserInfo />
             </Box>
           </Toolbar>
         </AppBar>

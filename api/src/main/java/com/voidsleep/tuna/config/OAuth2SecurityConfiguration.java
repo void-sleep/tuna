@@ -14,12 +14,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -29,6 +31,7 @@ import org.springframework.security.oauth2.server.resource.web.BearerTokenResolv
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
+import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.Map;
 
@@ -105,14 +108,26 @@ public class OAuth2SecurityConfiguration {
     return requests -> {
       //      requests.requestMatchers(security.getAnonymous().toArray(new String[0])).anonymous();
       //      requests.requestMatchers(permitAll).permitAll();
+
       requests.anyRequest().authenticated();
     };
+  }
+
+  @Bean
+  @Profile("dev")
+  public Customizer<CorsConfigurer<HttpSecurity>> corsCustomizer() {
+    return cors -> cors.configurationSource(r -> {
+      CorsConfiguration config = new CorsConfiguration();
+      config.addAllowedOriginPattern(CorsConfiguration.ALL);
+      return config;
+    });
   }
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                  ObjectProvider<KeycloakDebugTokenHeaderFilter> debugFilter,
                                                  KeycloakServletPolicyEnforcerFilter policyEnforcer,
+                                                 ObjectProvider<Customizer<CorsConfigurer<HttpSecurity>>> corsCustomizer,
                                                  Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> authorizeHttpRequestsCustomizer,
                                                  Customizer<OAuth2ResourceServerConfigurer<HttpSecurity>> resourceServerCustomizer) throws Exception {
     http.authorizeHttpRequests(authorizeHttpRequestsCustomizer);
@@ -124,6 +139,14 @@ public class OAuth2SecurityConfiguration {
     http.addFilterAfter(policyEnforcer, BearerTokenAuthenticationFilter.class);
     // State-less session，我们使用 access-token
     http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+    corsCustomizer.ifAvailable(cors -> {
+      try {
+        http.cors(cors);
+      } catch (Exception e) {
+        log.error("Error creating cors", e);
+      }
+    });
     // Disable CSRF because of state-less session-management
     http.csrf(AbstractHttpConfigurer::disable);
     return http.build();
