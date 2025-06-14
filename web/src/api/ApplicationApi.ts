@@ -13,29 +13,26 @@ const APPLICATION_API_BASE_URL = '/applications';
  * 获取当前用户的应用列表
  */
 export async function getCurrentUserApplications(): Promise<Application[]> {
-  // 获取当前用户的应用列表
-  const currentUser = await getCurrentUser();
-  return getApplicationsByUserId(currentUser.id);
+  return await getApplicationsByApi();
 }
 
-/**
- * 根据用户ID获取应用列表
- */
-async function getApplicationsByUserId(userId: string): Promise<Application[]> {
-  return await getApplicationsByApi(userId);
-}
-
-async function getApplicationsByApi(userId: string): Promise<Application[]> {
+async function getApplicationsByApi(): Promise<Application[]> {
   try {
     const apiUrl = getBackendApiUrl();
-    const response = await fetch(`${apiUrl}${APPLICATION_API_BASE_URL}?userId=${userId}`);
+    const response = await fetch(`${apiUrl}${APPLICATION_API_BASE_URL}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
     if (!response.ok) {
       throw new Error(`Failed to fetch applications: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
     console.error('Error fetching applications:', error);
-    return [];
+    // 失败时回退到本地获取
+    return getLocalApplications();
   }
 }
 
@@ -60,14 +57,6 @@ function getLocalApplications(): Application[] {
  * 创建新应用
  */
 export async function createApplication(application: Partial<Application>): Promise<Application> {
-  const currentUser = await getCurrentUser();
-  const appData = {
-    ...application,
-    createdBy: currentUser.id,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  };
-
   try {
     // 首先创建一个空的数据集
     const dataset = await createDataset({
@@ -78,21 +67,24 @@ export async function createApplication(application: Partial<Application>): Prom
     });
 
     // 将数据集ID关联到应用
-    appData.datasetId = dataset.id;
+    const appData = {
+      ...application,
+      datasetId: dataset.id
+    };
 
     // 创建带有数据集ID的应用
-    return await createApplicationByApi(appData as Application);
+    return await createApplicationByApi(appData);
   } catch (error) {
     console.error('Error creating dataset for application:', error);
     // 如果创建数据集失败，仍然继续创建应用，但没有关联数据集
-    return await createApplicationByApi(appData as Application);
+    return await createApplicationByApi(application);
   }
 }
 
 /**
  * 通过API创建应用
  */
-async function createApplicationByApi(application: Application): Promise<Application> {
+async function createApplicationByApi(application: Partial<Application>): Promise<Application> {
   try {
     const apiUrl = getBackendApiUrl();
     const response = await fetch(`${apiUrl}${APPLICATION_API_BASE_URL}`, {
@@ -111,7 +103,14 @@ async function createApplicationByApi(application: Application): Promise<Applica
   } catch (error) {
     console.error('Error creating application:', error);
     // 失败时回退到本地创建
-    return createLocalApplication(application);
+    const currentUser = await getCurrentUser();
+    const appData = {
+      ...application,
+      createdBy: currentUser.id,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    } as Application;
+    return createLocalApplication(appData);
   }
 }
 
@@ -263,8 +262,12 @@ async function updateApplicationByApi(application: Application): Promise<Applica
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        ...application,
-        updatedAt: new Date()
+        name: application.name,
+        description: application.description,
+        logo: application.logo,
+        tags: application.tags,
+        datasetId: application.datasetId,
+        policyId: application.policyId
       })
     });
 
