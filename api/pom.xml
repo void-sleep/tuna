@@ -10,7 +10,7 @@
   </parent>
   <groupId>com.voidsleep.tuna</groupId>
   <artifactId>tuna-api</artifactId>
-  <version>0.1.0</version>
+  <version>1.0.0</version>
   <name>tuna-api</name>
   <description>The backend api for tuna</description>
   <url/>
