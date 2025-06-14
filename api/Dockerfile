@@ -1,4 +1,4 @@
-FROM bellsoft/liberica-openjdk-alpine:21 AS build
+FROM bellsoft/liberica-openjdk-alpine:24 AS build
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ RUN chmod +x mvnw
 RUN ./mvnw package -DskipTests
 
 # Runtime stage
-FROM bellsoft/liberica-openjdk-alpine:21
+FROM bellsoft/liberica-openjdk-alpine:24
 
 WORKDIR /app
 

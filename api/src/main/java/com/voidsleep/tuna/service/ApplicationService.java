@@ -3,14 +3,19 @@ package com.voidsleep.tuna.service;
 import com.voidsleep.tuna.entity.CreateApplicationRequest;
 import com.voidsleep.tuna.entity.UpdateApplicationRequest;
 import com.voidsleep.tuna.entity.ApplicationEntity;
+import com.voidsleep.tuna.entity.DatasetEntity;
+import com.voidsleep.tuna.entity.PolicyEntity;
 import com.voidsleep.tuna.exception.AppException;
 import com.voidsleep.tuna.repository.ApplicationRepository;
+import com.voidsleep.tuna.repository.DatasetRepository;
+import com.voidsleep.tuna.repository.PolicyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,6 +28,8 @@ import java.util.UUID;
 public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
+    private final DatasetRepository datasetRepository;
+    private final PolicyRepository policyRepository;
 
     /**
      * Get current user applications
@@ -75,34 +82,63 @@ public class ApplicationService {
     public ApplicationEntity createApplication(CreateApplicationRequest request, String userId) {
         log.debug("Creating application for user: {}", userId);
         
+        // Create default dataset first
+        DatasetEntity defaultDataset = createDefaultDataset(request.getName(), userId);
+        DatasetEntity savedDataset = datasetRepository.save(defaultDataset);
+        log.debug("Created default dataset {} for application", savedDataset.getId());
+
+        // Create default policy
+        PolicyEntity defaultPolicy = createDefaultPolicy(request.getName(), userId);
+        PolicyEntity savedPolicy = policyRepository.save(defaultPolicy);
+        log.debug("Created default policy {} for application", savedPolicy.getId());
+
+        // Create application with default dataset and policy
         ApplicationEntity application = new ApplicationEntity();
         application.setName(request.getName());
         application.setDescription(request.getDescription());
         application.setLogo(request.getLogo());
         application.setTags(request.getTags());
         application.setCreatedBy(userId);
-        
-        // Convert string IDs to UUID if provided
-        if (request.getDatasetId() != null && !request.getDatasetId().trim().isEmpty()) {
-            try {
-                application.setDatasetId(UUID.fromString(request.getDatasetId()));
-            } catch (IllegalArgumentException e) {
-                log.warn("Invalid dataset ID format: {}", request.getDatasetId());
-            }
-        }
-        
-        if (request.getPolicyId() != null && !request.getPolicyId().trim().isEmpty()) {
-            try {
-                application.setPolicyId(UUID.fromString(request.getPolicyId()));
-            } catch (IllegalArgumentException e) {
-                log.warn("Invalid policy ID format: {}", request.getPolicyId());
-            }
-        }
+        application.setDatasetId(savedDataset.getId());
+        application.setPolicyId(savedPolicy.getId());
         
         ApplicationEntity savedApplication = applicationRepository.save(application);
-        log.info("Created application {} for user: {}", savedApplication.getId(), userId);
-        
+        log.info("Created application {} with default dataset {} and policy {} for user: {}",
+                savedApplication.getId(), savedDataset.getId(), savedPolicy.getId(), userId);
+
         return savedApplication;
+    }
+
+    /**
+     * Create default dataset for application
+     *
+     * @param applicationName application name
+     * @param userId          user ID
+     * @return default dataset entity
+     */
+    private DatasetEntity createDefaultDataset(String applicationName, String userId) {
+        DatasetEntity dataset = new DatasetEntity();
+        dataset.setName(applicationName + " - 默认数据集");
+        dataset.setDescription("自动为应用 \"" + applicationName + "\" 创建的默认数据集");
+        dataset.setTags(Arrays.asList("默认", "系统创建"));
+        dataset.setCreatedBy(userId);
+        return dataset;
+    }
+
+    /**
+     * Create default policy for application
+     *
+     * @param applicationName application name
+     * @param userId          user ID
+     * @return default policy entity
+     */
+    private PolicyEntity createDefaultPolicy(String applicationName, String userId) {
+        PolicyEntity policy = new PolicyEntity();
+        policy.setName(applicationName + " - 默认策略");
+        policy.setDescription("自动为应用 \"" + applicationName + "\" 创建的默认随机选择策略");
+        policy.setTags(Arrays.asList("默认", "随机选择", "系统创建"));
+        policy.setCreatedBy(userId);
+        return policy;
     }
 
     /**

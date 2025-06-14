@@ -19,7 +19,7 @@ A modern open source AI-powered random wheel.
 ### 项目结构
 
 - `web` 应用的 Web 页面，基于 [React](https://react.dev/) 开发，需要本地安装 Node.js 20+，建议使用 [nvm](https://github.com/nvm-sh/nvm) 安装和管理。
-- `api`  后端服务，Spring Boot 3，需要本地安装 Java 21+，建议使用 [sdkman](https://sdkman.io/) 安装和管理。
+- `api`  后端服务，Spring Boot 3，需要本地安装 Java 24+，建议使用 [sdkman](https://sdkman.io/) 安装和管理。
 
 ### 前端项目
 
