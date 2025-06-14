@@ -1,6 +1,6 @@
 package com.voidsleep.tuna.controller;
 
-import com.voidsleep.tuna.entity.ApplicationDto;
+import com.voidsleep.tuna.entity.ApplicationEntity;
 import com.voidsleep.tuna.entity.CreateApplicationRequest;
 import com.voidsleep.tuna.entity.UpdateApplicationRequest;
 import com.voidsleep.tuna.service.ApplicationService;
@@ -39,8 +39,8 @@ public class ApplicationController {
    * @return list of applications
    */
   @GetMapping
-  public ResponseEntity<List<ApplicationDto>> getCurrentUserApplications() {
-    List<ApplicationDto> applications = applicationService.getCurrentUserApplications(currentUserId());
+  public ResponseEntity<List<ApplicationEntity>> getCurrentUserApplications() {
+    List<ApplicationEntity> applications = applicationService.getCurrentUserApplications(currentUserId());
     return ResponseEntity.ok(applications);
   }
 
@@ -48,23 +48,24 @@ public class ApplicationController {
    * Get application by ID
    *
    * @param id application ID
-   * @return application DTO
+   * @return application entity
    */
   @GetMapping("/{id}")
-  public ResponseEntity<ApplicationDto> getApplicationById(@PathVariable String id) {
-    ApplicationDto application = applicationService.getApplicationById(id, currentUserId());
+  public ResponseEntity<ApplicationEntity> getApplicationById(@PathVariable String id) {
+    ApplicationEntity application = applicationService.getApplicationById(id, currentUserId());
     return ResponseEntity.ok(application);
   }
 
   @PostMapping
-  public ResponseEntity<ApplicationDto> createApplication(@Valid @RequestBody CreateApplicationRequest request) {
-    ApplicationDto application = applicationService.createApplication(request, currentUserId());
+  public ResponseEntity<ApplicationEntity> createApplication(@Valid @RequestBody CreateApplicationRequest request) {
+    ApplicationEntity application = applicationService.createApplication(request, currentUserId());
     return ResponseEntity.status(HttpStatus.CREATED).body(application);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<ApplicationDto> updateApplication(@PathVariable String id, @Valid @RequestBody UpdateApplicationRequest request) {
-    ApplicationDto application = applicationService.updateApplication(id, request, currentUserId());
+  public ResponseEntity<ApplicationEntity> updateApplication(@PathVariable String id,
+      @Valid @RequestBody UpdateApplicationRequest request) {
+    ApplicationEntity application = applicationService.updateApplication(id, request, currentUserId());
     return ResponseEntity.ok(application);
   }
 

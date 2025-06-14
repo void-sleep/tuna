@@ -1,6 +1,5 @@
 package com.voidsleep.tuna.service;
 
-import com.voidsleep.tuna.entity.ApplicationDto;
 import com.voidsleep.tuna.entity.CreateApplicationRequest;
 import com.voidsleep.tuna.entity.UpdateApplicationRequest;
 import com.voidsleep.tuna.entity.ApplicationEntity;
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Application service
@@ -32,14 +30,10 @@ public class ApplicationService {
      * @param userId current user ID
      * @return list of applications
      */
-    public List<ApplicationDto> getCurrentUserApplications(String userId) {
+    public List<ApplicationEntity> getCurrentUserApplications(String userId) {
         log.debug("Getting applications for user: {}", userId);
         
-        List<ApplicationEntity> applications = applicationRepository.findByCreatedByOrderByCreatedAtDesc(userId);
-        
-        return applications.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        return applicationRepository.findByCreatedByOrderByCreatedAtDesc(userId);
     }
 
     /**
@@ -47,9 +41,9 @@ public class ApplicationService {
      *
      * @param applicationId application ID
      * @param userId        current user ID
-     * @return application DTO
+     * @return application entity
      */
-    public ApplicationDto getApplicationById(String applicationId, String userId) {
+    public ApplicationEntity getApplicationById(String applicationId, String userId) {
         log.debug("Getting application {} for user: {}", applicationId, userId);
         
         UUID id;
@@ -67,7 +61,7 @@ public class ApplicationService {
             throw new AppException("Access denied", HttpStatus.FORBIDDEN);
         }
         
-        return convertToDto(application);
+        return application;
     }
 
     /**
@@ -75,10 +69,10 @@ public class ApplicationService {
      *
      * @param request create request
      * @param userId  current user ID
-     * @return created application DTO
+     * @return created application entity
      */
     @Transactional
-    public ApplicationDto createApplication(CreateApplicationRequest request, String userId) {
+    public ApplicationEntity createApplication(CreateApplicationRequest request, String userId) {
         log.debug("Creating application for user: {}", userId);
         
         ApplicationEntity application = new ApplicationEntity();
@@ -108,7 +102,7 @@ public class ApplicationService {
         ApplicationEntity savedApplication = applicationRepository.save(application);
         log.info("Created application {} for user: {}", savedApplication.getId(), userId);
         
-        return convertToDto(savedApplication);
+        return savedApplication;
     }
 
     /**
@@ -117,10 +111,10 @@ public class ApplicationService {
      * @param applicationId application ID
      * @param request       update request
      * @param userId        current user ID
-     * @return updated application DTO
+     * @return updated application entity
      */
     @Transactional
-    public ApplicationDto updateApplication(String applicationId, UpdateApplicationRequest request, String userId) {
+    public ApplicationEntity updateApplication(String applicationId, UpdateApplicationRequest request, String userId) {
         log.debug("Updating application {} for user: {}", applicationId, userId);
         
         UUID id;
@@ -170,7 +164,7 @@ public class ApplicationService {
         ApplicationEntity savedApplication = applicationRepository.save(application);
         log.info("Updated application {} for user: {}", savedApplication.getId(), userId);
         
-        return convertToDto(savedApplication);
+        return savedApplication;
     }
 
     /**
@@ -200,26 +194,5 @@ public class ApplicationService {
         
         applicationRepository.delete(application);
         log.info("Deleted application {} for user: {}", applicationId, userId);
-    }
-
-    /**
-     * Convert entity to DTO
-     *
-     * @param entity application entity
-     * @return application DTO
-     */
-    private ApplicationDto convertToDto(ApplicationEntity entity) {
-        ApplicationDto dto = new ApplicationDto();
-        dto.setId(entity.getId().toString());
-        dto.setName(entity.getName());
-        dto.setDescription(entity.getDescription());
-        dto.setLogo(entity.getLogo());
-        dto.setTags(entity.getTags());
-        dto.setDatasetId(entity.getDatasetId() != null ? entity.getDatasetId().toString() : null);
-        dto.setPolicyId(entity.getPolicyId() != null ? entity.getPolicyId().toString() : null);
-        dto.setCreatedBy(entity.getCreatedBy());
-        dto.setCreatedAt(entity.getCreatedAt());
-        dto.setUpdatedAt(entity.getUpdatedAt());
-        return dto;
     }
 }
