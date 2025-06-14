@@ -58,9 +58,10 @@ const ApplicationsPage: React.FC<ApplicationsPageProps> = ({
     try {
       setLoading(true);
       const apps = await getCurrentUserApplications();
-      setApplications(apps);
+      setApplications(apps || []);
     } catch (error) {
       console.error('Error loading applications:', error);
+      setApplications([]);
       setSnackbar({
         open: true,
         message: '加载应用失败',
@@ -160,19 +161,23 @@ const ApplicationsPage: React.FC<ApplicationsPageProps> = ({
       // 调用API创建应用
       const newApp = await createApplication(appData);
 
-      // 更新本地状态
-      setApplications(prevApps => [newApp, ...prevApps]);
+      if (newApp) {
+        // 更新本地状态
+        setApplications(prevApps => [newApp, ...prevApps]);
 
-      // 关闭对话框
-      setCreateDialogOpen(false);
+        // 关闭对话框
+        setCreateDialogOpen(false);
 
-      // 显示成功提示
-      showSuccessMessage('应用创建成功');
+        // 显示成功提示
+        showSuccessMessage('应用创建成功');
 
-      // 导航到应用编辑页面
-      setTimeout(() => {
-        handleNavigateToApp(newApp.id);
-      }, 300);
+        // 导航到应用编辑页面
+        setTimeout(() => {
+          handleNavigateToApp(newApp.id);
+        }, 300);
+      } else {
+        showErrorMessage('创建应用失败');
+      }
     } catch (error) {
       console.error('创建应用失败:', error);
       showErrorMessage('创建应用失败');
