@@ -57,7 +57,8 @@ function App() {
                 alt="Logo"
                 style={{
                   height: 32,
-                  marginRight: 8
+                  marginRight: 8,
+                  borderRadius: '50%'
                 }}
               />
               <Typography variant="h6" component="div">
