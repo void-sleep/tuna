@@ -118,7 +118,10 @@ public class OAuth2SecurityConfiguration {
   public Customizer<CorsConfigurer<HttpSecurity>> corsCustomizer() {
     return cors -> cors.configurationSource(r -> {
       CorsConfiguration config = new CorsConfiguration();
+      config.addAllowedHeader(CorsConfiguration.ALL);
+      config.addAllowedMethod(CorsConfiguration.ALL);
       config.addAllowedOriginPattern(CorsConfiguration.ALL);
+      config.setAllowCredentials(true);
       return config;
     });
   }
@@ -131,7 +134,6 @@ public class OAuth2SecurityConfiguration {
                                                  Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> authorizeHttpRequestsCustomizer,
                                                  Customizer<OAuth2ResourceServerConfigurer<HttpSecurity>> resourceServerCustomizer) throws Exception {
     http.authorizeHttpRequests(authorizeHttpRequestsCustomizer);
-//    http.exceptionHandling(oauth2ExceptionHandlingCustomizer);
     http.oauth2ResourceServer(resourceServerCustomizer);
 
     debugFilter.ifAvailable(filter -> http.addFilterBefore(filter, BearerTokenAuthenticationFilter.class));
