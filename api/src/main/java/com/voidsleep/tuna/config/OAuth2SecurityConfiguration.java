@@ -139,17 +139,18 @@ public class OAuth2SecurityConfiguration {
     http.addFilterAfter(policyEnforcer, BearerTokenAuthenticationFilter.class);
     // State-less session，我们使用 access-token
     http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-    corsCustomizer.ifAvailable(cors -> {
-      try {
-        http.cors(cors);
-      } catch (Exception e) {
-        log.error("Error creating cors", e);
-      }
-    });
+    corsCustomizer.ifAvailable(cors -> cors(http, cors));
     // Disable CSRF because of state-less session-management
     http.csrf(AbstractHttpConfigurer::disable);
     return http.build();
+  }
+
+  private static void cors(HttpSecurity http, Customizer<CorsConfigurer<HttpSecurity>> cors) {
+    try {
+      http.cors(cors);
+    } catch (Exception e) {
+      log.error("Error creating cors", e);
+    }
   }
 
   private JwtDecoder oauth2SecurityJwtDecoder(KeycloakProperties properties) {
