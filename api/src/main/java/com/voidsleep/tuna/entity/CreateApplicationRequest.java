@@ -12,18 +12,18 @@ import java.util.List;
 @Data
 public class CreateApplicationRequest {
 
-    @NotBlank(message = "应用名称不能为空")
-    @Size(max = 255, message = "应用名称长度不能超过255个字符")
-    private String name;
+  @NotBlank
+  @Size(max = 255)
+  private String name;
 
-    @Size(max = 1000, message = "应用描述长度不能超过1000个字符")
-    private String description;
+  @Size(max = 1000)
+  private String description;
 
-    private String logo;
+  private String logo;
 
-    private List<String> tags;
+  private List<String> tags;
 
-    private String datasetId;
+  private String datasetId;
 
-    private String policyId;
+  private String policyId;
 }
