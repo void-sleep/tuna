@@ -35,10 +35,10 @@ public class KeycloakDebugTokenHeaderFilter extends OncePerRequestFilter {
       return;
     }
     AddHeaderHttpServletRequest wrapper = new AddHeaderHttpServletRequest(request);
-    wrapper.addHeader(KeycloakUtils.ACCESS_TOKEN_HEADERS.getFirst(), token);
+    wrapper.addHeader(KeycloakUtils.ACCESS_TOKEN_HEADERS.get(0), token);
     Jwt jwt = jwtDecoder.decode(token);
-    wrapper.addHeader(KeycloakUtils.ID_HEADERS.getFirst(), jwt.getClaimAsString(DetailJwtAuthenticationConverter.CLAIM_SUB));
-    wrapper.addHeader(KeycloakUtils.USERNAME_HEADERS.getFirst(), jwt.getClaimAsString(DetailJwtAuthenticationConverter.CLAIM_USERNAME));
+    wrapper.addHeader(KeycloakUtils.ID_HEADERS.get(0), jwt.getClaimAsString(DetailJwtAuthenticationConverter.CLAIM_SUB));
+    wrapper.addHeader(KeycloakUtils.USERNAME_HEADERS.get(0), jwt.getClaimAsString(DetailJwtAuthenticationConverter.CLAIM_USERNAME));
     filterChain.doFilter(wrapper, response);
   }
 

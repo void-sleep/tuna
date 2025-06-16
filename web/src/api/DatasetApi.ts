@@ -1,7 +1,7 @@
 import { getBackendApiUrl } from '../utils/config';
 import { Dataset } from './Modules';
 
-const DATASET_API_BASE_URL = '/datasets';
+const DATASET_API_BASE_URL = '/api/datasets'; // Adjusted for RecipeController endpoint
 
 /**
  * 获取数据集详情
