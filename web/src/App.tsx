@@ -18,7 +18,6 @@ import ApplicationsPage from './components/ApplicationsPage';
 import ExplorePage from './components/ExplorePage';
 import ApplicationEditor from './components/ApplicationEditor';
 import UserInfo from './components/UserInfo';
-import HealthCheck from './components/HealthCheck';
 import { useColorMode } from './theme/ThemeContext';
 import logoImage from './logo.svg';
 
@@ -130,10 +129,6 @@ function App() {
       </Box>
 
       <Routes>
-        {/* Health check routes */}
-        <Route path="/.health/liveness" element={<HealthCheck />} />
-        <Route path="/.health/readiness" element={<HealthCheck />} />
-
         {/* Application routes */}
         <Route
           path="/"
