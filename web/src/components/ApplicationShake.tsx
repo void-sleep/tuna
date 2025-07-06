@@ -48,6 +48,11 @@ export default function ApplicationShake() {
       // 首先获取应用信息
       getApplicationById(appId)
         .then(app => {
+          if (!app) {
+            setError('应用不存在或无法访问');
+            return Promise.reject(new Error('Application not found'));
+          }
+
           setCurrentApp(app);
 
           // 如果应用有数据集ID，获取数据集项

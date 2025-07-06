@@ -1,5 +1,4 @@
 import './App.css';
-import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -18,6 +17,7 @@ import ApplicationShake from './components/ApplicationShake';
 import ApplicationsPage from './components/ApplicationsPage';
 import ExplorePage from './components/ExplorePage';
 import ApplicationEditor from './components/ApplicationEditor';
+import UserInfo from './components/UserInfo';
 import { useColorMode } from './theme/ThemeContext';
 import logoImage from './logo.svg';
 
@@ -57,7 +57,8 @@ function App() {
                 alt="Logo"
                 style={{
                   height: 32,
-                  marginRight: 8
+                  marginRight: 8,
+                  borderRadius: '50%'
                 }}
               />
               <Typography variant="h6" component="div">
@@ -101,9 +102,10 @@ function App() {
               justifyContent: 'center',
               alignItems: 'center'
             }}>
+
               <Link
                 color="inherit"
-                href="https://github.com/l10178/tuna"
+                href="https://github.com/void-sleep/"
                 target="_blank"
                 sx={{
                   display: 'flex',
@@ -120,6 +122,7 @@ function App() {
               >
                 {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
               </IconButton>
+              <UserInfo />
             </Box>
           </Toolbar>
         </AppBar>

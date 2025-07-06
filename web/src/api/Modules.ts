@@ -1,6 +1,6 @@
 export interface User {
   id: string;
-  name: string;
+  username: string;
   email?: string;
   displayName?: string;
   isAnonymous?: boolean;
@@ -70,7 +70,7 @@ export const LOCAL_STORAGE_DATASET_PREFIX = `${LOCAL_STORAGE_PREFIX}dataset_`;
  */
 export const ANONYMOUS_USER: User = {
   id: ANONYMOUS_USER_ID,
-  name: 'Guest',
+  username: 'Guest',
   displayName: 'Guest',
   isAnonymous: true
 };

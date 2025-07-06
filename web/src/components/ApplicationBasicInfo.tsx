@@ -105,8 +105,12 @@ const ApplicationBasicInfo: React.FC<ApplicationBasicInfoProps> = ({ application
         logo: iconIndex.toString()
       };
 
-      await updateApplication(updatedApplication);
-      showMessage('保存成功', 'success');
+      const result = await updateApplication(updatedApplication);
+      if (result) {
+        showMessage('保存成功', 'success');
+      } else {
+        showMessage('保存失败', 'error');
+      }
     } catch (error) {
       showMessage('保存失败', 'error');
     } finally {

@@ -82,6 +82,10 @@ const ApplicationEditor: React.FC = () => {
         setLoading(true); // 设置加载状态
         setError(null);
         const app = await getApplicationById(appId);
+        if (!app) {
+          setError('应用不存在或无法访问');
+          return;
+        }
         setApplication(app);
       } catch (error) {
         console.error('加载应用失败:', error);
