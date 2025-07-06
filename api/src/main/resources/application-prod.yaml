@@ -1,0 +1,3 @@
+management:
+  server:
+    port: ${MANAGEMENT_SERVER_PORT:8081}
