@@ -4,9 +4,10 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
-    tags:
-      - 'v*.*.*'
+      # disable for now
+      - disabled
+    # tags:
+    #   - 'v*.*.*'
 jobs:
   deploy-app:
     runs-on: ubuntu-latest
