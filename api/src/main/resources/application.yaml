@@ -28,7 +28,7 @@ server:
 tuna:
   api:
     keycloak:
-      server-url: ${KEYCLOAK_SERVER_URL:http://localhost:8080/auth}
+      server-url: ${KEYCLOAK_SERVER_URL:https://keycloak.local}
       realm: ${KEYCLOAK_REALM:tuna}
       # the client should enable `Client authentication`, `Direct access grants`
       client-id: ${KEYCLOAK_CLIENT_ID:tuna-api}
