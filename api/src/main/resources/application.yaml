@@ -24,3 +24,12 @@ server:
   port: 8080
   servlet:
     context-path: /tuna-api
+
+tuna:
+  api:
+    keycloak:
+      server-url: ${KEYCLOAK_SERVER_URL:https://keycloak.local}
+      realm: ${KEYCLOAK_REALM:tuna}
+      # the client should enable `Client authentication`, `Direct access grants`
+      client-id: ${KEYCLOAK_CLIENT_ID:tuna-api}
+      client-secret: ${KEYCLOAK_CLIENT_SECRET:tuna}

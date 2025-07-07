@@ -15,11 +15,8 @@ RUN npm ci
 RUN npm run build
 
 # Production stage
-FROM nginx:1.28
+FROM bitnami/nginx:1.29
 
+COPY nginx_server_block.conf /opt/bitnami/nginx/conf/server_blocks/nginx_server_block.conf
 # Copy built files from build stage
-COPY --from=build /app/build /usr/share/nginx/html/
-
-EXPOSE 80
-
-#CMD ["nginx", "-g", "daemon off;"]
+COPY --from=build /app/build /app/

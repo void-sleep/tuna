@@ -129,6 +129,7 @@ function App() {
       </Box>
 
       <Routes>
+        {/* Application routes */}
         <Route
           path="/"
           element={
