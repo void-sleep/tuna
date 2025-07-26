@@ -19,11 +19,6 @@ public class KeycloakProperties {
   private String issuerUri;
 
   /**
-   * 是否启动本地联调模式，启动时自动生成Token，此时必须设置用户名和密码
-   */
-  private boolean debug = false;
-
-  /**
    * 登录用户名，我们目前只用于本地联调
    */
   private String username;
@@ -32,6 +27,16 @@ public class KeycloakProperties {
    * 登录密码，我们目前只用于本地联调
    */
   private String password;
+
+  /**
+   * Spring security anonymous list
+   */
+  private List<String> anonymous = List.of();
+
+  /**
+   * Spring security permitAll list
+   */
+  private List<String> permitAll = List.of("/actuator/**");
 
   private PolicyEnforcer policyEnforcer = new PolicyEnforcer();
 
@@ -49,7 +54,7 @@ public class KeycloakProperties {
     /**
      * 忽略的名单，不走 PolicyEnforcer Filter，使用 Spring PathPattern 正则匹配
      */
-    private List<String> ignores = List.of();
+    private List<String> ignores = List.of("/actuator");
 
     /**
      * 可独立配置PolicyEnforcer用的client，如果不配置用全局默认的

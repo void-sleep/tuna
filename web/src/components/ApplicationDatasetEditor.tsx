@@ -370,7 +370,7 @@ const DatasetTable = ({ application }: { application: Application | null }) => {
                             whiteSpace: 'nowrap'
                           }}
                         >
-                          {item.description || '暂无描述'}
+                          {item.description || ''}
                         </Typography>
                       </TableCell>
                       <TableCell>
@@ -386,7 +386,6 @@ const DatasetTable = ({ application }: { application: Application | null }) => {
                             ))
                           ) : (
                             <Typography variant="body2" color="text.secondary">
-                              无标签
                             </Typography>
                           )}
                         </Box>
