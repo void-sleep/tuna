@@ -370,7 +370,7 @@ const DatasetTable = ({ application }: { application: Application | null }) => {
                             whiteSpace: 'nowrap'
                           }}
                         >
-                          {item.description || '暂无描述'}
+                          {item.description || ''}
                         </Typography>
                       </TableCell>
                       <TableCell>
