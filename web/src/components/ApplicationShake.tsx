@@ -2,8 +2,9 @@ import * as React from 'react';
 import { LuckyWheel } from '@lucky-canvas/react';
 import { useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
-import Skeleton from '@mui/material/Skeleton';
 import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 import { Application } from '../api/Modules';
 import { getApplicationById } from '../api/ApplicationApi';
 import { getDatasetItems } from '../api/DatasetApi';
@@ -45,7 +46,6 @@ export default function ApplicationShake() {
       setLoading(true);
       setError(null);
 
-      // 首先获取应用信息
       getApplicationById(appId)
         .then(app => {
           if (!app) {
@@ -54,15 +54,12 @@ export default function ApplicationShake() {
           }
 
           setCurrentApp(app);
-
-          // 如果应用有数据集ID，获取数据集项
           let datasetPromise;
           if (app.datasetId) {
             datasetPromise = getDatasetItems(app.datasetId);
           } else {
             datasetPromise = Promise.resolve([]);
           }
-
           return Promise.all([Promise.resolve(app), datasetPromise]);
         })
         .then(([, dataset]) => {
@@ -165,11 +162,17 @@ export default function ApplicationShake() {
 
   if (loading) {
     return (
-      <Box sx={{ p: 3, maxWidth: 800, mx: 'auto' }}>
-        <Skeleton
-          variant="rectangular"
-          sx={{ height: 380, width: 380, mx: 'auto', borderRadius: 2 }}
-        />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '60vh',
+          gap: 2
+        }}
+      >
+        <CircularProgress />
       </Box>
     );
   }
