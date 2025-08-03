@@ -8,7 +8,7 @@ RUN npm ci
 RUN npm run build
 
 # Production stage
-FROM nginx:1.29-alpine
+FROM nginxinc/nginx-unprivileged:1.29-alpine
 # Copy built files from build stage
 COPY --from=build /app/build /usr/share/nginx/html
-#EXPOSE 80
+#EXPOSE 8080
