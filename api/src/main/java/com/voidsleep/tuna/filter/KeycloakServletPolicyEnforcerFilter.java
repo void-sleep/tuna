@@ -14,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.pattern.PathPatternParser;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 /**
  * 重写改变获取Token的Header值
@@ -41,7 +42,9 @@ public class KeycloakServletPolicyEnforcerFilter extends OncePerRequestFilter {
   }
 
   private boolean isIgnore(String path) {
-    return properties.getPolicyEnforcer().getIgnores().stream()
+    return Stream.of(properties.getPolicyEnforcer().getIgnores().stream(),
+        properties.getPermitAll().stream())
+      .flatMap(s -> s)
       .anyMatch(pattern -> matcher.parse(pattern).matches(PathContainer.parsePath(path)));
   }
 

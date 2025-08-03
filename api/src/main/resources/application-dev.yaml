@@ -3,7 +3,6 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/tuna}
     username: ${DB_USERNAME:tuna}
     password: ${DB_PASSWORD:tuna}
-    driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: true
   flyway:
@@ -12,9 +11,8 @@ spring:
 tuna:
   api:
     keycloak:
-      debug: ${KEYCLOAK_DEBUG:true}
       username: ${KEYCLOAK_DEBUG_USERNAME:guest}
       password: ${KEYCLOAK_DEBUG_PASSWORD:guest}
       policy-enforcer:
-        enabled: ${KEYCLOAK_POLICY_ENFORCER_ENABLED:false}
-      
+        enabled: ${KEYCLOAK_POLICY_ENFORCER_ENABLED:true}
+

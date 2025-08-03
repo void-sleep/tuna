@@ -106,9 +106,12 @@ public class OAuth2SecurityConfiguration {
   @Bean
   public Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> authorizeHttpRequestsCustomizer() {
     return requests -> {
-      //      requests.requestMatchers(security.getAnonymous().toArray(new String[0])).anonymous();
-      //      requests.requestMatchers(permitAll).permitAll();
-
+      if (!properties.getAnonymous().isEmpty()) {
+        requests.requestMatchers(properties.getAnonymous().toArray(new String[0])).anonymous();
+      }
+      if (!properties.getPermitAll().isEmpty()) {
+        requests.requestMatchers(properties.getPermitAll().toArray(new String[0])).permitAll();
+      }
       requests.anyRequest().authenticated();
     };
   }

@@ -19,11 +19,17 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
     validate-on-migrate: true
-
+  jackson:
+    default-property-inclusion: NON_NULL
+    
 server:
   port: 8080
   servlet:
     context-path: /tuna-api
+    
+management:
+  server:
+    port: ${MANAGEMENT_SERVER_PORT:8081}
 
 tuna:
   api:

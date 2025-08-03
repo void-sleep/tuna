@@ -28,7 +28,7 @@ const colorPalette = [
 
 export default function ShakeDataDetail({ open, handleClose, data }: ShakeDataDetailProps) {
   // 生成随机表情
-  const randomEmoji = React.useMemo(() => createRandomEmoji(), []);
+  const randomEmoji = createRandomEmoji();
 
   // 确保数据存在
   if (!data) {
