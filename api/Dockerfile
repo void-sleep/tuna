@@ -1,24 +1,29 @@
-FROM bellsoft/liberica-openjdk-alpine:24 AS build
+# Build stage with GraalVM
+FROM ghcr.io/graalvm/native-image-community:21-muslib AS build
 
 WORKDIR /app
 
+# Install Maven
+RUN microdnf install -y findutils
+
 COPY . .
+
 # Make mvnw executable
 RUN chmod +x mvnw
 
-# Build the application
-RUN ./mvnw package -DskipTests
+# Build native image
+RUN ./mvnw -Pnative native:compile -DskipTests
 
-# Runtime stage
-FROM bellsoft/liberica-openjdk-alpine:24
+# Runtime stage - use minimal base image
+FROM gcr.io/distroless/cc-debian12:nonroot
 
 WORKDIR /app
 
-# Copy the built jar file
-COPY --from=build /app/target/*.jar app.jar
+# Copy the native executable
+COPY --from=build /app/target/api /app/api
 
-# Use JDK_JAVA_OPTIONS as default env
+# Expose ports
+EXPOSE 8080 8081
 
-EXPOSE 8080
-
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+# Run the native executable
+ENTRYPOINT ["/app/api"]
