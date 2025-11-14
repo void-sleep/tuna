@@ -7,13 +7,8 @@ RUN mvn clean package -DskipTests
 
 # Second stage: extract the jar layers and prepare CDS
 FROM bellsoft/liberica-openjre-debian:25-cds AS builder
-
 WORKDIR /builder
-
-# Copy the built jar from the build stage and rename it to application.jar
 COPY --from=build /builder/target/*.jar application.jar
-
-# Extract the jar into layered directories for efficient image layers
 RUN java -Djarmode=tools -jar application.jar extract --layers --destination extracted
 
 # Final runtime stage
@@ -31,10 +26,10 @@ COPY --from=builder /builder/extracted/application/ ./
 COPY --from=builder /builder/application.jar ./application.jar
 
 # Generate the CDS archive to improve startup time
-RUN java -XX:ArchiveClassesAtExit=application.jsa -Dspring.context.exit=onRefresh -jar application.jar
+# RUN java -XX:ArchiveClassesAtExit=application.jsa -Dspring.context.exit=onRefresh -jar application.jar
 
 # Expose application ports
 EXPOSE 8080 8081
 
-# Run the application with CDS enabled
-ENTRYPOINT ["java", "-XX:SharedArchiveFile=application.jsa", "-jar", "application.jar"]
+# Run the application with the prod profile
+ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "application.jar"]
