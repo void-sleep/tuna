@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.4</version>
+    <version>3.5.7</version>
     <relativePath/>
   </parent>
   
@@ -17,27 +17,11 @@
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>21</java.version>
+    <java.version>25</java.version>
     <maven.deploy.skip>true</maven.deploy.skip>
     <keycloak.client.version>26.0.7</keycloak.client.version>
-    <native.maven.plugin.version>0.10.4</native.maven.plugin.version>
-    <repackage.classifier />
   </properties>
 
-  <profiles>
-    <profile>
-      <id>native</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.graalvm.buildtools</groupId>
-            <artifactId>native-maven-plugin</artifactId>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-  
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -136,43 +120,6 @@
               <artifactId>lombok</artifactId>
             </exclude>
           </excludes>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>process-aot</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.graalvm.buildtools</groupId>
-        <artifactId>native-maven-plugin</artifactId>
-        <version>${native.maven.plugin.version}</version>
-        <extensions>true</extensions>
-        <executions>
-          <execution>
-            <id>test-native</id>
-            <phase>test</phase>
-            <goals>
-              <goal>test</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>build-native</id>
-            <phase>package</phase>
-            <goals>
-              <goal>compile-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <buildArgs>
-            <buildArg>--no-fallback</buildArg>
-            <buildArg>-H:+ReportExceptionStackTraces</buildArg>
-            <buildArg>-H:+AddAllCharsets</buildArg>
-            <buildArg>-H:IncludeResources=.*\\.(properties|yaml|yml|xml|sql)$</buildArg>
-          </buildArgs>
         </configuration>
       </plugin>
     </plugins>

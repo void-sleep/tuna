@@ -1,29 +1,40 @@
-# Build stage with GraalVM
-FROM ghcr.io/graalvm/native-image-community:21-muslib AS build
-
-WORKDIR /app
-
-# Install Maven
-RUN microdnf install -y findutils
-
+#  see: https://docs.spring.io/spring-boot/reference/packaging/container-images/dockerfiles.html
+# First stage: build the Spring Boot jar
+FROM maven:3.9.11-eclipse-temurin-25 AS build
+WORKDIR /builder
 COPY . .
+RUN mvn clean package -DskipTests
 
-# Make mvnw executable
-RUN chmod +x mvnw
+# Second stage: extract the jar layers and prepare CDS
+FROM bellsoft/liberica-openjre-debian:25-cds AS builder
 
-# Build native image
-RUN ./mvnw -Pnative native:compile -DskipTests
+WORKDIR /builder
 
-# Runtime stage - use minimal base image
-FROM gcr.io/distroless/cc-debian12:nonroot
+# Copy the built jar from the build stage and rename it to application.jar
+COPY --from=build /builder/target/*.jar application.jar
 
-WORKDIR /app
+# Extract the jar into layered directories for efficient image layers
+RUN java -Djarmode=tools -jar application.jar extract --layers --destination extracted
 
-# Copy the native executable
-COPY --from=build /app/target/api /app/api
+# Final runtime stage
+FROM bellsoft/liberica-openjre-debian:25-cds
 
-# Expose ports
+WORKDIR /application
+
+# Copy the extracted layers into the runtime image
+COPY --from=builder /builder/extracted/dependencies/ ./
+COPY --from=builder /builder/extracted/spring-boot-loader/ ./
+COPY --from=builder /builder/extracted/snapshot-dependencies/ ./
+COPY --from=builder /builder/extracted/application/ ./
+
+# Copy the lightweight application jar for runtime
+COPY --from=builder /builder/application.jar ./application.jar
+
+# Generate the CDS archive to improve startup time
+RUN java -XX:ArchiveClassesAtExit=application.jsa -Dspring.context.exit=onRefresh -jar application.jar
+
+# Expose application ports
 EXPOSE 8080 8081
 
-# Run the native executable
-ENTRYPOINT ["/app/api"]
+# Run the application with CDS enabled
+ENTRYPOINT ["java", "-XX:SharedArchiveFile=application.jsa", "-jar", "application.jar"]
