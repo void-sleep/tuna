@@ -32,4 +32,4 @@ COPY --from=builder /builder/application.jar ./application.jar
 EXPOSE 8080 8081
 
 # Run the application with the prod profile
-ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "application.jar"]
+ENTRYPOINT ["java", "-jar", "application.jar"]
