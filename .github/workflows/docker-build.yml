@@ -16,8 +16,8 @@ jobs:
         include:
           - name: tuna-api
             context: ./api
-          - name: tuna-web
-            context: ./web
+          - name: tuna-ui
+            context: ./ui
 
     steps:
       - name: Checkout
