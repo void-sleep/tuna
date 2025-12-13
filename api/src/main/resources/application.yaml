@@ -25,7 +25,7 @@ spring:
 server:
   port: 8080
   servlet:
-    context-path: /tuna-api
+    context-path: /api
     
 management:
   server:
