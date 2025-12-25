@@ -1,0 +1,24 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <!-- 黑色背景 -->
+  <rect width="512" height="512" fill="#121212" />
+
+  <!-- V 形线条（科技感与哲学思考） -->
+  <path d="M77,256 L256,77 L435,256" fill="none" stroke="#4169e1" stroke-width="10" />
+
+  <!-- S 形曲线（流畅与动态） -->
+  <path d="M256,435 C307,358 410,358 435,282" fill="none" stroke="#4169e1" stroke-width="10" />
+
+  <!-- 中心交织点（象征存在与思考） -->
+  <circle cx="256" cy="256" r="20" fill="#fff" />
+
+  <!-- 辅助线条（增加深度与层次） -->
+  <path d="M77,256 L179,179" fill="none" stroke="#4169e1" stroke-width="5" stroke-opacity="0.6" />
+  <path d="M333,179 L435,256" fill="none" stroke="#4169e1" stroke-width="5" stroke-opacity="0.6" />
+  <path d="M179,333 L256,435" fill="none" stroke="#4169e1" stroke-width="5" stroke-opacity="0.6" />
+  <path d="M256,435 L333,333" fill="none" stroke="#4169e1" stroke-width="5" stroke-opacity="0.6" />
+  <!-- VS 字母（融入设计） 
+    <text x="256" y="474" font-family="Arial" font-size="36" text-anchor="middle" fill="#4169e1">
+      Void Sleep
+    </text>
+  -->
+</svg> 

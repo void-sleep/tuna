@@ -1,0 +1,392 @@
+{
+  "common": {
+    "language": "Language"
+  },
+  "nav": {
+    "home": "Home",
+    "apps": "My Apps",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "hero": {
+    "badge": "AI-powered Decision Assistant",
+    "title": "Tuna",
+    "subtitle": "When in doubt, ask Zhuang Zhou",
+    "description": "Use AI, big data, and cloud computing to solve 'How to choose Y under X conditions' problems.",
+    "cta": {
+      "primary": "Get Started",
+      "secondary": "Learn More"
+    },
+    "features": {
+      "smartDecision": {
+        "title": "Smart Decision",
+        "description": "AI assistance helps you make the best choice"
+      },
+      "fastConvenient": {
+        "title": "Fast & Convenient",
+        "description": "Generate with one click, use instantly"
+      },
+      "preciseMatching": {
+        "title": "Precise Matching",
+        "description": "Smart recommendations based on big data"
+      }
+    }
+  },
+  "useCases": {
+    "badge": "Use Cases",
+    "title": "Perfect for Every Scenario",
+    "subtitle": "From daily life to important decisions, Tuna is your reliable assistant",
+    "cases": {
+      "lunch": {
+        "title": "What to Eat for Lunch",
+        "description": "Indecisive about lunch? Let Tuna help you choose from nearby restaurants"
+      },
+      "weekend": {
+        "title": "Weekend Activities",
+        "description": "Movie, shopping, or outdoor adventure? Tuna picks the best weekend plan for you"
+      },
+      "lottery": {
+        "title": "Annual Meeting Lottery",
+        "description": "Fair and transparent lottery system, making team events more exciting"
+      },
+      "baby": {
+        "title": "Baby Meal Planning",
+        "description": "Struggling with baby food choices? Tuna recommends nutritionally balanced meals"
+      }
+    }
+  },
+  "footer": {
+    "copyright": "Copyright",
+    "allRightsReserved": "All rights reserved",
+    "github": "GitHub",
+    "license": "License"
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "description": "Enter your email below to login to your account",
+      "email": "Email",
+      "emailPlaceholder": "m@example.com",
+      "password": "Password",
+      "forgotPassword": "Forgot your password?",
+      "submit": "Login",
+      "loggingIn": "Logging in...",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up",
+      "orContinueWith": "Or continue with"
+    },
+    "signup": {
+      "title": "Sign up",
+      "description": "Create a new account",
+      "email": "Email",
+      "emailPlaceholder": "m@example.com",
+      "password": "Password",
+      "repeatPassword": "Repeat Password",
+      "submit": "Sign up",
+      "creating": "Creating an account...",
+      "hasAccount": "Already have an account?",
+      "login": "Login",
+      "orContinueWith": "Or continue with"
+    },
+    "forgotPassword": {
+      "title": "Reset Your Password",
+      "description": "Type in your email and we'll send you a link to reset your password",
+      "email": "Email",
+      "emailPlaceholder": "m@example.com",
+      "submit": "Send Reset Link",
+      "sending": "Sending...",
+      "checkEmail": "Check Your Email",
+      "resetInstructionsSent": "Password reset instructions sent",
+      "backToLogin": "Back to Login"
+    },
+    "updatePassword": {
+      "title": "Reset Your Password",
+      "description": "Please enter your new password below.",
+      "newPassword": "New password",
+      "submit": "Save new password",
+      "saving": "Saving..."
+    },
+    "signUpSuccess": {
+      "title": "Thank you for signing up!",
+      "description": "Check your email to confirm your account",
+      "backToHome": "Back to Home"
+    },
+    "error": {
+      "title": "Sorry, something went wrong",
+      "description": "An unspecified error occurred",
+      "backToHome": "Back to Home"
+    },
+    "button": {
+      "login": "Login",
+      "signup": "Sign up",
+      "logout": "Logout"
+    },
+    "userMenu": {
+      "apps": "My Apps",
+      "logout": "Logout"
+    },
+    "errors": {
+      "passwordMismatch": "Passwords do not match",
+      "generic": "An error occurred",
+      "invalidEmail": "Invalid email address"
+    }
+  },
+  "protected": {
+    "title": "Profile",
+    "subtitle": "Your user details",
+    "info": "This is a protected page that you can only see as an authenticated user",
+    "userDetails": "User details"
+  },
+  "apps": {
+    "title": "My Applications",
+    "subtitle": "Manage and run your decision-making applications",
+    "createNew": "Create New App",
+    "empty": {
+      "title": "No applications yet",
+      "description": "Create your first application to get started",
+      "cta": "Create Application"
+    },
+    "applicationTypes": {
+      "coin": "Coin Flip",
+      "wheel": "Wheel",
+      "counter": "Counter",
+      "math_flash": "Math Flash"
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete",
+      "run": "Run"
+    },
+    "createDialog": {
+      "title": "Create New Application",
+      "description": "Choose an application type and give it a name",
+      "form": {
+        "title": "Application Title",
+        "titlePlaceholder": "Enter application title",
+        "description": "Description (optional)",
+        "descriptionPlaceholder": "Enter application description",
+        "type": "Application Type",
+        "selectType": "Select a type"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "create": "Create Application",
+        "creating": "Creating..."
+      }
+    },
+    "deleteDialog": {
+      "title": "Delete Application",
+      "description": "Are you sure you want to delete this application? This action cannot be undone.",
+      "buttons": {
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "deleting": "Deleting..."
+      }
+    }
+  },
+  "binaryChoice": {
+    "edit": {
+      "title": "Edit Binary Choice Application",
+      "subtitle": "Configure your to be or not to be decision",
+      "optionA": "Option A",
+      "optionB": "Option B",
+      "form": {
+        "text": "Text",
+        "textPlaceholder": "e.g., To Be, Survive, Yes",
+        "icon": "Icon (Emoji)",
+        "iconPlaceholder": "e.g., 🌱",
+        "description": "Description",
+        "descriptionPlaceholder": "Describe this option",
+        "color": "Color Theme"
+      },
+      "colors": {
+        "green": "Green",
+        "blue": "Blue",
+        "purple": "Purple",
+        "red": "Red",
+        "orange": "Orange",
+        "pink": "Pink"
+      },
+      "buttons": {
+        "save": "Save Changes",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "backToApps": "Back to Apps",
+        "preview": "Preview"
+      },
+      "success": "Application saved successfully!"
+    },
+    "run": {
+      "title": "Make Your Choice",
+      "subtitle": "Let fate decide",
+      "startButton": "Start",
+      "tryAgain": "Try Again",
+      "preparing": "Preparing...",
+      "deciding": "Deciding...",
+      "exit": "Exit",
+      "edit": "Edit",
+      "noItems": {
+        "title": "No options configured",
+        "description": "This application doesn't have any options yet. Please configure the options before running.",
+        "backToApps": "Back to Apps",
+        "configureOptions": "Configure Options"
+      },
+      "result": {
+        "title": "The Answer Is...",
+        "selected": "Selected",
+        "backToApps": "Back to Apps"
+      }
+    }
+  },
+  "howItWorks": {
+    "badge": "How It Works",
+    "title": "Simple Steps to Smart Decisions",
+    "subtitle": "Create your decision-making app in just three easy steps",
+    "steps": {
+      "create": {
+        "title": "Create Your App",
+        "description": "Start by creating a new decision-making application tailored to your specific needs"
+      },
+      "configure": {
+        "title": "Configure Options",
+        "description": "Set up your choices, customize icons, colors, and descriptions for each option"
+      },
+      "run": {
+        "title": "Run & Decide",
+        "description": "Let Tuna make the decision for you with beautiful animations and instant results"
+      }
+    }
+  },
+  "stats": {
+    "title": "Trusted by Decision Makers",
+    "subtitle": "Join thousands of users making smarter decisions every day",
+    "items": {
+      "decisions": "Decisions Made",
+      "users": "Active Users",
+      "apps": "Apps Created",
+      "uptime": "Uptime"
+    }
+  },
+  "cta": {
+    "badge": "Get Started Today",
+    "title": "Ready to Make Better Decisions?",
+    "description": "Join our open source community and start making smarter decisions today. Fast, fun, and fully transparent!",
+    "primary": "Get Started",
+    "secondary": "Sign In",
+    "features": {
+      "openSource": "100% Open Source",
+      "community": "Community Driven",
+      "instant": "Instant Setup"
+    }
+  },
+  "meta": {
+    "title": "Tuna - When in doubt, ask Zhuang Zhou",
+    "description": "Use AI, big data, and cloud computing to solve 'How to choose Y under X conditions' problems."
+  },
+  "pricing": {
+    "badge": "Pricing",
+    "title": "Simple, Transparent Pricing",
+    "subtitle": "Choose the plan that works best for you. Start free and upgrade when you need more.",
+    "popular": "Most Popular",
+    "freeNow": "Free Now",
+    "free": {
+      "name": "Free",
+      "price": "$0",
+      "description": "Perfect for getting started",
+      "features": {
+        "apps": "Up to 20 applications",
+        "basicTypes": "Basic application types",
+        "community": "Community support",
+        "updates": "Regular updates"
+      },
+      "cta": "Get Started Free"
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "$9",
+      "period": "year",
+      "description": "For power users who need more",
+      "features": {
+        "apps": "Unlimited applications",
+        "allTypes": "All application types",
+        "priority": "Priority support",
+        "analytics": "Advanced analytics",
+        "export": "Data export",
+        "support": "Email support"
+      },
+      "cta": "Upgrade to Pro"
+    },
+    "note": "All plans include access to our open-source community and regular feature updates."
+  },
+  "mathFlash": {
+    "edit": {
+      "title": "Edit Math Flash",
+      "subtitle": "Configure your math practice settings",
+      "numberRange": {
+        "title": "Number Range",
+        "description": "Set the range of numbers for problems",
+        "min": "Minimum",
+        "max": "Maximum",
+        "preview": "Range"
+      },
+      "operations": {
+        "title": "Operations",
+        "description": "Choose which operations to practice",
+        "addition": "Addition",
+        "subtraction": "Subtraction",
+        "multiplication": "Multiplication",
+        "division": "Division"
+      },
+      "difficulty": {
+        "title": "Difficulty Level",
+        "description": "Choose practice difficulty",
+        "level1": "Easy",
+        "level2": "Medium",
+        "level3": "Hard"
+      },
+      "settings": {
+        "title": "Practice Settings",
+        "description": "Customize your practice session",
+        "questionCount": "Number of Questions",
+        "timePerQuestion": "Time per Question",
+        "answerDisplayTime": "Answer Display Time"
+      },
+      "preview": {
+        "title": "Preview",
+        "description": "See what your practice will look like",
+        "sampleQuestion": "Sample question",
+        "questions": "Questions",
+        "perQuestion": "Per question",
+        "totalTime": "Total time"
+      },
+      "buttons": {
+        "save": "Save Changes",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "backToApps": "Back to Apps",
+        "preview": "Preview"
+      },
+      "success": "Settings saved successfully!"
+    },
+    "run": {
+      "ready": {
+        "title": "Ready to Practice?",
+        "description": "You will see {count} questions with {time} seconds each.",
+        "startButton": "Start Practice"
+      },
+      "feedback": {
+        "answer": "Answer"
+      },
+      "complete": {
+        "title": "Practice Complete!",
+        "description": "Great job! You finished all questions.",
+        "questions": "Questions",
+        "totalTime": "Total Time",
+        "tryAgain": "Practice Again"
+      },
+      "exit": "Exit",
+      "edit": "Edit"
+    }
+  }
+}
