@@ -59,7 +59,90 @@
     "copyright": "版权所有",
     "allRightsReserved": "保留所有权利",
     "github": "GitHub",
-    "license": "许可证"
+    "license": "许可证",
+    "about": "关于我们",
+    "terms": "服务条款",
+    "privacy": "隐私政策"
+  },
+  "about": {
+    "title": "关于 Tuna",
+    "subtitle": "了解我们的使命和愿景",
+    "whatIsTuna": {
+      "title": "什么是 Tuna？",
+      "description": "Tuna 是一款 AI 驱动的决策助手，帮助您在日常生活中做出选择。无论是决定午餐吃什么、规划周末活动，还是需要一个公平的抽奖系统，Tuna 都能提供有趣且可靠的解决方案。"
+    },
+    "mission": {
+      "title": "我们的使命",
+      "description": "我们相信做决定应该是有趣且轻松的。我们的使命是创造简单而强大的工具，帮助人们以一种令人兴奋且公平的方式做出更好的决定。"
+    },
+    "openSource": {
+      "title": "开源项目",
+      "description": "Tuna 是一个开源项目。我们相信透明度和社区驱动的开发。您可以在 GitHub 上查看我们的源代码、贡献代码或报告问题。"
+    },
+    "contact": {
+      "title": "联系我们",
+      "description": "有问题或建议？欢迎通过我们的 GitHub 仓库联系我们，或发送邮件至 support@voidsleep.com。"
+    }
+  },
+  "terms": {
+    "title": "服务条款",
+    "subtitle": "使用我们的服务前，请仔细阅读这些条款",
+    "acceptance": {
+      "title": "条款接受",
+      "description": "通过访问和使用 Tuna，您接受并同意受本协议条款和条件的约束。如果您不同意这些条款，请不要使用我们的服务。"
+    },
+    "usage": {
+      "title": "服务使用",
+      "description": "Tuna 仅供个人和非商业用途使用。您同意仅将服务用于合法目的，并遵守这些条款。您不得以任何可能损害、禁用或损害服务的方式使用服务。"
+    },
+    "accounts": {
+      "title": "用户账户",
+      "description": "当您在我们这里创建账户时，您必须提供准确和完整的信息。您有责任维护账户和密码的安全。您同意在发现任何未经授权访问您账户的情况时立即通知我们。"
+    },
+    "intellectualProperty": {
+      "title": "知识产权",
+      "description": "服务及其原创内容、功能和特性归 Void Sleep 所有，受国际版权、商标和其他知识产权法律保护。"
+    },
+    "limitation": {
+      "title": "责任限制",
+      "description": "在任何情况下，Void Sleep 均不对任何间接、附带、特殊、后果性或惩罚性损害负责，包括但不限于利润损失、数据损失或其他无形损失。"
+    },
+    "changes": {
+      "title": "条款变更",
+      "description": "我们保留随时修改或替换这些条款的权利。我们将通过在此页面发布新条款来通知任何更改。在任何更改后继续使用服务即表示接受新条款。"
+    }
+  },
+  "privacy": {
+    "title": "隐私政策",
+    "subtitle": "我们如何收集、使用和保护您的信息",
+    "collection": {
+      "title": "我们收集的信息",
+      "description": "我们收集您直接提供给我们的信息，例如当您创建账户、使用我们的服务或联系我们寻求支持时。这可能包括您的姓名、电子邮件地址和使用数据。"
+    },
+    "usage": {
+      "title": "我们如何使用您的信息",
+      "description": "我们使用收集的信息来提供、维护和改进我们的服务，与您沟通，并个性化您的体验。我们不会将您的个人信息出售给第三方。"
+    },
+    "storage": {
+      "title": "数据存储和安全",
+      "description": "我们采取适当的技术和组织措施来保护您的个人信息免受未经授权的访问、更改、披露或销毁。您的数据安全地存储在云服务器上。"
+    },
+    "sharing": {
+      "title": "信息共享",
+      "description": "我们不会与第三方共享您的个人信息，除非是为了提供我们的服务、遵守法律义务或保护我们的权利和用户安全所必需的。"
+    },
+    "cookies": {
+      "title": "Cookie 和跟踪",
+      "description": "我们使用 Cookie 和类似的跟踪技术来增强您的体验、分析使用模式并提供个性化内容。您可以通过浏览器偏好设置控制 Cookie 设置。"
+    },
+    "rights": {
+      "title": "您的权利",
+      "description": "您有权访问、更正或删除您的个人信息。您还可以请求获取数据副本或要求我们限制处理。请联系我们行使这些权利。"
+    },
+    "contact": {
+      "title": "联系我们",
+      "description": "如果您对本隐私政策有任何疑问，请通过 privacy@voidsleep.com 或我们的 GitHub 仓库联系我们。"
+    }
   },
   "auth": {
     "login": {
@@ -141,6 +224,7 @@
     "title": "我的应用",
     "subtitle": "管理和运行你的应用",
     "createNew": "创建新应用",
+    "createdAt": "创建于 {date}",
     "empty": {
       "title": "还没有应用",
       "description": "创建您的第一个应用开始使用",
@@ -226,6 +310,7 @@
       "deciding": "决策中...",
       "exit": "退出",
       "edit": "编辑",
+      "fullscreen": "全屏",
       "noItems": {
         "title": "尚未配置选项",
         "description": "此应用还没有任何选项。请先配置选项后再运行。",
@@ -386,7 +471,8 @@
         "tryAgain": "再练一次"
       },
       "exit": "退出",
-      "edit": "编辑"
+      "edit": "编辑",
+      "fullscreen": "全屏"
     }
   }
 }

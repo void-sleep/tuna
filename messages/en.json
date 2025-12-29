@@ -59,7 +59,90 @@
     "copyright": "Copyright",
     "allRightsReserved": "All rights reserved",
     "github": "GitHub",
-    "license": "License"
+    "license": "License",
+    "about": "About",
+    "terms": "Terms",
+    "privacy": "Privacy"
+  },
+  "about": {
+    "title": "About Tuna",
+    "subtitle": "Learn more about our mission and vision",
+    "whatIsTuna": {
+      "title": "What is Tuna?",
+      "description": "Tuna is an AI-powered decision assistant that helps you make choices in everyday life. Whether you're deciding what to eat for lunch, planning weekend activities, or need a fair lottery system, Tuna provides fun and reliable solutions."
+    },
+    "mission": {
+      "title": "Our Mission",
+      "description": "We believe that decision-making should be fun and stress-free. Our mission is to create simple yet powerful tools that help people make better decisions with a touch of excitement and fairness."
+    },
+    "openSource": {
+      "title": "Open Source",
+      "description": "Tuna is an open-source project. We believe in transparency and community-driven development. You can view our source code, contribute, or report issues on GitHub."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "description": "Have questions or suggestions? Feel free to reach out to us through our GitHub repository or email us at support@voidsleep.com."
+    }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "subtitle": "Please read these terms carefully before using our service",
+    "acceptance": {
+      "title": "Acceptance of Terms",
+      "description": "By accessing and using Tuna, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use our service."
+    },
+    "usage": {
+      "title": "Use of Service",
+      "description": "Tuna is provided for personal and non-commercial use. You agree to use the service only for lawful purposes and in accordance with these terms. You may not use the service in any way that could damage, disable, or impair the service."
+    },
+    "accounts": {
+      "title": "User Accounts",
+      "description": "When you create an account with us, you must provide accurate and complete information. You are responsible for maintaining the security of your account and password. You agree to notify us immediately of any unauthorized access to your account."
+    },
+    "intellectualProperty": {
+      "title": "Intellectual Property",
+      "description": "The service and its original content, features, and functionality are owned by Void Sleep and are protected by international copyright, trademark, and other intellectual property laws."
+    },
+    "limitation": {
+      "title": "Limitation of Liability",
+      "description": "In no event shall Void Sleep be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, or other intangible losses."
+    },
+    "changes": {
+      "title": "Changes to Terms",
+      "description": "We reserve the right to modify or replace these terms at any time. We will provide notice of any changes by posting the new terms on this page. Your continued use of the service after any changes constitutes acceptance of the new terms."
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "subtitle": "How we collect, use, and protect your information",
+    "collection": {
+      "title": "Information We Collect",
+      "description": "We collect information you provide directly to us, such as when you create an account, use our services, or contact us for support. This may include your name, email address, and usage data."
+    },
+    "usage": {
+      "title": "How We Use Your Information",
+      "description": "We use the information we collect to provide, maintain, and improve our services, to communicate with you, and to personalize your experience. We do not sell your personal information to third parties."
+    },
+    "storage": {
+      "title": "Data Storage and Security",
+      "description": "We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. Your data is stored securely on cloud servers."
+    },
+    "sharing": {
+      "title": "Information Sharing",
+      "description": "We do not share your personal information with third parties except as necessary to provide our services, comply with legal obligations, or protect our rights and the safety of our users."
+    },
+    "cookies": {
+      "title": "Cookies and Tracking",
+      "description": "We use cookies and similar tracking technologies to enhance your experience, analyze usage patterns, and deliver personalized content. You can control cookie settings through your browser preferences."
+    },
+    "rights": {
+      "title": "Your Rights",
+      "description": "You have the right to access, correct, or delete your personal information. You can also request a copy of your data or ask us to restrict processing. Contact us to exercise these rights."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "description": "If you have any questions about this Privacy Policy, please contact us at privacy@voidsleep.com or through our GitHub repository."
+    }
   },
   "auth": {
     "login": {
@@ -141,6 +224,7 @@
     "title": "My Applications",
     "subtitle": "Manage and run your decision-making applications",
     "createNew": "Create New App",
+    "createdAt": "Created {date}",
     "empty": {
       "title": "No applications yet",
       "description": "Create your first application to get started",
@@ -226,6 +310,7 @@
       "deciding": "Deciding...",
       "exit": "Exit",
       "edit": "Edit",
+      "fullscreen": "Fullscreen",
       "noItems": {
         "title": "No options configured",
         "description": "This application doesn't have any options yet. Please configure the options before running.",
@@ -386,7 +471,8 @@
         "tryAgain": "Practice Again"
       },
       "exit": "Exit",
-      "edit": "Edit"
+      "edit": "Edit",
+      "fullscreen": "Fullscreen"
     }
   }
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createApplication, type CreateApplicationInput } from "@/lib/supabase/applications";
 
@@ -46,6 +47,9 @@ export async function POST(request: NextRequest) {
 
     // Create application (without default items)
     const application = await createApplication(body);
+
+    // Revalidate the apps page cache
+    revalidatePath('/apps');
 
     return NextResponse.json(application, { status: 201 });
   } catch (error) {

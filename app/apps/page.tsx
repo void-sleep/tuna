@@ -19,6 +19,19 @@ export default async function AppsPage() {
 
   const applications = await getApplications();
 
+  // Count applications by type
+  const typeCounts = applications.reduce((acc, app) => {
+    acc[app.type] = (acc[app.type] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const typeIcons: Record<string, string> = {
+    coin: '🎲',
+    wheel: '🎡',
+    counter: '🔢',
+    math_flash: '🧮',
+  };
+
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-slate-50/50 dark:bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
@@ -32,7 +45,20 @@ export default async function AppsPage() {
               <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
                 {t('title')}
               </h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{applications.length} applications</p>
+              <div className="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
+                <span>{applications.length}</span>
+                {Object.keys(typeCounts).length > 0 && (
+                  <span className="flex items-center gap-2">
+                    <span className="text-slate-300 dark:text-slate-600">|</span>
+                    {Object.entries(typeCounts).map(([type, count]) => (
+                      <span key={type} className="flex items-center gap-1">
+                        <span>{typeIcons[type]}</span>
+                        <span>{count}</span>
+                      </span>
+                    ))}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 

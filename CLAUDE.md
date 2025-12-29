@@ -37,6 +37,8 @@ tuna/
 
 ## 开发命令
 
+如果本地已经 npm run dev 启动开发模式，在每次改代码后就不要 npm run build，复用开发模式即可。
+
 ```bash
 npm run dev       # 本地开发服务器
 npm run build     # 构建生产版本

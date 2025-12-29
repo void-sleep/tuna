@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import type { Application } from "@/lib/supabase/applications";
 import type { ApplicationItem } from "@/lib/supabase/application-items";
 import { Button } from "./ui/button";
@@ -115,6 +115,7 @@ const APP_TYPE_CONFIG: Record<string, {
 
 export function ApplicationCard({ application, index = 0 }: ApplicationCardProps) {
   const t = useTranslations('apps');
+  const locale = useLocale();
   const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -139,12 +140,17 @@ export function ApplicationCard({ application, index = 0 }: ApplicationCardProps
     fetchItems();
   }, [application.id]);
 
-  // Format date
+  // Format date based on locale
   const createdDate = new Date(application.created_at);
-  const formattedDate = createdDate.toLocaleDateString('en-US', {
+  const dateLocale = locale === 'zh' ? 'zh-CN' : locale;
+  const formattedDate = createdDate.toLocaleDateString(dateLocale, {
     month: 'short',
     day: 'numeric',
   });
+
+  // Get localized application type label
+  const typeKey = application.type as 'coin' | 'wheel' | 'counter' | 'math_flash';
+  const localizedTypeLabel = t(`applicationTypes.${typeKey}`);
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -212,7 +218,7 @@ export function ApplicationCard({ application, index = 0 }: ApplicationCardProps
               {/* Type label */}
               <div>
                 <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-                  {config.label}
+                  {localizedTypeLabel}
                 </span>
               </div>
             </div>
@@ -254,7 +260,7 @@ export function ApplicationCard({ application, index = 0 }: ApplicationCardProps
           {/* Description - flex-1 to fill available space */}
           <div className="flex-1">
             <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 min-h-[2.5rem] mb-3">
-              {application.description || 'No description'}
+              {application.description}
             </p>
 
             {/* Options preview for binary choice */}
@@ -276,7 +282,7 @@ export function ApplicationCard({ application, index = 0 }: ApplicationCardProps
           {/* Bottom row: Date and Actions - mt-auto pushes to bottom */}
           <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/50 mt-auto">
             <span className="text-xs text-slate-400 dark:text-slate-500">
-              Created {formattedDate}
+              {formattedDate}
             </span>
 
             <div className="flex items-center gap-2">

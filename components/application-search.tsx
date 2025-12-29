@@ -65,10 +65,10 @@ export function ApplicationSearch({ applications }: ApplicationSearchProps) {
       <Button
         variant="outline"
         onClick={() => setOpen(true)}
-        className="gap-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white px-3 h-9"
+        className="gap-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white px-4 h-9 min-w-[180px] md:min-w-[220px] justify-start"
       >
         <MagnifyingGlassIcon className="h-4 w-4" />
-        <span className="hidden md:inline text-sm">Search...</span>
+        <span className="text-sm flex-1 text-left">Search...</span>
         <kbd className="hidden md:inline-flex h-5 items-center gap-1 rounded border bg-slate-100 dark:bg-slate-700 px-1.5 font-mono text-[10px] font-medium text-slate-500 dark:text-slate-400">
           <span className="text-xs">⌘</span>K
         </kbd>

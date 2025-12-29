@@ -12,7 +12,7 @@ import type { MathFlashConfig } from "@/components/math-flash-editor";
 import { DEFAULT_MATH_FLASH_CONFIG } from "@/components/math-flash-editor";
 import type { Application, ApplicationType } from "@/lib/supabase/applications";
 import type { ApplicationItem } from "@/lib/supabase/application-items";
-import { ArrowLeftIcon, PencilIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, PencilIcon, XMarkIcon, ArrowsPointingOutIcon, ArrowsPointingInIcon } from "@heroicons/react/24/outline";
 
 const DEFAULT_BINARY_CONFIG: BinaryChoiceConfig = {
   optionA: {
@@ -31,9 +31,9 @@ const DEFAULT_BINARY_CONFIG: BinaryChoiceConfig = {
 
 const APP_TYPE_STYLES: Record<ApplicationType, { bgGradient: string; icon: string }> = {
   coin: { bgGradient: 'from-slate-900 via-violet-950/50 to-slate-900', icon: '🎲' },
-  math_flash: { bgGradient: 'from-slate-900 via-sky-950/50 to-slate-900', icon: '🧮' },
+  math_flash: { bgGradient: 'from-slate-900 via-orange-950/50 to-slate-900', icon: '🧮' },
   wheel: { bgGradient: 'from-slate-900 via-amber-950/50 to-slate-900', icon: '🎡' },
-  counter: { bgGradient: 'from-slate-900 via-emerald-950/50 to-slate-900', icon: '🔢' },
+  counter: { bgGradient: 'from-slate-900 via-sky-950/50 to-slate-900', icon: '🔢' },
 };
 
 export default function RunApplicationPage({
@@ -51,14 +51,45 @@ export default function RunApplicationPage({
   const [mathConfig, setMathConfig] = useState<MathFlashConfig>(DEFAULT_MATH_FLASH_CONFIG);
   const [isLoading, setIsLoading] = useState(true);
   const [hasItems, setHasItems] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const appType = application?.type || 'coin';
   const styles = APP_TYPE_STYLES[appType];
   const t = appType === 'math_flash' ? tMath : tBinary;
 
+  // Exit fullscreen when leaving the page
+  const exitFullscreen = useCallback(() => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    }
+  }, []);
+
   const handleExit = useCallback(() => {
+    exitFullscreen();
     router.push('/apps');
-  }, [router]);
+  }, [router, exitFullscreen]);
+
+  // Toggle browser fullscreen
+  const toggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().then(() => {
+        setIsFullscreen(true);
+      }).catch(() => {});
+    } else {
+      document.exitFullscreen().then(() => {
+        setIsFullscreen(false);
+      }).catch(() => {});
+    }
+  }, []);
+
+  // Listen for fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
 
   // Keyboard controls
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -215,7 +246,7 @@ export default function RunApplicationPage({
     );
   }
 
-  const colorClass = appType === 'math_flash' ? 'sky' : 'violet';
+  const colorClass = appType === 'math_flash' ? 'orange' : 'violet';
 
   // Main fullscreen runner
   return (
@@ -236,7 +267,7 @@ export default function RunApplicationPage({
           variant="ghost"
           size="sm"
           onClick={handleExit}
-          className={`gap-2 text-${colorClass}-300/80 hover:text-white hover:bg-${colorClass}-500/20 rounded-xl px-4 pointer-events-auto`}
+          className={`gap-2 text-white bg-${colorClass}-500/30 hover:bg-${colorClass}-500/50 border border-${colorClass}-400/40 rounded-xl px-4 pointer-events-auto backdrop-blur-sm`}
         >
           <XMarkIcon className="h-5 w-5" />
           <span className="text-sm font-medium">{t('exit')}</span>
@@ -250,18 +281,36 @@ export default function RunApplicationPage({
           </span>
         </div>
 
-        {/* Edit button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          asChild
-          className={`gap-2 text-${colorClass}-300/80 hover:text-white hover:bg-${colorClass}-500/20 rounded-xl px-4 pointer-events-auto`}
-        >
-          <Link href={`/apps/applications/${id}/edit`}>
-            <PencilIcon className="h-4 w-4" />
-            <span className="text-sm font-medium">{t('edit')}</span>
-          </Link>
-        </Button>
+        {/* Right buttons */}
+        <div className="flex items-center gap-2">
+          {/* Fullscreen toggle button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleFullscreen}
+            className={`gap-2 text-white bg-${colorClass}-500/30 hover:bg-${colorClass}-500/50 border border-${colorClass}-400/40 rounded-xl px-4 pointer-events-auto backdrop-blur-sm`}
+          >
+            {isFullscreen ? (
+              <ArrowsPointingInIcon className="h-4 w-4" />
+            ) : (
+              <ArrowsPointingOutIcon className="h-4 w-4" />
+            )}
+            <span className="text-sm font-medium">{t('fullscreen')}</span>
+          </Button>
+
+          {/* Edit button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className={`gap-2 text-white bg-${colorClass}-500/30 hover:bg-${colorClass}-500/50 border border-${colorClass}-400/40 rounded-xl px-4 pointer-events-auto backdrop-blur-sm`}
+          >
+            <Link href={`/apps/applications/${id}/edit`}>
+              <PencilIcon className="h-4 w-4" />
+              <span className="text-sm font-medium">{t('edit')}</span>
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Keyboard hint */}

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import {
   getApplication,
   updateApplication,
@@ -41,6 +42,9 @@ export async function PATCH(
 
     const application = await updateApplication(id, body);
 
+    // Revalidate the apps page cache
+    revalidatePath('/apps');
+
     return NextResponse.json(application);
   } catch (error) {
     console.error('Error updating application:', error);
@@ -59,6 +63,9 @@ export async function DELETE(
     const { id } = await params;
 
     await deleteApplication(id);
+
+    // Revalidate the apps page cache
+    revalidatePath('/apps');
 
     return NextResponse.json({ success: true });
   } catch (error) {

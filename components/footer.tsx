@@ -18,14 +18,32 @@ export function Footer() {
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-center md:justify-end gap-6 md:gap-8">
+          <div className="flex flex-wrap justify-center md:justify-end gap-4 md:gap-6">
             <Link
-              href="https://github.com/void-sleep/tuna"
+              href="/about"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {t('about')}
+            </Link>
+            <Link
+              href="/terms"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {t('terms')}
+            </Link>
+            <Link
+              href="/privacy"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {t('privacy')}
+            </Link>
+            <Link
+              href="https://github.com/l10178/tuna"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              <FaGithub className="h-4 w-4" />
+              <FaGithub className="h-3.5 w-3.5" />
               <span>GitHub</span>
             </Link>
           </div>

@@ -187,23 +187,22 @@ export function MathFlashRunner({ config, applicationId, fullscreen = false }: M
       <div className={`flex flex-col items-center justify-center ${fullscreen ? 'h-full' : 'min-h-[400px]'} p-8`}>
         <div className="text-center space-y-8">
           <div className="relative">
-            <div className="absolute inset-0 bg-sky-500/20 rounded-full blur-3xl animate-pulse" />
-            <div className="relative w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-sky-500/20 to-blue-500/20 border-2 border-sky-500/30 flex items-center justify-center">
+            <div className="absolute inset-0 bg-orange-500/20 rounded-full blur-3xl animate-pulse" />
+            <div className="relative w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-orange-500/20 to-amber-500/20 border-2 border-orange-500/30 flex items-center justify-center">
               <span className="text-6xl animate-bounce">🧮</span>
             </div>
           </div>
 
           <div>
             <h2 className="text-3xl font-bold text-white mb-2">{t('ready.title')}</h2>
-            <p className="text-sky-300/70 max-w-md">
+            <p className="text-orange-300/70 max-w-md">
               {t('ready.description', { count: config.questionCount, time: config.timePerQuestion })}
             </p>
           </div>
 
           <Button
             onClick={startPractice}
-            size="lg"
-            className="px-12 py-6 text-xl font-bold bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-400 hover:to-blue-400 text-white rounded-2xl shadow-lg shadow-sky-500/30 transition-all hover:scale-105"
+            className="px-6 py-2 text-sm font-bold bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white rounded-lg shadow-lg shadow-orange-500/30 transition-all hover:scale-105"
           >
             {t('ready.startButton')}
           </Button>
@@ -219,12 +218,12 @@ export function MathFlashRunner({ config, applicationId, fullscreen = false }: M
         {/* Progress bar */}
         <div className="absolute top-20 left-4 right-4 md:left-8 md:right-8">
           <div className="flex items-center gap-4 mb-2">
-            <span className="text-sky-300/80 text-sm font-medium whitespace-nowrap">
+            <span className="text-orange-300/80 text-sm font-medium whitespace-nowrap">
               {currentIndex + 1} / {config.questionCount}
             </span>
-            <div className="flex-1 h-2 bg-sky-500/20 rounded-full overflow-hidden">
+            <div className="flex-1 h-2 bg-orange-500/20 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-sky-500 to-blue-500 rounded-full transition-all duration-300"
+                className="h-full bg-gradient-to-r from-orange-500 to-amber-500 rounded-full transition-all duration-300"
                 style={{ width: `${((currentIndex + 1) / config.questionCount) * 100}%` }}
               />
             </div>
@@ -242,7 +241,7 @@ export function MathFlashRunner({ config, applicationId, fullscreen = false }: M
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="4"
-                className="text-sky-500/20"
+                className="text-orange-500/20"
               />
               <circle
                 cx="32"
@@ -253,11 +252,11 @@ export function MathFlashRunner({ config, applicationId, fullscreen = false }: M
                 strokeWidth="4"
                 strokeDasharray={2 * Math.PI * 28}
                 strokeDashoffset={2 * Math.PI * 28 * (1 - timeLeft / config.timePerQuestion)}
-                className={`transition-all duration-1000 ${timeLeft <= 3 ? 'text-red-500' : 'text-sky-400'}`}
+                className={`transition-all duration-1000 ${timeLeft <= 3 ? 'text-red-500' : 'text-orange-400'}`}
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className={`text-2xl md:text-3xl font-bold ${timeLeft <= 3 ? 'text-red-400 animate-pulse' : 'text-sky-300'}`}>
+              <span className={`text-2xl md:text-3xl font-bold ${timeLeft <= 3 ? 'text-red-400 animate-pulse' : 'text-orange-300'}`}>
                 {timeLeft}
               </span>
             </div>
@@ -292,7 +291,7 @@ export function MathFlashRunner({ config, applicationId, fullscreen = false }: M
               </span>
 
               {/* Equals sign */}
-              <span className="text-7xl md:text-9xl font-bold text-sky-400 flex-shrink-0">
+              <span className="text-7xl md:text-9xl font-bold text-orange-400 flex-shrink-0">
                 =
               </span>
 
@@ -303,7 +302,7 @@ export function MathFlashRunner({ config, applicationId, fullscreen = false }: M
                     {currentQuestion.answer}
                   </span>
                 ) : (
-                  <span className="text-sky-400/50">?</span>
+                  <span className="text-orange-400/50">?</span>
                 )}
               </span>
             </div>
@@ -321,30 +320,30 @@ export function MathFlashRunner({ config, applicationId, fullscreen = false }: M
       <div className="text-center space-y-8 max-w-lg">
         {/* Celebration */}
         <div className="relative">
-          <div className="absolute inset-0 bg-green-500/20 rounded-full blur-3xl animate-pulse" />
-          <div className="relative w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-sky-500/20 to-blue-500/20 border-2 border-sky-500/30 flex items-center justify-center">
+          <div className="absolute inset-0 bg-orange-500/20 rounded-full blur-3xl animate-pulse" />
+          <div className="relative w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-orange-500/20 to-amber-500/20 border-2 border-orange-500/30 flex items-center justify-center">
             <span className="text-6xl">🎉</span>
           </div>
         </div>
 
         <div>
           <h2 className="text-3xl font-bold text-white mb-2">{t('complete.title')}</h2>
-          <p className="text-sky-300/70">{t('complete.description')}</p>
+          <p className="text-orange-300/70">{t('complete.description')}</p>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 rounded-2xl bg-slate-800/50 border border-sky-500/20">
-            <div className="text-4xl font-bold text-sky-400">
+          <div className="p-4 rounded-2xl bg-slate-800/50 border border-orange-500/20">
+            <div className="text-4xl font-bold text-orange-400">
               {config.questionCount}
             </div>
-            <div className="text-sm text-sky-300/60">{t('complete.questions')}</div>
+            <div className="text-sm text-orange-300/60">{t('complete.questions')}</div>
           </div>
-          <div className="p-4 rounded-2xl bg-slate-800/50 border border-sky-500/20">
-            <div className="text-4xl font-bold text-sky-400">
+          <div className="p-4 rounded-2xl bg-slate-800/50 border border-orange-500/20">
+            <div className="text-4xl font-bold text-orange-400">
               {totalTime}s
             </div>
-            <div className="text-sm text-sky-300/60">{t('complete.totalTime')}</div>
+            <div className="text-sm text-orange-300/60">{t('complete.totalTime')}</div>
           </div>
         </div>
 
@@ -353,7 +352,7 @@ export function MathFlashRunner({ config, applicationId, fullscreen = false }: M
           <Button
             onClick={startPractice}
             size="lg"
-            className="px-8 py-4 text-lg font-bold bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-400 hover:to-blue-400 text-white rounded-xl shadow-lg shadow-sky-500/30"
+            className="px-8 py-4 text-lg font-bold bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white rounded-xl shadow-lg shadow-orange-500/30"
           >
             {t('complete.tryAgain')}
           </Button>
