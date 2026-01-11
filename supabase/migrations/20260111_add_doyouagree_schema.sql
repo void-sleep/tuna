@@ -1,224 +1,156 @@
--- DoYouAgree Application Database Schema
--- This migration creates tables for friends management, agree questions, and notifications
--- All tables include RLS policies for data isolation and security
+-- =============================================================================
+-- DoYouAgree Application - Database Schema
+-- =============================================================================
+--
+-- Tables:
+-- 1. friends - 双向好友关系管理
+-- 2. agree_questions - 问题和回答记录
+-- 3. notifications - 站内通知系统
+--
+-- =============================================================================
 
--- ============================================================================
--- Table: friends
--- Purpose: Manages friend relationships between users
--- ============================================================================
-CREATE TABLE IF NOT EXISTS public.friends (
+-- =============================================================================
+-- Table: friends (好友关系)
+-- =============================================================================
+
+CREATE TABLE friends (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   friend_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  status TEXT NOT NULL CHECK (status IN ('pending', 'accepted', 'rejected', 'blocked')),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-  -- Constraints
-  CONSTRAINT unique_friendship UNIQUE (user_id, friend_id),
-  CONSTRAINT no_self_friendship CHECK (user_id != friend_id)
+  status TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, friend_id),
+  CHECK (user_id != friend_id)
 );
 
--- Indexes for friends table
-CREATE INDEX IF NOT EXISTS idx_friends_user_id ON public.friends(user_id);
-CREATE INDEX IF NOT EXISTS idx_friends_friend_id ON public.friends(friend_id);
-CREATE INDEX IF NOT EXISTS idx_friends_status ON public.friends(status);
-CREATE INDEX IF NOT EXISTS idx_friends_user_status ON public.friends(user_id, status);
+-- 索引优化：好友关系查询
+CREATE INDEX idx_friends_user_id ON friends(user_id);
+CREATE INDEX idx_friends_friend_id ON friends(friend_id);
+CREATE INDEX idx_friends_status ON friends(status);
 
--- Trigger function for auto-updating updated_at
-CREATE OR REPLACE FUNCTION public.update_friends_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Trigger for friends table
-DROP TRIGGER IF EXISTS trigger_update_friends_updated_at ON public.friends;
-CREATE TRIGGER trigger_update_friends_updated_at
-  BEFORE UPDATE ON public.friends
+-- 自动更新 updated_at
+CREATE TRIGGER friends_updated_at
+  BEFORE UPDATE ON friends
   FOR EACH ROW
-  EXECUTE FUNCTION public.update_friends_updated_at();
+  EXECUTE FUNCTION update_updated_at_column();
 
--- Enable RLS on friends table
-ALTER TABLE public.friends ENABLE ROW LEVEL SECURITY;
+-- =============================================================================
+-- Table: agree_questions (问题记录)
+-- =============================================================================
 
--- RLS Policies for friends table
--- Policy: Users can view friend requests they sent or received
-CREATE POLICY friends_select_policy ON public.friends
-  FOR SELECT
-  USING (
-    auth.uid() = user_id OR auth.uid() = friend_id
-  );
-
--- Policy: Users can create friend requests (as sender)
-CREATE POLICY friends_insert_policy ON public.friends
-  FOR INSERT
-  WITH CHECK (
-    auth.uid() = user_id
-  );
-
--- Policy: Users can update friend requests they sent or received
-CREATE POLICY friends_update_policy ON public.friends
-  FOR UPDATE
-  USING (
-    auth.uid() = user_id OR auth.uid() = friend_id
-  )
-  WITH CHECK (
-    auth.uid() = user_id OR auth.uid() = friend_id
-  );
-
--- Policy: Users can delete friend requests they sent
-CREATE POLICY friends_delete_policy ON public.friends
-  FOR DELETE
-  USING (
-    auth.uid() = user_id
-  );
-
--- ============================================================================
--- Table: agree_questions
--- Purpose: Stores questions asked between friends with agree/disagree answers
--- ============================================================================
-CREATE TABLE IF NOT EXISTS public.agree_questions (
+CREATE TABLE agree_questions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  asker_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  responder_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  question TEXT NOT NULL,
-  asker_answer BOOLEAN,
-  responder_answer BOOLEAN,
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'answered', 'skipped')),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  answered_at TIMESTAMPTZ,
-
-  -- Constraints
-  CONSTRAINT no_self_question CHECK (asker_id != responder_id),
-  CONSTRAINT question_not_empty CHECK (LENGTH(TRIM(question)) > 0)
+  application_id UUID NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
+  from_user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  to_user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  question_text TEXT NOT NULL,
+  options JSONB NOT NULL,
+  answer TEXT NULL,
+  status TEXT NOT NULL,
+  answered_at TIMESTAMPTZ NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  CHECK (from_user_id != to_user_id)
 );
 
--- Indexes for agree_questions table
-CREATE INDEX IF NOT EXISTS idx_agree_questions_asker_id ON public.agree_questions(asker_id);
-CREATE INDEX IF NOT EXISTS idx_agree_questions_responder_id ON public.agree_questions(responder_id);
-CREATE INDEX IF NOT EXISTS idx_agree_questions_status ON public.agree_questions(status);
-CREATE INDEX IF NOT EXISTS idx_agree_questions_created_at ON public.agree_questions(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_agree_questions_responder_status ON public.agree_questions(responder_id, status);
+-- 索引优化：问题查询
+CREATE INDEX idx_agree_questions_from_user ON agree_questions(from_user_id);
+CREATE INDEX idx_agree_questions_to_user ON agree_questions(to_user_id);
+CREATE INDEX idx_agree_questions_status ON agree_questions(status);
+CREATE INDEX idx_agree_questions_app_id ON agree_questions(application_id);
 
--- Enable RLS on agree_questions table
-ALTER TABLE public.agree_questions ENABLE ROW LEVEL SECURITY;
+-- =============================================================================
+-- Table: notifications (通知)
+-- =============================================================================
 
--- RLS Policies for agree_questions table
--- Policy: Users can view questions they asked or were asked
-CREATE POLICY agree_questions_select_policy ON public.agree_questions
-  FOR SELECT
-  USING (
-    auth.uid() = asker_id OR auth.uid() = responder_id
-  );
-
--- Policy: Users can create questions for their friends
-CREATE POLICY agree_questions_insert_policy ON public.agree_questions
-  FOR INSERT
-  WITH CHECK (
-    auth.uid() = asker_id AND
-    -- Ensure responder is an accepted friend
-    EXISTS (
-      SELECT 1 FROM public.friends
-      WHERE (user_id = auth.uid() AND friend_id = responder_id AND status = 'accepted')
-         OR (user_id = responder_id AND friend_id = auth.uid() AND status = 'accepted')
-    )
-  );
-
--- Policy: Users can update questions they asked or were asked
-CREATE POLICY agree_questions_update_policy ON public.agree_questions
-  FOR UPDATE
-  USING (
-    auth.uid() = asker_id OR auth.uid() = responder_id
-  )
-  WITH CHECK (
-    auth.uid() = asker_id OR auth.uid() = responder_id
-  );
-
--- Policy: Users can delete questions they asked
-CREATE POLICY agree_questions_delete_policy ON public.agree_questions
-  FOR DELETE
-  USING (
-    auth.uid() = asker_id
-  );
-
--- ============================================================================
--- Table: notifications
--- Purpose: Stores notifications for friend requests and question activities
--- ============================================================================
-CREATE TABLE IF NOT EXISTS public.notifications (
+CREATE TABLE notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  type TEXT NOT NULL CHECK (type IN ('friend_request', 'friend_accepted', 'question_received', 'question_answered')),
-  content JSONB NOT NULL,
-  is_read BOOLEAN NOT NULL DEFAULT FALSE,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-  -- Constraints
-  CONSTRAINT content_not_empty CHECK (content IS NOT NULL AND content != '{}'::jsonb)
+  type TEXT NOT NULL,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  link TEXT NULL,
+  read BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Indexes for notifications table
-CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON public.notifications(user_id);
-CREATE INDEX IF NOT EXISTS idx_notifications_is_read ON public.notifications(is_read);
-CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON public.notifications(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_notifications_user_unread ON public.notifications(user_id, is_read) WHERE is_read = FALSE;
+-- 索引优化：通知查询（user_id + read + 时间倒序）
+CREATE INDEX idx_notifications_user_id ON notifications(user_id, read, created_at DESC);
 
--- Enable RLS on notifications table
-ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
+-- =============================================================================
+-- RLS Policies: friends
+-- =============================================================================
 
--- RLS Policies for notifications table
--- Policy: Users can only view their own notifications
-CREATE POLICY notifications_select_policy ON public.notifications
-  FOR SELECT
-  USING (
-    auth.uid() = user_id
+ALTER TABLE friends ENABLE ROW LEVEL SECURITY;
+
+-- 用户只能查看与自己相关的好友关系
+CREATE POLICY friends_select ON friends
+  FOR SELECT USING (
+    auth.uid() = user_id OR auth.uid() = friend_id
   );
 
--- Policy: System can create notifications (in practice, will be done via service role or triggers)
--- For now, allow users to create notifications for themselves (can be restricted later)
-CREATE POLICY notifications_insert_policy ON public.notifications
-  FOR INSERT
-  WITH CHECK (
-    auth.uid() = user_id
+-- 用户只能创建自己发起的好友请求
+CREATE POLICY friends_insert ON friends
+  FOR INSERT WITH CHECK (
+    auth.uid() = user_id AND status = 'pending'
   );
 
--- Policy: Users can update only their own notifications (e.g., mark as read)
-CREATE POLICY notifications_update_policy ON public.notifications
-  FOR UPDATE
-  USING (
-    auth.uid() = user_id
-  )
-  WITH CHECK (
-    auth.uid() = user_id
+-- 只能更新发给自己的好友请求（接受/拒绝）
+CREATE POLICY friends_update ON friends
+  FOR UPDATE USING (
+    auth.uid() = friend_id AND status = 'pending'
   );
 
--- Policy: Users can delete their own notifications
-CREATE POLICY notifications_delete_policy ON public.notifications
-  FOR DELETE
-  USING (
-    auth.uid() = user_id
+-- 可以删除自己发起的或接收到的好友关系
+CREATE POLICY friends_delete ON friends
+  FOR DELETE USING (
+    auth.uid() = user_id OR auth.uid() = friend_id
   );
 
--- ============================================================================
--- Comments and Documentation
--- ============================================================================
+-- =============================================================================
+-- RLS Policies: agree_questions
+-- =============================================================================
 
-COMMENT ON TABLE public.friends IS 'Manages bidirectional friend relationships with status tracking';
-COMMENT ON COLUMN public.friends.status IS 'Friend request status: pending, accepted, rejected, blocked';
-COMMENT ON COLUMN public.friends.user_id IS 'User who initiated the friend request';
-COMMENT ON COLUMN public.friends.friend_id IS 'User who received the friend request';
+ALTER TABLE agree_questions ENABLE ROW LEVEL SECURITY;
 
-COMMENT ON TABLE public.agree_questions IS 'Stores questions between friends with agree/disagree answers';
-COMMENT ON COLUMN public.agree_questions.asker_id IS 'User who asked the question';
-COMMENT ON COLUMN public.agree_questions.responder_id IS 'User who should answer the question';
-COMMENT ON COLUMN public.agree_questions.asker_answer IS 'Asker''s own answer (true=agree, false=disagree, null=not answered)';
-COMMENT ON COLUMN public.agree_questions.responder_answer IS 'Responder''s answer (true=agree, false=disagree, null=not answered)';
-COMMENT ON COLUMN public.agree_questions.status IS 'Question status: pending, answered, skipped';
+-- 只有提问者和被提问者能查看
+CREATE POLICY agree_questions_select ON agree_questions
+  FOR SELECT USING (
+    auth.uid() = from_user_id OR auth.uid() = to_user_id
+  );
 
-COMMENT ON TABLE public.notifications IS 'User notifications for friend and question activities';
-COMMENT ON COLUMN public.notifications.type IS 'Notification type: friend_request, friend_accepted, question_received, question_answered';
-COMMENT ON COLUMN public.notifications.content IS 'JSON content with notification details (flexible schema)';
-COMMENT ON COLUMN public.notifications.is_read IS 'Whether the notification has been read by the user';
+-- 只能创建自己发起的问题
+CREATE POLICY agree_questions_insert ON agree_questions
+  FOR INSERT WITH CHECK (
+    auth.uid() = from_user_id AND status = 'pending'
+  );
+
+-- 只有被提问者可以更新（回答问题），且只能回答一次
+CREATE POLICY agree_questions_update ON agree_questions
+  FOR UPDATE USING (
+    auth.uid() = to_user_id AND status = 'pending' AND answer IS NULL
+  );
+
+-- 提问者可以删除未回答的问题
+CREATE POLICY agree_questions_delete ON agree_questions
+  FOR DELETE USING (
+    auth.uid() = from_user_id AND status = 'pending'
+  );
+
+-- =============================================================================
+-- RLS Policies: notifications
+-- =============================================================================
+
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+
+-- 只能查看自己的通知
+CREATE POLICY notifications_select ON notifications
+  FOR SELECT USING (auth.uid() = user_id);
+
+-- 只能更新自己的通知（标记已读）
+CREATE POLICY notifications_update ON notifications
+  FOR UPDATE USING (auth.uid() = user_id);
+
+-- 只能删除自己的通知
+CREATE POLICY notifications_delete ON notifications
+  FOR DELETE USING (auth.uid() = user_id);
