@@ -207,7 +207,9 @@
     },
     "userMenu": {
       "apps": "My Apps",
-      "logout": "Logout"
+      "logout": "Logout",
+      "friends": "Friends",
+      "settings": "Settings"
     },
     "errors": {
       "passwordMismatch": "Passwords do not match",
@@ -521,5 +523,24 @@
       "edit": "Edit",
       "fullscreen": "Fullscreen"
     }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account settings and privacy preferences",
+    "privacy": {
+      "title": "Privacy Settings",
+      "searchable": {
+        "label": "Allow others to find me",
+        "description": "When disabled, other users will not be able to find you in friend search"
+      }
+    },
+    "account": {
+      "title": "Account Information",
+      "displayName": "Display Name"
+    },
+    "success": "Updated successfully",
+    "error": "Update failed",
+    "updateFailed": "Update failed, please try again",
+    "searchableUpdated": "Search settings updated"
   }
 }

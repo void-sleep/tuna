@@ -71,13 +71,19 @@ export function UserMenu({ userEmail, avatarUrl, fullName }: UserMenuProps) {
           onClick={() => router.push('/apps')}
           className="cursor-pointer"
         >
-          我的应用
+          {t('apps')}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => router.push('/apps/friends')}
           className="cursor-pointer"
         >
-          好友管理
+          {t('friends')}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => router.push('/apps/settings')}
+          className="cursor-pointer"
+        >
+          {t('settings')}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

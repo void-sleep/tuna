@@ -207,7 +207,9 @@
     },
     "userMenu": {
       "apps": "我的应用",
-      "logout": "退出登录"
+      "logout": "退出登录",
+      "friends": "好友管理",
+      "settings": "设置"
     },
     "errors": {
       "passwordMismatch": "密码不匹配",
@@ -521,5 +523,24 @@
     "viewDetail": "查看详情",
     "yourAnswer": "你的回答",
     "theirAnswer": "对方的回答"
+  },
+  "settings": {
+    "title": "设置",
+    "subtitle": "管理您的账户设置和隐私偏好",
+    "privacy": {
+      "title": "隐私设置",
+      "searchable": {
+        "label": "允许他人搜索到我",
+        "description": "关闭后，其他用户将无法在好友搜索中找到您"
+      }
+    },
+    "account": {
+      "title": "账户信息",
+      "displayName": "显示名称"
+    },
+    "success": "更新成功",
+    "error": "更新失败",
+    "updateFailed": "更新失败，请重试",
+    "searchableUpdated": "搜索设置已更新"
   }
 }
