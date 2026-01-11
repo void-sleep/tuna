@@ -13,21 +13,21 @@
 -- Table: friends (好友关系)
 -- =============================================================================
 
-CREATE TABLE friends (
+CREATE TABLE IF NOT EXISTS friends (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   friend_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   status TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE(user_id, friend_id),
   CHECK (user_id != friend_id)
 );
 
 -- 索引优化：好友关系查询
-CREATE INDEX idx_friends_user_id ON friends(user_id);
-CREATE INDEX idx_friends_friend_id ON friends(friend_id);
-CREATE INDEX idx_friends_status ON friends(status);
+CREATE INDEX IF NOT EXISTS idx_friends_user_id ON friends(user_id);
+CREATE INDEX IF NOT EXISTS idx_friends_friend_id ON friends(friend_id);
+CREATE INDEX IF NOT EXISTS idx_friends_status ON friends(status);
 
 -- 自动更新 updated_at
 CREATE TRIGGER friends_updated_at
@@ -39,7 +39,7 @@ CREATE TRIGGER friends_updated_at
 -- Table: agree_questions (问题记录)
 -- =============================================================================
 
-CREATE TABLE agree_questions (
+CREATE TABLE IF NOT EXISTS agree_questions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   application_id UUID NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
   from_user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -54,16 +54,16 @@ CREATE TABLE agree_questions (
 );
 
 -- 索引优化：问题查询
-CREATE INDEX idx_agree_questions_from_user ON agree_questions(from_user_id);
-CREATE INDEX idx_agree_questions_to_user ON agree_questions(to_user_id);
-CREATE INDEX idx_agree_questions_status ON agree_questions(status);
-CREATE INDEX idx_agree_questions_app_id ON agree_questions(application_id);
+CREATE INDEX IF NOT EXISTS idx_agree_questions_from_user ON agree_questions(from_user_id);
+CREATE INDEX IF NOT EXISTS idx_agree_questions_to_user ON agree_questions(to_user_id);
+CREATE INDEX IF NOT EXISTS idx_agree_questions_status ON agree_questions(status);
+CREATE INDEX IF NOT EXISTS idx_agree_questions_app_id ON agree_questions(application_id);
 
 -- =============================================================================
 -- Table: notifications (通知)
 -- =============================================================================
 
-CREATE TABLE notifications (
+CREATE TABLE IF NOT EXISTS notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   type TEXT NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE notifications (
 );
 
 -- 索引优化：通知查询（user_id + read + 时间倒序）
-CREATE INDEX idx_notifications_user_id ON notifications(user_id, read, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id, read, created_at DESC);
 
 -- =============================================================================
 -- RLS Policies: friends
