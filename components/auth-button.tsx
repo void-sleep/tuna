@@ -48,37 +48,44 @@ export function AuthButton() {
     return <div className="h-9 w-16" />;
   }
 
-  return user ? (
+  const appsHref = user ? "/apps" : "/auth/login";
+
+  return (
     <div className="flex items-center gap-1.5">
       <Button
         asChild
         variant="ghost"
         size="sm"
-        className="h-9 w-9 rounded-xl hover:bg-violet-500/10 transition-all duration-200 p-0"
+        className="h-9 px-3 rounded-xl hover:bg-violet-500/10 transition-all duration-200 flex items-center gap-1.5 group"
       >
-        <Link href="/apps">
-          <Squares2X2Icon className="h-5 w-5 text-muted-foreground" />
+        <Link href={appsHref} className="flex items-center gap-1.5">
+          <Squares2X2Icon className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+          <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors hidden sm:inline">
+            {t('discoverApps')}
+          </span>
         </Link>
       </Button>
-      <UserMenu userEmail={user.email} avatarUrl={user.avatar_url} fullName={user.full_name} />
-    </div>
-  ) : (
-    <div className="flex items-center gap-2">
-      <Button
-        asChild
-        variant="ghost"
-        size="sm"
-        className="h-9 px-4 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-xl transition-all duration-200"
-      >
-        <Link href="/auth/login">{t('login')}</Link>
-      </Button>
-      <Button
-        asChild
-        size="sm"
-        className="h-9 px-4 text-sm font-medium bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-xl shadow-md shadow-violet-500/20 hover:shadow-lg hover:shadow-violet-500/30 transition-all duration-200 hover:scale-105"
-      >
-        <Link href="/auth/sign-up">{t('signup')}</Link>
-      </Button>
+      {user ? (
+        <UserMenu userEmail={user.email} avatarUrl={user.avatar_url} fullName={user.full_name} />
+      ) : (
+        <div className="flex items-center gap-2">
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="h-9 px-4 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-xl transition-all duration-200"
+          >
+            <Link href="/auth/login">{t('login')}</Link>
+          </Button>
+          <Button
+            asChild
+            size="sm"
+            className="h-9 px-4 text-sm font-medium bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-xl shadow-md shadow-violet-500/20 hover:shadow-lg hover:shadow-violet-500/30 transition-all duration-200 hover:scale-105"
+          >
+            <Link href="/auth/sign-up">{t('signup')}</Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
