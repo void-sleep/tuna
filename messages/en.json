@@ -202,7 +202,8 @@
     "button": {
       "login": "Login",
       "signup": "Sign up",
-      "logout": "Logout"
+      "logout": "Logout",
+      "discoverApps": "Discover Apps"
     },
     "userMenu": {
       "apps": "My Apps",

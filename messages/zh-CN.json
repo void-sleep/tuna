@@ -202,7 +202,8 @@
     "button": {
       "login": "登录",
       "signup": "注册",
-      "logout": "退出"
+      "logout": "退出",
+      "discoverApps": "发现应用"
     },
     "userMenu": {
       "apps": "我的应用",
