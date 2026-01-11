@@ -16,11 +16,7 @@ export async function getFriendsAction(): Promise<FriendWithUser[]> {
 
   const { data: friends, error } = await supabase
     .from('friends')
-    .select(`
-      *,
-      user:user_id (id, email, full_name, avatar_url),
-      friend:friend_id (id, email, full_name, avatar_url)
-    `)
+    .select('*')
     .eq('user_id', user.id)
     .eq('status', 'accepted')
     .order('created_at', { ascending: false });
@@ -30,7 +26,29 @@ export async function getFriendsAction(): Promise<FriendWithUser[]> {
     return [];
   }
 
-  return friends || [];
+  if (!friends || friends.length === 0) return [];
+
+  // Get unique user IDs
+  const userIds = new Set<string>();
+  friends.forEach(f => {
+    userIds.add(f.user_id);
+    userIds.add(f.friend_id);
+  });
+
+  // Fetch profiles for these users
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, email, full_name, avatar_url')
+    .in('id', Array.from(userIds));
+
+  const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+  // Combine data
+  return friends.map(f => ({
+    ...f,
+    user: profileMap.get(f.user_id) || { id: f.user_id, email: '', full_name: null, avatar_url: null },
+    friend: profileMap.get(f.friend_id) || { id: f.friend_id, email: '', full_name: null, avatar_url: null },
+  }));
 }
 
 export async function getReceivedFriendRequestsAction(): Promise<FriendWithUser[]> {
@@ -41,11 +59,7 @@ export async function getReceivedFriendRequestsAction(): Promise<FriendWithUser[
 
   const { data: requests, error } = await supabase
     .from('friends')
-    .select(`
-      *,
-      user:user_id (id, email, full_name, avatar_url),
-      friend:friend_id (id, email, full_name, avatar_url)
-    `)
+    .select('*')
     .eq('friend_id', user.id)
     .eq('status', 'pending')
     .order('created_at', { ascending: false });
@@ -55,7 +69,29 @@ export async function getReceivedFriendRequestsAction(): Promise<FriendWithUser[
     return [];
   }
 
-  return requests || [];
+  if (!requests || requests.length === 0) return [];
+
+  // Get unique user IDs
+  const userIds = new Set<string>();
+  requests.forEach(f => {
+    userIds.add(f.user_id);
+    userIds.add(f.friend_id);
+  });
+
+  // Fetch profiles for these users
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, email, full_name, avatar_url')
+    .in('id', Array.from(userIds));
+
+  const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+  // Combine data
+  return requests.map(f => ({
+    ...f,
+    user: profileMap.get(f.user_id) || { id: f.user_id, email: '', full_name: null, avatar_url: null },
+    friend: profileMap.get(f.friend_id) || { id: f.friend_id, email: '', full_name: null, avatar_url: null },
+  }));
 }
 
 export async function getSentFriendRequestsAction(): Promise<FriendWithUser[]> {
@@ -66,11 +102,7 @@ export async function getSentFriendRequestsAction(): Promise<FriendWithUser[]> {
 
   const { data: requests, error } = await supabase
     .from('friends')
-    .select(`
-      *,
-      user:user_id (id, email, full_name, avatar_url),
-      friend:friend_id (id, email, full_name, avatar_url)
-    `)
+    .select('*')
     .eq('user_id', user.id)
     .eq('status', 'pending')
     .order('created_at', { ascending: false });
@@ -80,7 +112,29 @@ export async function getSentFriendRequestsAction(): Promise<FriendWithUser[]> {
     return [];
   }
 
-  return requests || [];
+  if (!requests || requests.length === 0) return [];
+
+  // Get unique user IDs
+  const userIds = new Set<string>();
+  requests.forEach(f => {
+    userIds.add(f.user_id);
+    userIds.add(f.friend_id);
+  });
+
+  // Fetch profiles for these users
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, email, full_name, avatar_url')
+    .in('id', Array.from(userIds));
+
+  const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+  // Combine data
+  return requests.map(f => ({
+    ...f,
+    user: profileMap.get(f.user_id) || { id: f.user_id, email: '', full_name: null, avatar_url: null },
+    friend: profileMap.get(f.friend_id) || { id: f.friend_id, email: '', full_name: null, avatar_url: null },
+  }));
 }
 
 export async function sendFriendRequestAction(friendId: string): Promise<{ success: boolean; error?: string }> {

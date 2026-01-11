@@ -115,28 +115,43 @@ export async function getMyQuestionsAction(): Promise<{
   // Get sent questions
   const { data: sent } = await supabase
     .from('agree_questions')
-    .select(`
-      *,
-      from_user:from_user_id (id, email, full_name, avatar_url),
-      to_user:to_user_id (id, email, full_name, avatar_url)
-    `)
+    .select('*')
     .eq('from_user_id', user.id)
     .order('created_at', { ascending: false });
 
   // Get received questions
   const { data: received } = await supabase
     .from('agree_questions')
-    .select(`
-      *,
-      from_user:from_user_id (id, email, full_name, avatar_url),
-      to_user:to_user_id (id, email, full_name, avatar_url)
-    `)
+    .select('*')
     .eq('to_user_id', user.id)
     .order('created_at', { ascending: false });
 
+  // Get all unique user IDs
+  const userIds = new Set<string>();
+  [...(sent || []), ...(received || [])].forEach(q => {
+    userIds.add(q.from_user_id);
+    userIds.add(q.to_user_id);
+  });
+
+  // Fetch profiles
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, email, full_name, avatar_url')
+    .in('id', Array.from(userIds));
+
+  const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+  // Helper to attach user profiles
+  const attachProfiles = <T extends { from_user_id: string; to_user_id: string }>(questions: T[]) =>
+    questions.map(q => ({
+      ...q,
+      from_user: profileMap.get(q.from_user_id) || { id: q.from_user_id, email: '', full_name: null, avatar_url: null },
+      to_user: profileMap.get(q.to_user_id) || { id: q.to_user_id, email: '', full_name: null, avatar_url: null },
+    }));
+
   return {
-    sent: (sent || []) as AgreeQuestionWithUsers[],
-    received: (received || []) as AgreeQuestionWithUsers[],
+    sent: attachProfiles(sent || []),
+    received: attachProfiles(received || []),
   };
 }
 
@@ -152,11 +167,7 @@ export async function getQuestionDetailAction(
 
   const { data: question } = await supabase
     .from('agree_questions')
-    .select(`
-      *,
-      from_user:from_user_id (id, email, full_name, avatar_url),
-      to_user:to_user_id (id, email, full_name, avatar_url)
-    `)
+    .select('*')
     .eq('id', questionId)
     .single();
 
@@ -167,8 +178,26 @@ export async function getQuestionDetailAction(
   // Check if user can view (must be sender or receiver)
   const canView = question.from_user_id === user.id || question.to_user_id === user.id;
 
+  if (!canView) {
+    return { question: null, canView: false };
+  }
+
+  // Fetch user profiles
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, email, full_name, avatar_url')
+    .in('id', [question.from_user_id, question.to_user_id]);
+
+  const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+  const questionWithUsers = {
+    ...question,
+    from_user: profileMap.get(question.from_user_id) || { id: question.from_user_id, email: '', full_name: null, avatar_url: null },
+    to_user: profileMap.get(question.to_user_id) || { id: question.to_user_id, email: '', full_name: null, avatar_url: null },
+  };
+
   return {
-    question: canView ? (question as AgreeQuestionWithUsers) : null,
-    canView,
+    question: questionWithUsers as AgreeQuestionWithUsers,
+    canView: true,
   };
 }
