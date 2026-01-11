@@ -280,7 +280,8 @@
       "coin": "Coin Flip",
       "wheel": "Wheel",
       "counter": "Counter",
-      "math_flash": "Math Flash"
+      "math_flash": "Math Flash",
+      "agree_question": "Do You Agree"
     },
     "actions": {
       "view": "View",

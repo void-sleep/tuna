@@ -235,7 +235,8 @@
       "coin": "二选一",
       "wheel": "转盘",
       "counter": "计数器",
-      "math_flash": "闪念数学"
+      "math_flash": "闪念数学",
+      "agree_question": "你同意吗"
     },
     "actions": {
       "view": "查看",

@@ -79,12 +79,6 @@ export function UserMenu({ userEmail, avatarUrl, fullName }: UserMenuProps) {
         >
           好友管理
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => router.push('/apps/questions')}
-          className="cursor-pointer"
-        >
-          提问管理
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={logout}
