@@ -219,6 +219,9 @@ export async function sendFriendRequest(friendId: string): Promise<{ success: bo
       return { success: false, error: '已发送过好友请求' };
     } else if (status === 'accepted') {
       return { success: false, error: '已经是好友了' };
+    } else if (status === 'rejected') {
+      // Delete old rejected record to allow retry
+      await supabase.from('friends').delete().eq('id', existing[0].id);
     }
   }
 
@@ -246,51 +249,21 @@ export async function sendFriendRequest(friendId: string): Promise<{ success: bo
 export async function acceptFriendRequest(requestId: string): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
 
-  // 更新请求状态为 accepted
-  const { error: updateError } = await supabase
-    .from('friends')
-    .update({ status: 'accepted' })
-    .eq('id', requestId)
-    .eq('status', 'pending');
+  const { data, error } = await supabase.rpc('accept_friend_request_tx', {
+    request_id: requestId
+  });
 
-  if (updateError) {
-    console.error('Error accepting friend request:', updateError);
+  if (error || !data) {
+    console.error('Error accepting friend request:', error);
     return { success: false, error: '接受好友请求失败' };
   }
 
-  // 获取请求信息以创建反向关系
-  const { data: request } = await supabase
-    .from('friends')
-    .select('user_id, friend_id')
-    .eq('id', requestId)
-    .single();
-
-  if (!request) {
-    return { success: false, error: '请求不存在' };
+  if (data.success) {
+    // TODO: 创建通知
+    return { success: true };
   }
 
-  // 创建反向关系（双向好友）
-  const { error: insertError } = await supabase
-    .from('friends')
-    .insert({
-      user_id: request.friend_id,
-      friend_id: request.user_id,
-      status: 'accepted',
-    });
-
-  if (insertError) {
-    console.error('Error creating reverse friendship:', insertError);
-    // 回滚
-    await supabase
-      .from('friends')
-      .update({ status: 'pending' })
-      .eq('id', requestId);
-    return { success: false, error: '创建好友关系失败' };
-  }
-
-  // TODO: 创建通知
-
-  return { success: true };
+  return { success: false, error: data.error || '接受好友请求失败' };
 }
 
 /**

@@ -175,6 +175,10 @@ CREATE INDEX IF NOT EXISTS idx_profiles_email ON profiles(email);
 -- Enable RLS
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
+-- Allow authenticated users to discover other users for friend requests
+CREATE POLICY profiles_select_public ON profiles
+  FOR SELECT USING (auth.uid() IS NOT NULL);
+
 -- Users can view their own profile
 CREATE POLICY profiles_select_own ON profiles
   FOR SELECT USING (auth.uid() = id);
@@ -205,3 +209,45 @@ CREATE TRIGGER profiles_updated_at
   EXECUTE FUNCTION update_updated_at_column();
 
 COMMENT ON TABLE profiles IS '用户公开资料（镜像 auth.users 元数据）';
+
+-- =============================================================================
+-- Friend Request Functions
+-- =============================================================================
+
+-- Accept friend request with transaction safety
+CREATE OR REPLACE FUNCTION accept_friend_request_tx(request_id UUID)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_user_id UUID;
+  v_friend_id UUID;
+  v_status TEXT;
+BEGIN
+  -- Get and validate request
+  SELECT user_id, friend_id, status INTO v_user_id, v_friend_id, v_status
+  FROM friends
+  WHERE id = request_id AND friend_id = auth.uid();
+
+  IF NOT FOUND THEN
+    RETURN jsonb_build_object('success', false, 'error', '请求不存在或无权限');
+  END IF;
+
+  IF v_status != 'pending' THEN
+    RETURN jsonb_build_object('success', false, 'error', '请求状态无效');
+  END IF;
+
+  -- Update request to accepted
+  UPDATE friends SET status = 'accepted' WHERE id = request_id;
+
+  -- Create reverse relationship
+  INSERT INTO friends (user_id, friend_id, status)
+  VALUES (v_friend_id, v_user_id, 'accepted');
+
+  RETURN jsonb_build_object('success', true);
+EXCEPTION
+  WHEN OTHERS THEN
+    RETURN jsonb_build_object('success', false, 'error', '操作失败');
+END;
+$$;
