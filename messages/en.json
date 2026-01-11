@@ -215,6 +215,19 @@
       "invalidEmail": "Invalid email address"
     }
   },
+  "friends": {
+    "title": "Friends",
+    "myFriends": "My Friends",
+    "received": "Received",
+    "sent": "Sent",
+    "search": "Search by name or email...",
+    "addFriend": "Add Friend",
+    "accept": "Accept",
+    "reject": "Reject",
+    "noFriends": "No friends yet",
+    "deleteFriend": "Delete Friend",
+    "confirmDelete": "Are you sure you want to delete this friend?"
+  },
   "protected": {
     "title": "Profile",
     "subtitle": "Your user details",

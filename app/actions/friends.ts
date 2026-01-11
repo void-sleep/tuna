@@ -1,0 +1,225 @@
+'use server';
+
+import { createClient } from '@/lib/supabase/server';
+import type { UserProfile, FriendWithUser } from '@/lib/types/doyouagree';
+
+/**
+ * Server Actions for friends management
+ * These can be called from client components without import boundary issues
+ */
+
+export async function getFriendsAction(): Promise<FriendWithUser[]> {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data: friends, error } = await supabase
+    .from('friends')
+    .select(`
+      *,
+      user:user_id (id, email, full_name, avatar_url),
+      friend:friend_id (id, email, full_name, avatar_url)
+    `)
+    .eq('user_id', user.id)
+    .eq('status', 'accepted')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching friends:', error);
+    return [];
+  }
+
+  return friends || [];
+}
+
+export async function getReceivedFriendRequestsAction(): Promise<FriendWithUser[]> {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data: requests, error } = await supabase
+    .from('friends')
+    .select(`
+      *,
+      user:user_id (id, email, full_name, avatar_url),
+      friend:friend_id (id, email, full_name, avatar_url)
+    `)
+    .eq('friend_id', user.id)
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching received requests:', error);
+    return [];
+  }
+
+  return requests || [];
+}
+
+export async function getSentFriendRequestsAction(): Promise<FriendWithUser[]> {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data: requests, error } = await supabase
+    .from('friends')
+    .select(`
+      *,
+      user:user_id (id, email, full_name, avatar_url),
+      friend:friend_id (id, email, full_name, avatar_url)
+    `)
+    .eq('user_id', user.id)
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching sent requests:', error);
+    return [];
+  }
+
+  return requests || [];
+}
+
+export async function sendFriendRequestAction(friendId: string): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { success: false, error: '请先登录' };
+  }
+
+  if (user.id === friendId) {
+    return { success: false, error: '不能添加自己为好友' };
+  }
+
+  // Check existing relationship
+  const { data: existing } = await supabase
+    .from('friends')
+    .select('id, status')
+    .eq('user_id', user.id)
+    .eq('friend_id', friendId);
+
+  if (existing && existing.length > 0) {
+    const status = existing[0].status;
+    if (status === 'pending') {
+      return { success: false, error: '好友请求已发送' };
+    } else if (status === 'accepted') {
+      return { success: false, error: '已经是好友了' };
+    } else if (status === 'rejected') {
+      // Delete rejected request to allow retry
+      await supabase.from('friends').delete().eq('id', existing[0].id);
+    }
+  }
+
+  const { error } = await supabase.from('friends').insert({
+    user_id: user.id,
+    friend_id: friendId,
+    status: 'pending',
+  });
+
+  if (error) {
+    console.error('Error sending friend request:', error);
+    return { success: false, error: '发送好友请求失败' };
+  }
+
+  return { success: true };
+}
+
+export async function acceptFriendRequestAction(requestId: string): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { success: false, error: '请先登录' };
+  }
+
+  // Use RPC function for atomic transaction
+  const { data, error } = await supabase.rpc('accept_friend_request_tx', {
+    request_id: requestId,
+  });
+
+  if (error) {
+    console.error('Error accepting friend request:', error);
+    return { success: false, error: '接受好友请求失败' };
+  }
+
+  const result = data as { success: boolean; error?: string };
+  return result;
+}
+
+export async function rejectFriendRequestAction(requestId: string): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { success: false, error: '请先登录' };
+  }
+
+  const { error } = await supabase
+    .from('friends')
+    .update({ status: 'rejected' })
+    .eq('id', requestId)
+    .eq('friend_id', user.id);
+
+  if (error) {
+    console.error('Error rejecting friend request:', error);
+    return { success: false, error: '拒绝好友请求失败' };
+  }
+
+  return { success: true };
+}
+
+export async function deleteFriendAction(friendId: string): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { success: false, error: '请先登录' };
+  }
+
+  // Delete both directions of friendship
+  const { error } = await supabase
+    .from('friends')
+    .delete()
+    .or(`and(user_id.eq.${user.id},friend_id.eq.${friendId}),and(user_id.eq.${friendId},friend_id.eq.${user.id})`);
+
+  if (error) {
+    console.error('Error deleting friend:', error);
+    return { success: false, error: '删除好友失败' };
+  }
+
+  return { success: true };
+}
+
+export async function searchUsersAction(query: string): Promise<UserProfile[]> {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data: profiles, error } = await supabase
+    .from('profiles')
+    .select('id, email, full_name, avatar_url')
+    .or(`email.ilike.%${query}%,full_name.ilike.%${query}%`)
+    .neq('id', user.id)
+    .limit(10);
+
+  if (error) {
+    console.error('Error searching users:', error);
+    return [];
+  }
+
+  // Filter out existing friends
+  const { data: existingFriends } = await supabase
+    .from('friends')
+    .select('friend_id')
+    .eq('user_id', user.id)
+    .in('status', ['pending', 'accepted']);
+
+  const friendIds = new Set(existingFriends?.map(f => f.friend_id) || []);
+
+  return (profiles || []).filter(p => !friendIds.has(p.id));
+}

@@ -475,5 +475,18 @@
       "edit": "编辑",
       "fullscreen": "全屏"
     }
+  },
+  "friends": {
+    "title": "好友管理",
+    "myFriends": "我的好友",
+    "received": "待处理",
+    "sent": "已发送",
+    "search": "搜索用户名或邮箱...",
+    "addFriend": "添加好友",
+    "accept": "接受",
+    "reject": "拒绝",
+    "noFriends": "还没有好友",
+    "deleteFriend": "删除好友",
+    "confirmDelete": "确定要删除这个好友吗？"
   }
 }
