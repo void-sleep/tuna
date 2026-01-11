@@ -1,9 +1,14 @@
+// Status types
+export type FriendStatus = 'pending' | 'accepted' | 'rejected';
+export type QuestionStatus = 'pending' | 'answered' | 'expired';
+export type NotificationType = 'friend_request' | 'new_question' | 'question_answered';
+
 // Friend relationship types
 export interface Friend {
   id: string;
   user_id: string;
   friend_id: string;
-  status: 'pending' | 'accepted' | 'rejected';
+  status: FriendStatus;
   created_at: string;
   updated_at: string;
 }
@@ -23,9 +28,10 @@ export interface AgreeQuestion {
   from_user_id: string;
   to_user_id: string;
   question_text: string;
+  /** Array of answer options. Database stores as JSONB but always contains string[] */
   options: string[];
   answer: string | null;
-  status: 'pending' | 'answered' | 'expired';
+  status: QuestionStatus;
   answered_at: string | null;
   created_at: string;
 }
@@ -34,7 +40,7 @@ export interface AgreeQuestion {
 export interface Notification {
   id: string;
   user_id: string;
-  type: 'friend_request' | 'new_question' | 'question_answered';
+  type: NotificationType;
   title: string;
   content: string;
   link: string | null;
@@ -51,4 +57,38 @@ export interface FriendWithUser extends Friend {
 export interface AgreeQuestionWithUsers extends AgreeQuestion {
   from_user: UserProfile;
   to_user: UserProfile;
+}
+
+// Input types for creating records
+export interface CreateFriendInput {
+  friend_id: string;
+  // status is always 'pending' on creation, enforced by RLS
+  // user_id comes from auth.uid()
+}
+
+export interface CreateAgreeQuestionInput {
+  application_id: string;
+  to_user_id: string;
+  question_text: string;
+  options: string[];
+  // from_user_id filled from auth.uid()
+  // status is always 'pending' on creation
+}
+
+export interface UpdateAgreeQuestionInput {
+  answer: string;
+  // Only field user can update, other fields immutable per spec
+}
+
+export interface CreateNotificationInput {
+  user_id: string;
+  type: NotificationType;
+  title: string;
+  content: string;
+  link?: string;
+}
+
+export interface UpdateNotificationInput {
+  read: boolean;
+  // Only field user can update
 }
