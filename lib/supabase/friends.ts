@@ -1,17 +1,20 @@
 import type { SupabaseClient, User } from '@supabase/supabase-js';
-import { createClient } from '@supabase/supabase-js';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 // 创建 Supabase 管理客户端实例
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+function createAdminClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
+  return createSupabaseClient(supabaseUrl, supabaseServiceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+}
 
+// Helper types for friend API responses
 export interface FriendWithUser {
   id: string;
   friend_id: string;
@@ -112,20 +115,18 @@ export async function getFriends(
       return { friends: [], error: null };
     }
 
-    // 获取所有好友的 user_id
-    const friendIds = friendships.map((f) => f.friend_id);
-
     // 使用 Admin API 获取用户信息
-    const { data: usersData, error: usersError } = await supabaseAdmin.auth.admin.listUsers();
+    const supabaseAdmin = createAdminClient();
+    const listUsersResponse = await supabaseAdmin.auth.admin.listUsers();
 
-    if (usersError) {
-      console.error('Error fetching users:', usersError);
-      return { friends: [], error: usersError.message };
+    if (listUsersResponse.error || !listUsersResponse.data) {
+      console.error('Error fetching users:', listUsersResponse.error);
+      return { friends: [], error: listUsersResponse.error?.message || 'Failed to fetch users' };
     }
 
     // 创建用户信息映射
     const usersMap = new Map<string, User>();
-    usersData.users.forEach((user) => {
+    listUsersResponse.data.users.forEach((user) => {
       usersMap.set(user.id, user);
     });
 
@@ -184,20 +185,18 @@ export async function getReceivedFriendRequests(
       return { requests: [], error: null };
     }
 
-    // 获取所有发送者的 user_id
-    const senderIds = requests.map((r) => r.user_id);
-
     // 使用 Admin API 获取用户信息
-    const { data: usersData, error: usersError } = await supabaseAdmin.auth.admin.listUsers();
+    const supabaseAdmin = createAdminClient();
+    const listUsersResponse = await supabaseAdmin.auth.admin.listUsers();
 
-    if (usersError) {
-      console.error('Error fetching users:', usersError);
-      return { requests: [], error: usersError.message };
+    if (listUsersResponse.error || !listUsersResponse.data) {
+      console.error('Error fetching users:', listUsersResponse.error);
+      return { requests: [], error: listUsersResponse.error?.message || 'Failed to fetch users' };
     }
 
     // 创建用户信息映射
     const usersMap = new Map<string, User>();
-    usersData.users.forEach((user) => {
+    listUsersResponse.data.users.forEach((user) => {
       usersMap.set(user.id, user);
     });
 
@@ -252,20 +251,18 @@ export async function getSentFriendRequests(
       return { requests: [], error: null };
     }
 
-    // 获取所有接收者的 user_id
-    const receiverIds = requests.map((r) => r.friend_id);
-
     // 使用 Admin API 获取用户信息
-    const { data: usersData, error: usersError } = await supabaseAdmin.auth.admin.listUsers();
+    const supabaseAdmin = createAdminClient();
+    const listUsersResponse = await supabaseAdmin.auth.admin.listUsers();
 
-    if (usersError) {
-      console.error('Error fetching users:', usersError);
-      return { requests: [], error: usersError.message };
+    if (listUsersResponse.error || !listUsersResponse.data) {
+      console.error('Error fetching users:', listUsersResponse.error);
+      return { requests: [], error: listUsersResponse.error?.message || 'Failed to fetch users' };
     }
 
     // 创建用户信息映射
     const usersMap = new Map<string, User>();
-    usersData.users.forEach((user) => {
+    listUsersResponse.data.users.forEach((user) => {
       usersMap.set(user.id, user);
     });
 
@@ -529,16 +526,17 @@ export async function searchUsers(
     }
 
     // 使用 Admin API 获取所有用户
-    const { data: usersData, error: usersError } = await supabaseAdmin.auth.admin.listUsers();
+    const supabaseAdmin = createAdminClient();
+    const listUsersResponse = await supabaseAdmin.auth.admin.listUsers();
 
-    if (usersError) {
-      console.error('Error fetching users:', usersError);
-      return { users: [], error: usersError.message };
+    if (listUsersResponse.error || !listUsersResponse.data) {
+      console.error('Error fetching users:', listUsersResponse.error);
+      return { users: [], error: listUsersResponse.error?.message || 'Failed to fetch users' };
     }
 
     // 过滤匹配的用户（email 或 name）
     const searchLower = searchQuery.toLowerCase();
-    const matchedUsers = usersData.users.filter((user) => {
+    const matchedUsers = listUsersResponse.data.users.filter((user) => {
       const email = user.email?.toLowerCase() || '';
       const name = user.user_metadata?.name?.toLowerCase() || '';
       return (
