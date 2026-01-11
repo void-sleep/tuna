@@ -479,6 +479,72 @@
       "fullscreen": "全屏"
     }
   },
+  "agreeQuestion": {
+    "edit": {
+      "title": "编辑同意问题",
+      "subtitle": "配置你的提问应用",
+      "infoTitle": "同意问题应用",
+      "infoDescription": "创建一个应用来向好友提问，让他们选择同意或不同意。你可以自定义默认问题和选项。",
+      "defaultQuestion": {
+        "label": "默认问题模板",
+        "description": "设置一个默认问题模板，使用时可以根据需要修改",
+        "placeholder": "例如：你认为这个想法怎么样？"
+      },
+      "defaultOptions": {
+        "label": "默认选项",
+        "description": "设置默认的回答选项（最多2个）",
+        "option": "选项"
+      },
+      "guide": {
+        "title": "使用指南",
+        "step1": "设置默认问题模板，方便快速发起提问",
+        "step2": "配置默认选项，如「同意」、「不同意」等",
+        "step3": "运行应用时可以随时修改问题和选项"
+      },
+      "buttons": {
+        "save": "保存设置",
+        "saving": "保存中...",
+        "cancel": "取消",
+        "backToApps": "返回应用列表",
+        "preview": "预览"
+      }
+    },
+    "run": {
+      "sendQuestion": {
+        "title": "发送问题",
+        "selectFriend": "选择好友",
+        "selectFriendPlaceholder": "请选择要提问的好友",
+        "question": "问题内容",
+        "questionPlaceholder": "输入你想问的问题...",
+        "options": "回答选项",
+        "option": "选项",
+        "addOption": "添加选项",
+        "send": "发送",
+        "sending": "发送中..."
+      },
+      "history": {
+        "title": "提问历史",
+        "sent": "我发送的",
+        "received": "我收到的",
+        "to": "提问给",
+        "from": "来自",
+        "answer": "回答",
+        "yourAnswer": "你的回答",
+        "empty": "还没有提问记录"
+      },
+      "errors": {
+        "noFriend": "请选择要提问的好友",
+        "noQuestion": "请输入问题内容",
+        "notEnoughOptions": "至少需要2个选项",
+        "sendFailed": "发送失败，请重试"
+      },
+      "success": "问题已发送",
+      "exit": "退出",
+      "edit": "编辑",
+      "fullscreen": "全屏",
+      "locale": "zh-CN"
+    }
+  },
   "friends": {
     "title": "好友管理",
     "myFriends": "我的好友",

@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { BinaryChoiceEditor, type BinaryChoiceConfig } from "@/components/binary-choice-editor";
 import { MathFlashEditor, type MathFlashConfig, DEFAULT_MATH_FLASH_CONFIG } from "@/components/math-flash-editor";
+import { AgreeQuestionEditor, type AgreeQuestionConfig, DEFAULT_AGREE_QUESTION_CONFIG } from "@/components/agree-question-editor";
 import { PageWrapper, PageHeader, PageContent } from "@/components/page-wrapper";
 import { ArrowLeftIcon, CheckIcon, PlayIcon } from "@heroicons/react/24/outline";
 import type { Application, ApplicationType } from "@/lib/supabase/applications";
@@ -52,6 +53,12 @@ const APP_TYPE_CONFIG: Record<ApplicationType, { icon: string; colorClass: strin
     bgClass: 'bg-emerald-500/10',
     borderClass: 'border-emerald-500/20',
   },
+  agree_question: {
+    icon: '💭',
+    colorClass: 'text-indigo-600 dark:text-indigo-400',
+    bgClass: 'bg-indigo-500/10',
+    borderClass: 'border-indigo-500/20',
+  },
 };
 
 export default function EditApplicationPage({
@@ -67,12 +74,14 @@ export default function EditApplicationPage({
   const [application, setApplication] = useState<Application | null>(null);
   const [binaryConfig, setBinaryConfig] = useState<BinaryChoiceConfig>(DEFAULT_BINARY_CONFIG);
   const [mathConfig, setMathConfig] = useState<MathFlashConfig>(DEFAULT_MATH_FLASH_CONFIG);
+  const [agreeConfig, setAgreeConfig] = useState<AgreeQuestionConfig>(DEFAULT_AGREE_QUESTION_CONFIG);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const appType = application?.type || 'coin';
   const typeConfig = APP_TYPE_CONFIG[appType];
-  const t = appType === 'math_flash' ? tMath : tBinary;
+  const tAgree = useTranslations('agreeQuestion.edit');
+  const t = appType === 'math_flash' ? tMath : (appType === 'agree_question' ? tAgree : tBinary);
 
   useEffect(() => {
     async function fetchApplication() {
@@ -95,6 +104,14 @@ export default function EditApplicationPage({
               timePerQuestion: (data.config.timePerQuestion as number) || DEFAULT_MATH_FLASH_CONFIG.timePerQuestion,
               answerDisplayTime: (data.config.answerDisplayTime as number) || DEFAULT_MATH_FLASH_CONFIG.answerDisplayTime,
               difficulty: (data.config.difficulty as 1 | 2 | 3) || DEFAULT_MATH_FLASH_CONFIG.difficulty,
+            });
+          }
+        } else if (data.type === 'agree_question') {
+          // Load agree question config from application.config
+          if (data.config && Object.keys(data.config).length > 0) {
+            setAgreeConfig({
+              defaultQuestion: (data.config.defaultQuestion as string) || DEFAULT_AGREE_QUESTION_CONFIG.defaultQuestion,
+              defaultOptions: (data.config.defaultOptions as string[]) || DEFAULT_AGREE_QUESTION_CONFIG.defaultOptions,
             });
           }
         } else if (data.type === 'coin') {
@@ -145,6 +162,17 @@ export default function EditApplicationPage({
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ config: mathConfig }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to save application');
+        }
+      } else if (appType === 'agree_question') {
+        // Save agree question config to application.config
+        const response = await fetch(`/api/applications/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ config: agreeConfig }),
         });
 
         if (!response.ok) {
@@ -278,6 +306,8 @@ export default function EditApplicationPage({
         {/* Editor - Conditional based on type */}
         {appType === 'math_flash' ? (
           <MathFlashEditor config={mathConfig} onChange={setMathConfig} />
+        ) : appType === 'agree_question' ? (
+          <AgreeQuestionEditor config={agreeConfig} onChange={setAgreeConfig} />
         ) : (
           <BinaryChoiceEditor config={binaryConfig} onChange={setBinaryConfig} />
         )}

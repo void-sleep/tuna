@@ -161,6 +161,35 @@ export const APP_TYPE_COLORS: Record<ApplicationType, AppTypeColorConfig> = {
     primary: 'sky-600',
     primaryRgb: '14, 165, 233',
   },
+
+  agree_question: {
+    // Agree Question - Indigo/Purple theme (contemplation, wisdom, communication)
+    gradient: 'from-indigo-500 via-purple-500 to-pink-500',
+    gradientHover: 'from-indigo-400 via-purple-400 to-pink-400',
+
+    shadow: 'shadow-indigo-500/30',
+    shadowHover: 'shadow-indigo-500/50',
+    glow: 'bg-indigo-500/20',
+    glowIntense: 'bg-indigo-500/40',
+
+    bgLight: 'bg-indigo-50',
+    bgDark: 'dark:bg-indigo-950/30',
+    bgMuted: 'bg-indigo-500/10',
+
+    text: 'text-indigo-600 dark:text-indigo-400',
+    textMuted: 'text-indigo-500/70',
+
+    border: 'border-indigo-500/30',
+    borderHover: 'border-indigo-500/50',
+
+    button: 'bg-indigo-600 hover:bg-indigo-500',
+    buttonHover: 'hover:bg-indigo-500',
+
+    neonAnimation: 'animate-neon-indigo',
+
+    primary: 'indigo-600',
+    primaryRgb: '79, 70, 229',
+  },
 };
 
 /**
@@ -215,6 +244,14 @@ export const APP_TYPES: AppTypeMetadata[] = [
     description: 'Practice math with timed arithmetic problems for kids',
     available: true,
     colors: APP_TYPE_COLORS.math_flash,
+  },
+  {
+    value: 'agree_question',
+    icon: '💭',
+    label: 'Agree Question',
+    description: 'Ask friends questions and let them choose to agree or disagree',
+    available: true,
+    colors: APP_TYPE_COLORS.agree_question,
   },
 ];
 

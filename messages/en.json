@@ -524,6 +524,72 @@
       "fullscreen": "Fullscreen"
     }
   },
+  "agreeQuestion": {
+    "edit": {
+      "title": "Edit Agreement Question",
+      "subtitle": "Configure your question application",
+      "infoTitle": "Agreement Question App",
+      "infoDescription": "Create an application to ask friends questions and let them choose to agree or disagree. You can customize default questions and options.",
+      "defaultQuestion": {
+        "label": "Default Question Template",
+        "description": "Set a default question template that can be modified when used",
+        "placeholder": "e.g., What do you think about this idea?"
+      },
+      "defaultOptions": {
+        "label": "Default Options",
+        "description": "Set default answer options (up to 2 options)",
+        "option": "Option"
+      },
+      "guide": {
+        "title": "Usage Guide",
+        "step1": "Set a default question template for quick questioning",
+        "step2": "Configure default options like 'Agree', 'Disagree', etc.",
+        "step3": "You can modify questions and options anytime when running the app"
+      },
+      "buttons": {
+        "save": "Save Settings",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "backToApps": "Back to Apps",
+        "preview": "Preview"
+      }
+    },
+    "run": {
+      "sendQuestion": {
+        "title": "Send Question",
+        "selectFriend": "Select Friend",
+        "selectFriendPlaceholder": "Please select a friend to ask",
+        "question": "Question Content",
+        "questionPlaceholder": "Enter your question...",
+        "options": "Answer Options",
+        "option": "Option",
+        "addOption": "Add Option",
+        "send": "Send",
+        "sending": "Sending..."
+      },
+      "history": {
+        "title": "Question History",
+        "sent": "Sent by Me",
+        "received": "Received by Me",
+        "to": "Asked to",
+        "from": "From",
+        "answer": "Answer",
+        "yourAnswer": "Your Answer",
+        "empty": "No questions yet"
+      },
+      "errors": {
+        "noFriend": "Please select a friend to ask",
+        "noQuestion": "Please enter a question",
+        "notEnoughOptions": "At least 2 options required",
+        "sendFailed": "Failed to send, please try again"
+      },
+      "success": "Question sent successfully",
+      "exit": "Exit",
+      "edit": "Edit",
+      "fullscreen": "Fullscreen",
+      "locale": "en-US"
+    }
+  },
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your account settings and privacy preferences",
