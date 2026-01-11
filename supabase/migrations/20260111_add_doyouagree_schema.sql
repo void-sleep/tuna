@@ -154,3 +154,54 @@ CREATE POLICY notifications_update ON notifications
 -- 只能删除自己的通知
 CREATE POLICY notifications_delete ON notifications
   FOR DELETE USING (auth.uid() = user_id);
+
+-- =============================================================================
+-- Table: profiles (用户公开资料)
+-- =============================================================================
+
+-- Create profiles table to mirror auth.users metadata
+CREATE TABLE IF NOT EXISTS profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  full_name TEXT,
+  avatar_url TEXT,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index for quick lookups
+CREATE INDEX IF NOT EXISTS idx_profiles_email ON profiles(email);
+
+-- Enable RLS
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+-- Users can view their own profile
+CREATE POLICY profiles_select_own ON profiles
+  FOR SELECT USING (auth.uid() = id);
+
+-- Users can view profiles of their accepted friends
+CREATE POLICY profiles_select_friends ON profiles
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM friends
+      WHERE ((user_id = auth.uid() AND friend_id = profiles.id)
+          OR (friend_id = auth.uid() AND user_id = profiles.id))
+        AND status = 'accepted'
+    )
+  );
+
+-- Users can update their own profile
+CREATE POLICY profiles_update_own ON profiles
+  FOR UPDATE USING (auth.uid() = id);
+
+-- Users can insert their own profile (on signup)
+CREATE POLICY profiles_insert_own ON profiles
+  FOR INSERT WITH CHECK (auth.uid() = id);
+
+-- Trigger to keep profiles updated_at current
+CREATE TRIGGER profiles_updated_at
+  BEFORE UPDATE ON profiles
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+COMMENT ON TABLE profiles IS '用户公开资料（镜像 auth.users 元数据）';

@@ -58,18 +58,19 @@ export async function getFriends(): Promise<FriendWithUser[]> {
   });
 
   // 获取用户信息
-  const { data: users } = await supabase.auth.admin.listUsers();
-  const userMap = new Map<string, UserProfile>();
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, email, full_name, avatar_url')
+    .in('id', Array.from(userIds));
 
-  users?.users.forEach(u => {
-    if (userIds.has(u.id)) {
-      userMap.set(u.id, {
-        id: u.id,
-        email: u.email || '',
-        full_name: u.user_metadata?.full_name || u.user_metadata?.name,
-        avatar_url: u.user_metadata?.avatar_url,
-      });
-    }
+  const userMap = new Map<string, UserProfile>();
+  profiles?.forEach(p => {
+    userMap.set(p.id, {
+      id: p.id,
+      email: p.email,
+      full_name: p.full_name,
+      avatar_url: p.avatar_url,
+    });
   });
 
   // 组装结果（去重：只保留双向关系中的一条）
@@ -121,18 +122,19 @@ export async function getReceivedFriendRequests(): Promise<FriendWithUser[]> {
 
   // 获取发送者信息
   const senderIds = requests.map(r => r.user_id);
-  const { data: users } = await supabase.auth.admin.listUsers();
-  const userMap = new Map<string, UserProfile>();
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, email, full_name, avatar_url')
+    .in('id', senderIds);
 
-  users?.users.forEach(u => {
-    if (senderIds.includes(u.id)) {
-      userMap.set(u.id, {
-        id: u.id,
-        email: u.email || '',
-        full_name: u.user_metadata?.full_name || u.user_metadata?.name,
-        avatar_url: u.user_metadata?.avatar_url,
-      });
-    }
+  const userMap = new Map<string, UserProfile>();
+  profiles?.forEach(p => {
+    userMap.set(p.id, {
+      id: p.id,
+      email: p.email,
+      full_name: p.full_name,
+      avatar_url: p.avatar_url,
+    });
   });
 
   return requests.map(req => ({
@@ -167,18 +169,19 @@ export async function getSentFriendRequests(): Promise<FriendWithUser[]> {
 
   // 获取接收者信息
   const receiverIds = requests.map(r => r.friend_id);
-  const { data: users } = await supabase.auth.admin.listUsers();
-  const userMap = new Map<string, UserProfile>();
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, email, full_name, avatar_url')
+    .in('id', receiverIds);
 
-  users?.users.forEach(u => {
-    if (receiverIds.includes(u.id)) {
-      userMap.set(u.id, {
-        id: u.id,
-        email: u.email || '',
-        full_name: u.user_metadata?.full_name || u.user_metadata?.name,
-        avatar_url: u.user_metadata?.avatar_url,
-      });
-    }
+  const userMap = new Map<string, UserProfile>();
+  profiles?.forEach(p => {
+    userMap.set(p.id, {
+      id: p.id,
+      email: p.email,
+      full_name: p.full_name,
+      avatar_url: p.avatar_url,
+    });
   });
 
   return requests.map(req => ({
@@ -346,29 +349,19 @@ export async function searchUsers(query: string): Promise<UserProfile[]> {
     return [];
   }
 
-  // 使用 Supabase Auth Admin API 搜索用户
-  const { data: users } = await supabase.auth.admin.listUsers();
+  const lowerQuery = `%${query}%`;
 
-  if (!users) {
+  // 使用 profiles 表搜索用户
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, email, full_name, avatar_url')
+    .neq('id', user.id) // 排除自己
+    .or(`email.ilike.${lowerQuery},full_name.ilike.${lowerQuery}`)
+    .limit(10);
+
+  if (!profiles) {
     return [];
   }
 
-  const lowerQuery = query.toLowerCase();
-
-  return users.users
-    .filter(u => {
-      if (u.id === user.id) return false; // 排除自己
-
-      const email = u.email?.toLowerCase() || '';
-      const fullName = u.user_metadata?.full_name?.toLowerCase() || u.user_metadata?.name?.toLowerCase() || '';
-
-      return email.includes(lowerQuery) || fullName.includes(lowerQuery);
-    })
-    .slice(0, 10) // 限制返回数量
-    .map(u => ({
-      id: u.id,
-      email: u.email || '',
-      full_name: u.user_metadata?.full_name || u.user_metadata?.name,
-      avatar_url: u.user_metadata?.avatar_url,
-    }));
+  return profiles;
 }
