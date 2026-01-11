@@ -136,7 +136,7 @@ export function CreateQuestionDialog({ friends, open, onOpenChange, onCreated }:
                   const friend = friendship.friend;
                   return (
                     <SelectItem key={friend.id} value={friend.id}>
-                      {friend.full_name || friend.email}
+                      {friend.full_name}
                     </SelectItem>
                   );
                 })}

@@ -1,13 +1,108 @@
 -- =============================================================================
--- DoYouAgree Application - Database Schema
+-- DoYouAgree Application - Complete Database Schema
 -- =============================================================================
 --
 -- Tables:
--- 1. friends - Bilateral friendship management
--- 2. agree_questions - Questions and answers records
--- 3. notifications - In-app notification system
+-- 1. profiles - User public profile (mirrors auth.users metadata)
+-- 2. friends - Bilateral friendship management
+-- 3. agree_questions - Questions and answers records
+-- 4. notifications - In-app notification system
 --
 -- =============================================================================
+
+-- =============================================================================
+-- Table: profiles (user public profile)
+-- =============================================================================
+
+-- Create profiles table to mirror auth.users metadata
+CREATE TABLE IF NOT EXISTS profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  full_name TEXT,
+  avatar_url TEXT,
+  searchable BOOLEAN DEFAULT TRUE NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index for quick lookups
+CREATE INDEX IF NOT EXISTS idx_profiles_email ON profiles(email);
+CREATE INDEX IF NOT EXISTS idx_profiles_searchable_email ON profiles(searchable, email) WHERE searchable = true;
+
+-- Trigger to keep profiles updated_at current
+CREATE TRIGGER profiles_updated_at
+  BEFORE UPDATE ON profiles
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+COMMENT ON TABLE profiles IS 'User public profile (mirrors auth.users metadata)';
+COMMENT ON COLUMN profiles.searchable IS 'Whether user can be found in search (privacy control)';
+
+-- =============================================================================
+-- RLS Policies: profiles
+-- =============================================================================
+
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+-- Allow authenticated users to discover other users for friend requests
+CREATE POLICY profiles_select ON profiles
+  FOR SELECT
+  TO authenticated
+  USING (true);
+
+-- Users can update their own profile
+CREATE POLICY profiles_update_own ON profiles
+  FOR UPDATE
+  TO authenticated
+  USING (auth.uid() = id)
+  WITH CHECK (auth.uid() = id);
+
+-- Users can insert their own profile (on signup)
+CREATE POLICY profiles_insert_own ON profiles
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (auth.uid() = id);
+
+-- =============================================================================
+-- Auto-sync profiles from auth.users
+-- =============================================================================
+
+-- When a user signs up, automatically create their profile record
+CREATE OR REPLACE FUNCTION handle_new_user()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email, full_name, avatar_url)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    NEW.raw_user_meta_data->>'full_name',
+    NEW.raw_user_meta_data->>'avatar_url'
+  );
+  RETURN NEW;
+END;
+$$;
+
+-- Trigger on auth.users insert
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW
+  EXECUTE FUNCTION handle_new_user();
+
+-- Backfill existing users (for users that signed up before this migration)
+INSERT INTO public.profiles (id, email, full_name, avatar_url, created_at)
+SELECT
+  id,
+  email,
+  raw_user_meta_data->>'full_name',
+  raw_user_meta_data->>'avatar_url',
+  created_at
+FROM auth.users
+WHERE id NOT IN (SELECT id FROM public.profiles)
+ON CONFLICT (id) DO NOTHING;
 
 -- =============================================================================
 -- Table: friends (friendship relationships)
@@ -34,48 +129,6 @@ CREATE TRIGGER friends_updated_at
   BEFORE UPDATE ON friends
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
-
--- =============================================================================
--- Table: agree_questions (question records)
--- =============================================================================
-
-CREATE TABLE IF NOT EXISTS agree_questions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  application_id UUID NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
-  from_user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  to_user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  question_text TEXT NOT NULL,
-  options JSONB NOT NULL,
-  answer TEXT NULL,
-  status TEXT NOT NULL,
-  answered_at TIMESTAMPTZ NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  CHECK (from_user_id != to_user_id)
-);
-
--- Index optimization: question queries
-CREATE INDEX IF NOT EXISTS idx_agree_questions_from_user ON agree_questions(from_user_id);
-CREATE INDEX IF NOT EXISTS idx_agree_questions_to_user ON agree_questions(to_user_id);
-CREATE INDEX IF NOT EXISTS idx_agree_questions_status ON agree_questions(status);
-CREATE INDEX IF NOT EXISTS idx_agree_questions_app_id ON agree_questions(application_id);
-
--- =============================================================================
--- Table: notifications (notifications)
--- =============================================================================
-
-CREATE TABLE IF NOT EXISTS notifications (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  type TEXT NOT NULL,
-  title TEXT NOT NULL,
-  content TEXT NOT NULL,
-  link TEXT NULL,
-  read BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Index optimization: notification queries (user_id + read + time desc)
-CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id, read, created_at DESC);
 
 -- =============================================================================
 -- RLS Policies: friends
@@ -108,6 +161,30 @@ CREATE POLICY friends_delete ON friends
   );
 
 -- =============================================================================
+-- Table: agree_questions (question records)
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS agree_questions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  application_id UUID NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
+  from_user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  to_user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  question_text TEXT NOT NULL,
+  options JSONB NOT NULL,
+  answer TEXT NULL,
+  status TEXT NOT NULL,
+  answered_at TIMESTAMPTZ NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  CHECK (from_user_id != to_user_id)
+);
+
+-- Index optimization: question queries
+CREATE INDEX IF NOT EXISTS idx_agree_questions_from_user ON agree_questions(from_user_id);
+CREATE INDEX IF NOT EXISTS idx_agree_questions_to_user ON agree_questions(to_user_id);
+CREATE INDEX IF NOT EXISTS idx_agree_questions_status ON agree_questions(status);
+CREATE INDEX IF NOT EXISTS idx_agree_questions_app_id ON agree_questions(application_id);
+
+-- =============================================================================
 -- RLS Policies: agree_questions
 -- =============================================================================
 
@@ -138,6 +215,24 @@ CREATE POLICY agree_questions_delete ON agree_questions
   );
 
 -- =============================================================================
+-- Table: notifications (notifications)
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS notifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  type TEXT NOT NULL,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  link TEXT NULL,
+  read BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index optimization: notification queries (user_id + read + time desc)
+CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id, read, created_at DESC);
+
+-- =============================================================================
 -- RLS Policies: notifications
 -- =============================================================================
 
@@ -154,61 +249,6 @@ CREATE POLICY notifications_update ON notifications
 -- Can only delete own notifications
 CREATE POLICY notifications_delete ON notifications
   FOR DELETE USING (auth.uid() = user_id);
-
--- =============================================================================
--- Table: profiles (user public profile)
--- =============================================================================
-
--- Create profiles table to mirror auth.users metadata
-CREATE TABLE IF NOT EXISTS profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  email TEXT NOT NULL,
-  full_name TEXT,
-  avatar_url TEXT,
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Index for quick lookups
-CREATE INDEX IF NOT EXISTS idx_profiles_email ON profiles(email);
-
--- Enable RLS
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-
--- Allow authenticated users to discover other users for friend requests
-CREATE POLICY profiles_select_public ON profiles
-  FOR SELECT USING (auth.uid() IS NOT NULL);
-
--- Users can view their own profile
-CREATE POLICY profiles_select_own ON profiles
-  FOR SELECT USING (auth.uid() = id);
-
--- Users can view profiles of their accepted friends
-CREATE POLICY profiles_select_friends ON profiles
-  FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM friends
-      WHERE ((user_id = auth.uid() AND friend_id = profiles.id)
-          OR (friend_id = auth.uid() AND user_id = profiles.id))
-        AND status = 'accepted'
-    )
-  );
-
--- Users can update their own profile
-CREATE POLICY profiles_update_own ON profiles
-  FOR UPDATE USING (auth.uid() = id);
-
--- Users can insert their own profile (on signup)
-CREATE POLICY profiles_insert_own ON profiles
-  FOR INSERT WITH CHECK (auth.uid() = id);
-
--- Trigger to keep profiles updated_at current
-CREATE TRIGGER profiles_updated_at
-  BEFORE UPDATE ON profiles
-  FOR EACH ROW
-  EXECUTE FUNCTION update_updated_at_column();
-
-COMMENT ON TABLE profiles IS 'User public profile (mirrors auth.users metadata)';
 
 -- =============================================================================
 -- Friend Request Functions

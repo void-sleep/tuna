@@ -62,15 +62,12 @@ export function FriendsList({ friends, onFriendDeleted }: FriendsListProps) {
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-violet-100 dark:bg-violet-900 flex items-center justify-center">
                   <span className="text-lg font-medium text-violet-600 dark:text-violet-400">
-                    {friend.full_name?.[0] || friend.email[0].toUpperCase()}
+                    {friend.full_name[0].toUpperCase()}
                   </span>
                 </div>
                 <div>
                   <p className="font-medium text-slate-900 dark:text-white">
-                    {friend.full_name || friend.email}
-                  </p>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
-                    {friend.email}
+                    {friend.full_name}
                   </p>
                 </div>
               </div>
@@ -90,7 +87,7 @@ export function FriendsList({ friends, onFriendDeleted }: FriendsListProps) {
                   <AlertDialogHeader>
                     <AlertDialogTitle>删除好友</AlertDialogTitle>
                     <AlertDialogDescription>
-                      确定要删除好友 {friend.full_name || friend.email} 吗？
+                      确定要删除好友 {friend.full_name} 吗？
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>

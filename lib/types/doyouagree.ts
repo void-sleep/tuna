@@ -16,9 +16,9 @@ export interface Friend {
 // User profile (for display in friend lists)
 export interface UserProfile {
   id: string;
-  email: string;
-  full_name?: string;
+  full_name: string; // Always provided: real name or email prefix
   avatar_url?: string;
+  searchable?: boolean;
 }
 
 // Agree question types

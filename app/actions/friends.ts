@@ -8,6 +8,18 @@ import type { UserProfile, FriendWithUser } from '@/lib/types/doyouagree';
  * These can be called from client components without import boundary issues
  */
 
+/**
+ * Helper function to get display name from profile
+ * Returns full_name if available, otherwise email prefix (before @)
+ */
+function getDisplayName(email: string, full_name: string | null): string {
+  if (full_name && full_name.trim()) {
+    return full_name.trim();
+  }
+  // Use email prefix (before @) as fallback
+  return email.split('@')[0];
+}
+
 export async function getFriendsAction(): Promise<FriendWithUser[]> {
   const supabase = await createClient();
 
@@ -41,13 +53,23 @@ export async function getFriendsAction(): Promise<FriendWithUser[]> {
     .select('id, email, full_name, avatar_url')
     .in('id', Array.from(userIds));
 
-  const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+  // Transform profiles to use display names
+  const profileMap = new Map(
+    profiles?.map(p => [
+      p.id,
+      {
+        id: p.id,
+        full_name: getDisplayName(p.email, p.full_name),
+        avatar_url: p.avatar_url,
+      } as UserProfile,
+    ]) || []
+  );
 
   // Combine data
   return friends.map(f => ({
     ...f,
-    user: profileMap.get(f.user_id) || { id: f.user_id, email: '', full_name: null, avatar_url: null },
-    friend: profileMap.get(f.friend_id) || { id: f.friend_id, email: '', full_name: null, avatar_url: null },
+    user: profileMap.get(f.user_id) || { id: f.user_id, full_name: 'Unknown', avatar_url: null },
+    friend: profileMap.get(f.friend_id) || { id: f.friend_id, full_name: 'Unknown', avatar_url: null },
   }));
 }
 
@@ -84,13 +106,23 @@ export async function getReceivedFriendRequestsAction(): Promise<FriendWithUser[
     .select('id, email, full_name, avatar_url')
     .in('id', Array.from(userIds));
 
-  const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+  // Transform profiles to use display names
+  const profileMap = new Map(
+    profiles?.map(p => [
+      p.id,
+      {
+        id: p.id,
+        full_name: getDisplayName(p.email, p.full_name),
+        avatar_url: p.avatar_url,
+      } as UserProfile,
+    ]) || []
+  );
 
   // Combine data
   return requests.map(f => ({
     ...f,
-    user: profileMap.get(f.user_id) || { id: f.user_id, email: '', full_name: null, avatar_url: null },
-    friend: profileMap.get(f.friend_id) || { id: f.friend_id, email: '', full_name: null, avatar_url: null },
+    user: profileMap.get(f.user_id) || { id: f.user_id, full_name: 'Unknown', avatar_url: null },
+    friend: profileMap.get(f.friend_id) || { id: f.friend_id, full_name: 'Unknown', avatar_url: null },
   }));
 }
 
@@ -127,13 +159,23 @@ export async function getSentFriendRequestsAction(): Promise<FriendWithUser[]> {
     .select('id, email, full_name, avatar_url')
     .in('id', Array.from(userIds));
 
-  const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+  // Transform profiles to use display names
+  const profileMap = new Map(
+    profiles?.map(p => [
+      p.id,
+      {
+        id: p.id,
+        full_name: getDisplayName(p.email, p.full_name),
+        avatar_url: p.avatar_url,
+      } as UserProfile,
+    ]) || []
+  );
 
   // Combine data
   return requests.map(f => ({
     ...f,
-    user: profileMap.get(f.user_id) || { id: f.user_id, email: '', full_name: null, avatar_url: null },
-    friend: profileMap.get(f.friend_id) || { id: f.friend_id, email: '', full_name: null, avatar_url: null },
+    user: profileMap.get(f.user_id) || { id: f.user_id, full_name: 'Unknown', avatar_url: null },
+    friend: profileMap.get(f.friend_id) || { id: f.friend_id, full_name: 'Unknown', avatar_url: null },
   }));
 }
 
@@ -258,6 +300,7 @@ export async function searchUsersAction(query: string): Promise<UserProfile[]> {
     .from('profiles')
     .select('id, email, full_name, avatar_url')
     .or(`email.ilike.%${query}%,full_name.ilike.%${query}%`)
+    .eq('searchable', true)
     .neq('id', user.id)
     .limit(10);
 
@@ -275,5 +318,58 @@ export async function searchUsersAction(query: string): Promise<UserProfile[]> {
 
   const friendIds = new Set(existingFriends?.map(f => f.friend_id) || []);
 
-  return (profiles || []).filter(p => !friendIds.has(p.id));
+  // Transform profiles to use display names and filter out friends
+  return (profiles || [])
+    .filter(p => !friendIds.has(p.id))
+    .map(p => ({
+      id: p.id,
+      full_name: getDisplayName(p.email, p.full_name),
+      avatar_url: p.avatar_url,
+    }));
+}
+
+export async function getCurrentUserProfileAction(): Promise<UserProfile | null> {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('id, email, full_name, avatar_url, searchable')
+    .eq('id', user.id)
+    .single();
+
+  if (error) {
+    console.error('Error fetching user profile:', error);
+    return null;
+  }
+
+  return {
+    id: profile.id,
+    full_name: getDisplayName(profile.email, profile.full_name),
+    avatar_url: profile.avatar_url,
+    searchable: profile.searchable,
+  };
+}
+
+export async function updateSearchableStatusAction(searchable: boolean): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { success: false, error: 'Not authenticated' };
+  }
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({ searchable })
+    .eq('id', user.id);
+
+  if (error) {
+    console.error('Error updating searchable status:', error);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
 }

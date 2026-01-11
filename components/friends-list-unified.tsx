@@ -189,19 +189,16 @@ export function UnifiedFriendsList({ friends, receivedRequests, sentRequests }: 
                 <div className="flex items-center gap-4 flex-1 min-w-0">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
                     <span className="text-lg font-semibold text-white">
-                      {displayUser.full_name?.[0] || displayUser.email[0].toUpperCase()}
+                      {displayUser.full_name[0].toUpperCase()}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2">
                       <p className="font-semibold text-slate-900 dark:text-white truncate">
-                        {displayUser.full_name || displayUser.email}
+                        {displayUser.full_name}
                       </p>
                       {getStatusBadge(item.itemType)}
                     </div>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 truncate">
-                      {displayUser.email}
-                    </p>
                   </div>
                 </div>
 
@@ -221,7 +218,7 @@ export function UnifiedFriendsList({ friends, receivedRequests, sentRequests }: 
           <AlertDialogHeader>
             <AlertDialogTitle>删除好友</AlertDialogTitle>
             <AlertDialogDescription>
-              确定要删除好友 {deletingItem && getDisplayUser(deletingItem).full_name || deletingItem?.friend.email} 吗？
+              确定要删除好友 {deletingItem && getDisplayUser(deletingItem).full_name} 吗？
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -40,12 +40,12 @@ export function QuestionCard({ question, type, onAnswer }: QuestionCardProps) {
           <div className="flex items-center gap-3 flex-1">
             <div className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900 flex items-center justify-center flex-shrink-0">
               <span className="text-sm font-medium text-violet-600 dark:text-violet-400">
-                {displayUser.full_name?.[0] || displayUser.email[0].toUpperCase()}
+                {displayUser.full_name[0].toUpperCase()}
               </span>
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-slate-900 dark:text-white truncate">
-                {displayUser.full_name || displayUser.email}
+                {displayUser.full_name}
               </p>
               <p className="text-xs text-slate-500 dark:text-slate-400">{timeText}</p>
             </div>

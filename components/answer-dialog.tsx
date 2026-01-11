@@ -59,7 +59,7 @@ export function AnswerDialog({ question, open, onOpenChange, onAnswered }: Answe
         <DialogHeader>
           <DialogTitle>{t('answer')}</DialogTitle>
           <DialogDescription>
-            {t('from')}: {question.from_user.full_name || question.from_user.email}
+            {t('from')}: {question.from_user.full_name}
           </DialogDescription>
         </DialogHeader>
 
