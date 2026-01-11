@@ -68,6 +68,25 @@ export function UserMenu({ userEmail, avatarUrl, fullName }: UserMenuProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
+          onClick={() => router.push('/apps')}
+          className="cursor-pointer"
+        >
+          我的应用
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => router.push('/apps/friends')}
+          className="cursor-pointer"
+        >
+          好友管理
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => router.push('/apps/questions')}
+          className="cursor-pointer"
+        >
+          提问管理
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
           onClick={logout}
           className="cursor-pointer text-destructive focus:text-destructive"
         >
