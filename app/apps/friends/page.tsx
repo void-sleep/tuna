@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getFriendsAction, getReceivedFriendRequestsAction, getSentFriendRequestsAction } from "@/app/actions/friends";
-import { FriendsPageClient } from "@/components/friends-page-client";
+import { FriendsPageRedesigned } from "@/components/friends-page-redesigned";
 
 export default async function FriendsPage() {
   const supabase = await createClient();
@@ -18,7 +18,7 @@ export default async function FriendsPage() {
   ]);
 
   return (
-    <FriendsPageClient
+    <FriendsPageRedesigned
       friends={friends}
       receivedRequests={receivedRequests}
       sentRequests={sentRequests}
