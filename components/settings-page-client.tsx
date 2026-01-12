@@ -1,19 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { updateSearchableStatusAction } from '@/app/actions/friends';
+import { updateSearchableStatusAction, uploadAvatarAction } from '@/app/actions/friends';
 import type { UserProfile } from '@/lib/types/doyouagree';
 import {
   UserIcon,
   ShieldCheckIcon,
   EyeIcon,
   EyeSlashIcon,
-  SparklesIcon
+  SparklesIcon,
+  CameraIcon
 } from '@heroicons/react/24/outline';
 
 interface SettingsPageClientProps {
@@ -22,8 +25,11 @@ interface SettingsPageClientProps {
 
 export function SettingsPageClient({ profile }: SettingsPageClientProps) {
   const t = useTranslations('settings');
+  const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [searchable, setSearchable] = useState(profile?.searchable ?? true);
   const [loading, setLoading] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const handleSearchableChange = async (checked: boolean) => {
     setLoading(true);
@@ -39,6 +45,36 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
     }
 
     setLoading(false);
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadingAvatar(true);
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    const result = await uploadAvatarAction(formData);
+
+    if (result.success) {
+      toast.success('头像更新成功');
+      router.refresh();
+    } else {
+      toast.error(result.error || '头像上传失败');
+    }
+
+    setUploadingAvatar(false);
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
   };
 
   return (
@@ -69,35 +105,69 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-violet-500/10 to-purple-500/10 rounded-full blur-3xl -z-10" />
 
-          <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-violet-500/25">
-              <UserIcon className="h-7 w-7 text-white" />
-            </div>
-            <div className="flex-1 space-y-4">
-              <div>
-                <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
-                  {t('account.title')}
-                </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  您的个人信息和账户详情
-                </p>
+          <div className="space-y-6">
+            {/* Avatar Section */}
+            <div className="flex items-start gap-6">
+              <div className="relative group">
+                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-violet-500/25 overflow-hidden">
+                  {profile?.avatar_url ? (
+                    <img
+                      src={profile.avatar_url}
+                      alt={profile.full_name || 'User avatar'}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <UserIcon className="h-12 w-12 text-white" />
+                  )}
+                </div>
+                <button
+                  onClick={handleAvatarClick}
+                  disabled={uploadingAvatar}
+                  className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex items-center justify-center cursor-pointer disabled:cursor-not-allowed"
+                >
+                  <CameraIcon className="h-8 w-8 text-white" />
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                  className="hidden"
+                />
               </div>
 
-              {profile?.full_name && (
-                <div className="p-4 rounded-xl bg-gradient-to-br from-slate-50 to-violet-50/50 dark:from-slate-800 dark:to-violet-900/20 border border-violet-100 dark:border-violet-900/30">
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">
-                    {t('account.displayName')}
-                  </p>
-                  <p className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                    {profile.full_name}
-                    {profile.avatar_url && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400">
-                        已验证
-                      </span>
-                    )}
+              <div className="flex-1 space-y-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
+                    {t('account.title')}
+                  </h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    您的个人信息和账户详情
                   </p>
                 </div>
-              )}
+
+                {profile?.full_name && (
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-slate-50 to-violet-50/50 dark:from-slate-800 dark:to-violet-900/20 border border-violet-100 dark:border-violet-900/30">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">
+                      {t('account.displayName')}
+                    </p>
+                    <p className="text-lg font-semibold text-slate-900 dark:text-white">
+                      {profile.full_name}
+                    </p>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleAvatarClick}
+                  disabled={uploadingAvatar}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                >
+                  <CameraIcon className="h-4 w-4" />
+                  {uploadingAvatar ? '上传中...' : (profile?.avatar_url ? '更换头像' : '上传头像')}
+                </Button>
+              </div>
             </div>
           </div>
         </Card>

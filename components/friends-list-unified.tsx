@@ -189,10 +189,18 @@ export function UnifiedFriendsList({ friends, receivedRequests, sentRequests }: 
               <div className="p-4 flex items-center justify-between gap-4">
                 {/* User Info */}
                 <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
-                    <span className="text-lg font-semibold text-white">
-                      {displayUser.full_name[0].toUpperCase()}
-                    </span>
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden">
+                    {displayUser.avatar_url ? (
+                      <img
+                        src={displayUser.avatar_url}
+                        alt={displayUser.full_name || 'User avatar'}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-lg font-semibold text-white">
+                        {displayUser.full_name[0].toUpperCase()}
+                      </span>
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">

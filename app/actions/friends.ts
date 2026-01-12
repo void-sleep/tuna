@@ -373,3 +373,65 @@ export async function updateSearchableStatusAction(searchable: boolean): Promise
 
   return { success: true };
 }
+
+export async function uploadAvatarAction(formData: FormData): Promise<{ success: boolean; error?: string; avatarUrl?: string }> {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { success: false, error: '请先登录' };
+  }
+
+  const file = formData.get('avatar') as File;
+  if (!file) {
+    return { success: false, error: '请选择图片文件' };
+  }
+
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    return { success: false, error: '只能上传图片文件' };
+  }
+
+  // Validate file size (max 2MB)
+  if (file.size > 2 * 1024 * 1024) {
+    return { success: false, error: '图片大小不能超过2MB' };
+  }
+
+  // Generate unique filename
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+  const filePath = `avatars/${fileName}`;
+
+  // Upload to Supabase Storage
+  const { error: uploadError } = await supabase.storage
+    .from('avatars')
+    .upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: false
+    });
+
+  if (uploadError) {
+    console.error('Error uploading avatar:', uploadError);
+    return { success: false, error: '上传失败，请重试' };
+  }
+
+  // Get public URL
+  const { data: { publicUrl } } = supabase.storage
+    .from('avatars')
+    .getPublicUrl(filePath);
+
+  // Update profile with new avatar URL
+  const { error: updateError } = await supabase
+    .from('profiles')
+    .update({ avatar_url: publicUrl })
+    .eq('id', user.id);
+
+  if (updateError) {
+    console.error('Error updating profile:', updateError);
+    // Try to delete the uploaded file if profile update fails
+    await supabase.storage.from('avatars').remove([filePath]);
+    return { success: false, error: '更新头像失败' };
+  }
+
+  return { success: true, avatarUrl: publicUrl };
+}
