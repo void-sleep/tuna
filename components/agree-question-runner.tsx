@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { PaperAirplaneIcon, PlusIcon, XMarkIcon, UserGroupIcon, ChatBubbleLeftRightIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { PaperAirplaneIcon, PlusIcon, XMarkIcon, UserGroupIcon, CheckCircleIcon, ChatBubbleLeftIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { toast } from 'sonner';
 import { getFriendsAction } from '@/app/actions/friends';
 import { createAgreeQuestionAction } from '@/app/actions/agree-questions';
@@ -132,13 +132,10 @@ export function AgreeQuestionRunner({
       <div className="relative w-full max-w-2xl">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 mb-4 shadow-lg shadow-indigo-500/25">
-            <ChatBubbleLeftRightIcon className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
-            {t('sendQuestion.title')}
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-3">
+            💭 {t('sendQuestion.title')}
           </h1>
-          <p className="text-indigo-300/60">
+          <p className="text-lg text-indigo-300/80">
             向好友提问，获取他们的真实想法
           </p>
         </div>
@@ -151,36 +148,37 @@ export function AgreeQuestionRunner({
           <div className="relative p-8 space-y-6">
             {/* Select Friend Section */}
             <div className="space-y-3">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                  <UserGroupIcon className="h-4 w-4 text-white" />
-                </div>
-                <Label htmlFor="friend" className="text-base font-semibold text-white">
-                  {t('sendQuestion.selectFriend')}
-                </Label>
-              </div>
+              <Label htmlFor="friend" className="text-base font-semibold text-white flex items-center gap-2">
+                <UserGroupIcon className="h-5 w-5 text-indigo-300" />
+                {t('sendQuestion.selectFriend')}
+              </Label>
               <Select value={selectedFriendId} onValueChange={setSelectedFriendId}>
                 <SelectTrigger
                   id="friend"
-                  className="h-12 rounded-xl bg-white/10 border-indigo-500/30 text-white backdrop-blur-sm hover:bg-white/20 transition-colors"
+                  className="h-14 rounded-xl bg-white/5 border-2 border-indigo-400/50 text-white backdrop-blur-sm hover:bg-white/10 hover:border-indigo-400/70 transition-all shadow-lg shadow-indigo-500/10"
                 >
-                  <SelectValue placeholder={t('sendQuestion.selectFriendPlaceholder')} />
+                  <SelectValue placeholder={t('sendQuestion.selectFriendPlaceholder')} className="text-indigo-200" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl">
+                <SelectContent className="rounded-xl border-2 border-indigo-200 dark:border-indigo-800 shadow-2xl">
                   {friends.length === 0 ? (
-                    <div className="p-4 text-center text-sm text-muted-foreground">
-                      暂无好友，请先添加好友
+                    <div className="p-6 text-center">
+                      <div className="text-4xl mb-2">👥</div>
+                      <p className="text-sm text-muted-foreground">暂无好友，请先添加好友</p>
                     </div>
                   ) : (
                     friends.map((friendship) => {
                       const friend = friendship.friend;
                       return (
-                        <SelectItem key={friend.id} value={friend.id} className="rounded-lg">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold">
-                              {friend.full_name.charAt(0)}
+                        <SelectItem
+                          key={friend.id}
+                          value={friend.id}
+                          className="rounded-lg py-3 px-3 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-950/50 focus:bg-indigo-100 dark:focus:bg-indigo-900/50"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-base font-bold shadow-md">
+                              {friend.full_name.charAt(0).toUpperCase()}
                             </div>
-                            <span>{friend.full_name}</span>
+                            <span className="font-medium">{friend.full_name}</span>
                           </div>
                         </SelectItem>
                       );
@@ -192,60 +190,52 @@ export function AgreeQuestionRunner({
 
             {/* Question Text Section */}
             <div className="space-y-3">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
-                  <span className="text-white text-sm">💭</span>
-                </div>
-                <Label htmlFor="question" className="text-base font-semibold text-white">
-                  {t('sendQuestion.question')}
-                </Label>
-              </div>
+              <Label htmlFor="question" className="text-base font-semibold text-white flex items-center gap-2">
+                <ChatBubbleLeftIcon className="h-5 w-5 text-purple-300" />
+                {t('sendQuestion.question')}
+              </Label>
               <Textarea
                 id="question"
                 value={questionText}
                 onChange={(e) => setQuestionText(e.target.value)}
                 placeholder={t('sendQuestion.questionPlaceholder')}
                 rows={4}
-                className="rounded-xl bg-white/10 border-indigo-500/30 text-white placeholder:text-indigo-300/40 backdrop-blur-sm resize-none focus:bg-white/15 transition-colors"
+                className="rounded-xl bg-white/5 border-2 border-purple-400/50 text-white placeholder:text-indigo-300/50 backdrop-blur-sm resize-none focus:bg-white/10 focus:border-purple-400/70 transition-all shadow-lg shadow-purple-500/10"
               />
             </div>
 
             {/* Options Section */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
-                    <span className="text-white text-sm">✨</span>
-                  </div>
-                  <Label className="text-base font-semibold text-white">
-                    {t('sendQuestion.options')}
-                  </Label>
-                </div>
+              <div className="flex items-center justify-between">
+                <Label className="text-base font-semibold text-white flex items-center gap-2">
+                  <SparklesIcon className="h-5 w-5 text-pink-300" />
+                  {t('sendQuestion.options')}
+                </Label>
                 {options.length < 5 && (
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     onClick={handleAddOption}
-                    className="h-8 gap-1 text-xs text-indigo-300 hover:text-white hover:bg-indigo-500/20"
+                    className="h-8 gap-1.5 text-sm text-indigo-200 hover:text-white hover:bg-indigo-500/30 rounded-lg px-3"
                   >
-                    <PlusIcon className="h-3 w-3" />
+                    <PlusIcon className="h-4 w-4" />
                     {t('sendQuestion.addOption')}
                   </Button>
                 )}
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {options.map((option, index) => (
                   <div key={index} className="flex items-center gap-2 group">
                     <div className="flex-1 relative">
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-white text-sm font-bold shadow-md z-10">
                         {index + 1}
                       </div>
                       <Input
                         value={option}
                         onChange={(e) => handleOptionChange(index, e.target.value)}
                         placeholder={`${t('sendQuestion.option')} ${index + 1}`}
-                        className="pl-12 h-12 rounded-xl bg-white/10 border-indigo-500/30 text-white placeholder:text-indigo-300/40 backdrop-blur-sm focus:bg-white/15 transition-colors"
+                        className="pl-14 pr-4 h-14 rounded-xl bg-white/5 border-2 border-pink-400/50 text-white placeholder:text-indigo-300/50 backdrop-blur-sm focus:bg-white/10 focus:border-pink-400/70 transition-all shadow-lg shadow-pink-500/10"
                       />
                     </div>
                     {options.length > 2 && (
@@ -254,7 +244,7 @@ export function AgreeQuestionRunner({
                         variant="ghost"
                         size="sm"
                         onClick={() => handleRemoveOption(index)}
-                        className="h-12 w-12 p-0 text-rose-400 hover:text-white hover:bg-rose-500/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="h-14 w-14 p-0 rounded-xl text-rose-400 hover:text-white hover:bg-rose-500/30 opacity-0 group-hover:opacity-100 transition-all"
                       >
                         <XMarkIcon className="h-5 w-5" />
                       </Button>
