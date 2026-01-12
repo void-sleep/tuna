@@ -30,6 +30,7 @@ export default async function AppsPage() {
     wheel: '🎡',
     counter: '🔢',
     math_flash: '🧮',
+    agree_question: '💭',
   };
 
   return (

@@ -68,12 +68,6 @@ export function UserMenu({ userEmail, avatarUrl, fullName }: UserMenuProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={() => router.push('/apps')}
-          className="cursor-pointer"
-        >
-          {t('apps')}
-        </DropdownMenuItem>
-        <DropdownMenuItem
           onClick={() => router.push('/apps/friends')}
           className="cursor-pointer"
         >
