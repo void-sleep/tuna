@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { updateSearchableStatusAction, uploadAvatarAction } from '@/app/actions/friends';
+import { AvatarCropDialog } from '@/components/avatar-crop-dialog';
 import type { UserProfile } from '@/lib/types/doyouagree';
 import {
   UserIcon,
@@ -30,6 +31,8 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
   const [searchable, setSearchable] = useState(profile?.searchable ?? true);
   const [loading, setLoading] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const handleSearchableChange = async (checked: boolean) => {
     setLoading(true);
@@ -47,14 +50,41 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
     setLoading(false);
   };
 
-  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('请选择图片文件');
+      return;
+    }
+
+    // Validate file size (max 5MB before crop)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('图片大小不能超过5MB');
+      return;
+    }
+
+    // Read file as data URL for cropper
+    const reader = new FileReader();
+    reader.addEventListener('load', () => {
+      setSelectedImage(reader.result as string);
+      setCropDialogOpen(true);
+    });
+    reader.readAsDataURL(file);
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleCropComplete = async (croppedImage: Blob) => {
     setUploadingAvatar(true);
 
     const formData = new FormData();
-    formData.append('avatar', file);
+    formData.append('avatar', croppedImage, 'avatar.jpg');
 
     const result = await uploadAvatarAction(formData);
 
@@ -66,11 +96,7 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
     }
 
     setUploadingAvatar(false);
-
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    setSelectedImage(null);
   };
 
   const handleAvatarClick = () => {
@@ -131,7 +157,7 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"
-                  onChange={handleAvatarUpload}
+                  onChange={handleFileSelect}
                   className="hidden"
                 />
               </div>
@@ -258,6 +284,16 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
           </div>
         </Card>
       </div>
+
+      {/* Avatar Crop Dialog */}
+      {selectedImage && (
+        <AvatarCropDialog
+          open={cropDialogOpen}
+          onOpenChange={setCropDialogOpen}
+          imageSrc={selectedImage}
+          onCropComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
 }
