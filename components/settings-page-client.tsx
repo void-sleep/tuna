@@ -106,38 +106,31 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/30 to-purple-50/30 dark:from-slate-950 dark:via-violet-950/10 dark:to-purple-950/10">
-      <div className="container max-w-4xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6 sm:space-y-8">
-        {/* Header with Icon */}
-        <div className="relative px-2">
-          <div className="absolute -top-4 -left-4 w-24 h-24 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-full blur-3xl" />
-          <div className="relative space-y-3">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/25">
-                <SparklesIcon className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 bg-clip-text text-transparent">
-                  {t('title')}
-                </h1>
-                <p className="text-slate-600 dark:text-slate-400 mt-1">
-                  {t('subtitle')}
-                </p>
-              </div>
-            </div>
+    <div className="min-h-[calc(100vh-4rem)] bg-slate-50/50 dark:bg-slate-950">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-8">
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-violet-600 flex items-center justify-center">
+            <SparklesIcon className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+              {t('title')}
+            </h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              {t('subtitle')}
+            </p>
           </div>
         </div>
 
         {/* Account Info Card */}
-        <Card className="p-6 sm:p-8 border-2 border-violet-100 dark:border-violet-900/50 bg-gradient-to-br from-white via-violet-50/30 to-purple-50/30 dark:from-slate-900 dark:via-violet-950/20 dark:to-purple-950/20 shadow-xl shadow-violet-500/5 relative overflow-hidden">
-          {/* Background decoration */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-violet-500/10 to-purple-500/10 rounded-full blur-3xl -z-10" />
+        <Card className="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
 
           <div className="space-y-6">
             {/* Avatar Section */}
             <div className="flex items-start gap-6">
               <div className="relative group">
-                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-violet-500/25 overflow-hidden">
+                <div className="w-20 h-20 rounded-xl bg-violet-600 flex items-center justify-center flex-shrink-0 overflow-hidden">
                   {profile?.avatar_url ? (
                     <img
                       src={profile.avatar_url}
@@ -145,15 +138,15 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <UserIcon className="h-12 w-12 text-white" />
+                    <UserIcon className="h-10 w-10 text-white" />
                   )}
                 </div>
                 <button
                   onClick={handleAvatarClick}
                   disabled={uploadingAvatar}
-                  className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex items-center justify-center cursor-pointer disabled:cursor-not-allowed"
+                  className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center cursor-pointer disabled:cursor-not-allowed"
                 >
-                  <CameraIcon className="h-8 w-8 text-white" />
+                  <CameraIcon className="h-6 w-6 text-white" />
                 </button>
                 <input
                   ref={fileInputRef}
@@ -164,9 +157,9 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
                 />
               </div>
 
-              <div className="flex-1 space-y-4">
+              <div className="flex-1 space-y-3">
                 <div>
-                  <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                     {t('account.title')}
                   </h2>
                   <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -175,11 +168,11 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
                 </div>
 
                 {profile?.full_name && (
-                  <div className="p-4 rounded-xl bg-gradient-to-br from-slate-50 to-violet-50/50 dark:from-slate-800 dark:to-violet-900/20 border border-violet-100 dark:border-violet-900/30">
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">
+                  <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
                       {t('account.displayName')}
                     </p>
-                    <p className="text-lg font-semibold text-slate-900 dark:text-white">
+                    <p className="text-base font-medium text-slate-900 dark:text-white">
                       {profile.full_name}
                     </p>
                   </div>
@@ -201,17 +194,14 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
         </Card>
 
         {/* Privacy Settings Card */}
-        <Card className="p-6 sm:p-8 border-2 border-purple-100 dark:border-purple-900/50 bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 dark:from-slate-900 dark:via-purple-950/20 dark:to-pink-950/20 shadow-xl shadow-purple-500/5 relative overflow-hidden">
-          {/* Background decoration */}
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-purple-500/10 to-pink-500/10 rounded-full blur-3xl -z-10" />
-
+        <Card className="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="space-y-6">
-            <div className="flex items-start gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/25">
-                <ShieldCheckIcon className="h-7 w-7 text-white" />
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-violet-600 flex items-center justify-center">
+                <ShieldCheckIcon className="h-5 w-5 text-white" />
               </div>
-              <div className="flex-1">
-                <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-1">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                   {t('privacy.title')}
                 </h2>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -221,18 +211,18 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
             </div>
 
             {/* Privacy Toggle */}
-            <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-white to-purple-50/50 dark:from-slate-800 dark:to-purple-900/20 border-2 border-purple-100 dark:border-purple-900/30 hover:border-purple-200 dark:hover:border-purple-800/50 transition-all duration-200">
+            <div className="p-4 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
                 <div className="flex items-start gap-4 flex-1">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
                     searchable
-                      ? 'bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg shadow-green-500/25'
-                      : 'bg-gradient-to-br from-slate-400 to-slate-500 shadow-lg shadow-slate-500/25'
+                      ? 'bg-green-500'
+                      : 'bg-slate-400'
                   }`}>
                     {searchable ? (
-                      <EyeIcon className="h-6 w-6 text-white" />
+                      <EyeIcon className="h-5 w-5 text-white" />
                     ) : (
-                      <EyeSlashIcon className="h-6 w-6 text-white" />
+                      <EyeSlashIcon className="h-5 w-5 text-white" />
                     )}
                   </div>
                   <div className="flex-1 space-y-2">
@@ -268,20 +258,10 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
             </div>
 
             {/* Privacy Tips */}
-            <div className="p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border border-blue-200 dark:border-blue-900/30">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
-                  <SparklesIcon className="h-4 w-4 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-1">
-                    隐私提示
-                  </p>
-                  <p className="text-xs text-blue-700 dark:text-blue-400">
-                    关闭搜索功能后，其他用户将无法在好友搜索中找到您，但您已经添加的好友仍然可以看到您。
-                  </p>
-                </div>
-              </div>
+            <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/30">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                💡 关闭搜索功能后，其他用户将无法在好友搜索中找到您，但您已经添加的好友仍然可以看到您。
+              </p>
             </div>
           </div>
         </Card>
