@@ -90,6 +90,8 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
 
     if (result.success) {
       toast.success('头像更新成功');
+      // Trigger custom event to notify AuthButton
+      window.dispatchEvent(new Event('avatar-updated'));
       router.refresh();
     } else {
       toast.error(result.error || '头像上传失败');

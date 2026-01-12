@@ -345,10 +345,13 @@ export async function getCurrentUserProfileAction(): Promise<UserProfile | null>
     return null;
   }
 
+  // Priority order: profile.avatar_url > metadata.avatar_url > undefined
+  const avatarUrl = profile.avatar_url || user.user_metadata?.avatar_url;
+
   return {
     id: profile.id,
     full_name: getDisplayName(profile.email, profile.full_name),
-    avatar_url: profile.avatar_url,
+    avatar_url: avatarUrl,
     searchable: profile.searchable,
   };
 }

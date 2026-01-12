@@ -14,34 +14,54 @@ export function AuthButton() {
   useEffect(() => {
     const supabase = createClient();
 
+    // Helper function to fetch user data with proper priority
+    const fetchUserData = async (session: any) => {
+      if (!session?.user) {
+        setUser(null);
+        return;
+      }
+
+      // Fetch profile data (highest priority for avatar)
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('avatar_url, full_name')
+        .eq('id', session.user.id)
+        .single();
+
+      // Priority order: profile.avatar_url > metadata.avatar_url > undefined
+      const avatarUrl = profile?.avatar_url || session.user.user_metadata?.avatar_url;
+      const fullName = profile?.full_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name;
+
+      setUser({
+        email: session.user.email,
+        avatar_url: avatarUrl,
+        full_name: fullName,
+      });
+    };
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setUser({
-          email: session.user.email,
-          avatar_url: session.user.user_metadata?.avatar_url,
-          full_name: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
-        });
-      } else {
-        setUser(null);
-      }
+      fetchUserData(session);
       setLoading(false);
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUser({
-          email: session.user.email,
-          avatar_url: session.user.user_metadata?.avatar_url,
-          full_name: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
-        });
-      } else {
-        setUser(null);
-      }
+      fetchUserData(session);
     });
 
-    return () => subscription.unsubscribe();
+    // Listen for custom avatar update events
+    const handleAvatarUpdate = () => {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        fetchUserData(session);
+      });
+    };
+    window.addEventListener('avatar-updated', handleAvatarUpdate);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener('avatar-updated', handleAvatarUpdate);
+    };
   }, []);
 
   if (loading) {

@@ -23,14 +23,20 @@
 
 ### 4. 自动同步更新
 - **设置页面**: 上传后立即显示新头像（通过 router.refresh()）
-- **右上角菜单**: 自动同步更新 UserMenu 中的头像（通过更新 auth.user_metadata）
+- **右上角菜单**: 自动同步更新 UserMenu 中的头像（通过自定义事件 + profiles 查询）
 - **好友列表**: 好友看到的你的头像也会更新（profiles 表更新）
+
+**头像显示优先级**（所有位置统一）:
+1. `profiles.avatar_url`（最高优先级，用户上传的头像）
+2. `auth.user_metadata.avatar_url`（备用，OAuth 登录的头像）
+3. 字母头像（默认，无任何头像时）
 
 **同步机制**:
 1. 更新 `profiles` 表的 `avatar_url` 字段
-2. 更新 Supabase Auth 的 `user_metadata.avatar_url`
-3. 触发 AuthButton 的 `onAuthStateChange` 监听器
-4. UserMenu 组件自动重新渲染新头像
+2. 更新 Supabase Auth 的 `user_metadata.avatar_url`（触发 onAuthStateChange）
+3. 触发 `avatar-updated` 自定义事件
+4. AuthButton 监听事件并重新查询 profiles 表
+5. UserMenu 组件自动重新渲染新头像
 
 ## 使用流程
 
