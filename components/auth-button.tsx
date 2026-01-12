@@ -64,14 +64,20 @@ export function AuthButton() {
     };
   }, []);
 
-  if (loading) {
-    return <div className="h-9 w-16" />;
-  }
-
   const appsHref = user ? "/apps" : "/auth/login";
 
+  // Skeleton loading state - prevents layout shift
+  if (loading) {
+    return (
+      <div className="flex items-center gap-1.5">
+        <div className="h-9 px-3 rounded-xl bg-accent/50 animate-pulse w-24" />
+        <div className="h-9 w-9 rounded-full bg-accent/50 animate-pulse" />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1.5 animate-in fade-in duration-300">
       <Button
         asChild
         variant="ghost"
