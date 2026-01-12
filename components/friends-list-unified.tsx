@@ -160,7 +160,9 @@ export function UnifiedFriendsList({ friends, receivedRequests, sentRequests }: 
   };
 
   const getDisplayUser = (item: FriendItem) => {
-    return item.itemType === 'sent' ? item.friend : item.user;
+    // For received requests: show the sender (user)
+    // For friends and sent requests: show the other person (friend)
+    return item.itemType === 'received' ? item.user : item.friend;
   };
 
   if (allItems.length === 0) {
