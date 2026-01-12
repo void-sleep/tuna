@@ -101,7 +101,7 @@ export async function answerQuestionAction(params: {
   return { success: true };
 }
 
-export async function getMyQuestionsAction(): Promise<{
+export async function getMyQuestionsAction(applicationId?: string): Promise<{
   sent: AgreeQuestionWithUsers[];
   received: AgreeQuestionWithUsers[];
 }> {
@@ -112,19 +112,29 @@ export async function getMyQuestionsAction(): Promise<{
     return { sent: [], received: [] };
   }
 
-  // Get sent questions
-  const { data: sent } = await supabase
+  // Build query for sent questions
+  let sentQuery = supabase
     .from('agree_questions')
     .select('*')
-    .eq('from_user_id', user.id)
-    .order('created_at', { ascending: false });
+    .eq('from_user_id', user.id);
 
-  // Get received questions
-  const { data: received } = await supabase
+  if (applicationId) {
+    sentQuery = sentQuery.eq('application_id', applicationId);
+  }
+
+  const { data: sent } = await sentQuery.order('created_at', { ascending: false });
+
+  // Build query for received questions
+  let receivedQuery = supabase
     .from('agree_questions')
     .select('*')
-    .eq('to_user_id', user.id)
-    .order('created_at', { ascending: false });
+    .eq('to_user_id', user.id);
+
+  if (applicationId) {
+    receivedQuery = receivedQuery.eq('application_id', applicationId);
+  }
+
+  const { data: received } = await receivedQuery.order('created_at', { ascending: false });
 
   // Get all unique user IDs
   const userIds = new Set<string>();

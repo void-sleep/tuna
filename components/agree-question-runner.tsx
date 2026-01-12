@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ export function AgreeQuestionRunner({
   defaultOptions = ['同意', '不同意']
 }: AgreeQuestionRunnerProps) {
   const t = useTranslations('agreeQuestion.run');
+  const router = useRouter();
   const [friends, setFriends] = useState<FriendWithUser[]>([]);
   const [selectedFriendId, setSelectedFriendId] = useState<string>('');
   const [questionText, setQuestionText] = useState(defaultQuestion);
@@ -105,15 +107,15 @@ export function AgreeQuestionRunner({
 
     if (result.success) {
       setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
       toast.success(t('success'));
-      setQuestionText(defaultQuestion);
-      setOptions(defaultOptions);
-      setSelectedFriendId('');
+      // Redirect to apps page after 1.5 seconds
+      setTimeout(() => {
+        router.push('/apps');
+      }, 1500);
     } else {
       toast.error(result.error || t('errors.sendFailed'));
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const selectedFriend = friends.find(f => f.friend.id === selectedFriendId)?.friend;

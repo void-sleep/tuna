@@ -15,12 +15,14 @@ interface QuestionsPageClientProps {
   sentQuestions: AgreeQuestionWithUsers[];
   receivedQuestions: AgreeQuestionWithUsers[];
   friends: FriendWithUser[];
+  applicationTitle?: string;
 }
 
 export function QuestionsPageClient({
   sentQuestions: initialSent,
   receivedQuestions: initialReceived,
   friends,
+  applicationTitle,
 }: QuestionsPageClientProps) {
   const t = useTranslations('questions');
   const router = useRouter();
@@ -53,7 +55,9 @@ export function QuestionsPageClient({
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('title')}</h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-1">{t('myQuestions')}</p>
+          <p className="text-slate-600 dark:text-slate-400 mt-1">
+            {applicationTitle ? `${applicationTitle} 的提问` : t('myQuestions')}
+          </p>
         </div>
         <Button onClick={() => setCreateDialogOpen(true)} className="gap-2">
           <PlusIcon className="h-4 w-4" />

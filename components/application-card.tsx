@@ -259,7 +259,7 @@ export function ApplicationCard({ application, index = 0 }: ApplicationCardProps
                 </DropdownMenuItem>
                 {application.type === 'agree_question' && (
                   <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
-                    <Link href={`/apps/applications/${application.id}/questions`}>
+                    <Link href={`/apps/questions?app=${application.id}`}>
                       <ClipboardDocumentListIcon className="h-4 w-4 mr-2" />
                       查看记录
                     </Link>
