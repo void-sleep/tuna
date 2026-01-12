@@ -443,5 +443,17 @@ export async function uploadAvatarAction(formData: FormData): Promise<{ success:
     return { success: false, error: `更新头像失败: ${updateError.message}` };
   }
 
+  // Update user metadata so auth session reflects the new avatar
+  // This triggers onAuthStateChange in client components like AuthButton
+  const { error: metadataError } = await supabase.auth.updateUser({
+    data: { avatar_url: publicUrl }
+  });
+
+  if (metadataError) {
+    console.error('Error updating user metadata:', metadataError);
+    // Don't fail the request since profile is already updated
+    // The avatar will still show in Settings page, just not immediately in UserMenu
+  }
+
   return { success: true, avatarUrl: publicUrl };
 }

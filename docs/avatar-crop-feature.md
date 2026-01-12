@@ -22,9 +22,15 @@
 - **操作指引**: 清晰的文字提示
 
 ### 4. 自动同步更新
-- **设置页面**: 上传后立即显示新头像
-- **右上角菜单**: 自动同步更新 UserMenu 中的头像
-- **好友列表**: 好友看到的你的头像也会更新
+- **设置页面**: 上传后立即显示新头像（通过 router.refresh()）
+- **右上角菜单**: 自动同步更新 UserMenu 中的头像（通过更新 auth.user_metadata）
+- **好友列表**: 好友看到的你的头像也会更新（profiles 表更新）
+
+**同步机制**:
+1. 更新 `profiles` 表的 `avatar_url` 字段
+2. 更新 Supabase Auth 的 `user_metadata.avatar_url`
+3. 触发 AuthButton 的 `onAuthStateChange` 监听器
+4. UserMenu 组件自动重新渲染新头像
 
 ## 使用流程
 
@@ -90,7 +96,11 @@ uploadAvatarAction (上传到 Supabase)
   ↓
   更新 profiles 表
   ↓
-router.refresh() (刷新页面数据)
+  更新 auth.user_metadata
+  ↓
+  触发 onAuthStateChange
+  ↓
+router.refresh() (刷新服务端组件数据)
 ```
 
 ### 存储结构
@@ -145,3 +155,9 @@ WHERE id = {user_id};
 - 尝试调整缩放级别
 - 重新拖动图片位置
 - 关闭对话框重新选择图片
+
+### 右上角头像不更新
+- 检查 `uploadAvatarAction` 是否更新了 `auth.user_metadata`
+- 确认 AuthButton 的 `onAuthStateChange` 监听器正常工作
+- 查看浏览器 Console 是否有 metadata 更新错误
+- 刷新页面强制重新获取 auth session
