@@ -1,20 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { PaperAirplaneIcon, PlusIcon, XMarkIcon, UserGroupIcon, CheckCircleIcon, ChatBubbleLeftIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { PaperAirplaneIcon, PlusIcon, XMarkIcon, UserGroupIcon, CheckCircleIcon, ChatBubbleLeftIcon, SparklesIcon, MagnifyingGlassIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { toast } from 'sonner';
 import { getFriendsAction } from '@/app/actions/friends';
 import { createAgreeQuestionAction } from '@/app/actions/agree-questions';
@@ -38,15 +31,33 @@ export function AgreeQuestionRunner({
   const [options, setOptions] = useState<string[]>(defaultOptions);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadFriends();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const loadFriends = async () => {
     const friendsList = await getFriendsAction();
     setFriends(friendsList);
   };
+
+  const filteredFriends = friends.filter(f =>
+    f.friend.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleAddOption = () => {
     if (options.length < 5) {
@@ -147,45 +158,99 @@ export function AgreeQuestionRunner({
 
           <div className="relative p-8 space-y-6">
             {/* Select Friend Section */}
-            <div className="space-y-3">
+            <div className="space-y-3" ref={dropdownRef}>
               <Label htmlFor="friend" className="text-base font-semibold text-white flex items-center gap-2">
                 <UserGroupIcon className="h-5 w-5 text-indigo-300" />
                 {t('sendQuestion.selectFriend')}
               </Label>
-              <Select value={selectedFriendId} onValueChange={setSelectedFriendId}>
-                <SelectTrigger
-                  id="friend"
-                  className="h-14 rounded-xl bg-white/5 border-2 border-indigo-400/50 text-white backdrop-blur-sm hover:bg-white/10 hover:border-indigo-400/70 transition-all shadow-lg shadow-indigo-500/10"
+
+              <div className="relative">
+                {/* Trigger Button */}
+                <button
+                  type="button"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="w-full h-16 rounded-xl bg-white/10 border-2 border-indigo-400/60 text-white backdrop-blur-sm hover:bg-white/15 hover:border-indigo-400/80 transition-all shadow-lg shadow-indigo-500/20 px-4 flex items-center justify-between"
                 >
-                  <SelectValue placeholder={t('sendQuestion.selectFriendPlaceholder')} className="text-indigo-200" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-2 border-indigo-200 dark:border-indigo-800 shadow-2xl">
-                  {friends.length === 0 ? (
-                    <div className="p-6 text-center">
-                      <div className="text-4xl mb-2">👥</div>
-                      <p className="text-sm text-muted-foreground">暂无好友，请先添加好友</p>
+                  {selectedFriendId ? (
+                    <div className="flex items-center gap-3">
+                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-base font-bold shadow-md">
+                        {friends.find(f => f.friend.id === selectedFriendId)?.friend.full_name.charAt(0).toUpperCase()}
+                      </div>
+                      <span className="font-medium text-lg">
+                        {friends.find(f => f.friend.id === selectedFriendId)?.friend.full_name}
+                      </span>
                     </div>
                   ) : (
-                    friends.map((friendship) => {
-                      const friend = friendship.friend;
-                      return (
-                        <SelectItem
-                          key={friend.id}
-                          value={friend.id}
-                          className="rounded-lg py-3 px-3 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-950/50 focus:bg-indigo-100 dark:focus:bg-indigo-900/50"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-base font-bold shadow-md">
-                              {friend.full_name.charAt(0).toUpperCase()}
-                            </div>
-                            <span className="font-medium">{friend.full_name}</span>
-                          </div>
-                        </SelectItem>
-                      );
-                    })
+                    <span className="text-indigo-300/70">{t('sendQuestion.selectFriendPlaceholder')}</span>
                   )}
-                </SelectContent>
-              </Select>
+                  <ChevronDownIcon className={`h-5 w-5 text-indigo-300 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* Dropdown */}
+                {isDropdownOpen && (
+                  <div className="absolute z-50 w-full mt-2 rounded-xl border-2 border-indigo-300 dark:border-indigo-700 bg-white dark:bg-slate-900 shadow-2xl overflow-hidden">
+                    {/* Search Input */}
+                    <div className="p-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                      <div className="relative">
+                        <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                        <Input
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          placeholder="搜索好友..."
+                          className="pl-10 h-11 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600"
+                          autoFocus
+                        />
+                      </div>
+                    </div>
+
+                    {/* Friends List */}
+                    <div className="max-h-80 overflow-y-auto">
+                      {friends.length === 0 ? (
+                        <div className="p-8 text-center">
+                          <div className="text-4xl mb-3">👥</div>
+                          <p className="text-sm text-slate-500 dark:text-slate-400">暂无好友，请先添加好友</p>
+                        </div>
+                      ) : filteredFriends.length === 0 ? (
+                        <div className="p-8 text-center">
+                          <div className="text-4xl mb-3">🔍</div>
+                          <p className="text-sm text-slate-500 dark:text-slate-400">未找到匹配的好友</p>
+                        </div>
+                      ) : (
+                        filteredFriends.map((friendship) => {
+                          const friend = friendship.friend;
+                          const isSelected = selectedFriendId === friend.id;
+                          return (
+                            <button
+                              key={friend.id}
+                              type="button"
+                              onClick={() => {
+                                setSelectedFriendId(friend.id);
+                                setIsDropdownOpen(false);
+                                setSearchQuery('');
+                              }}
+                              className={`w-full py-3.5 px-4 flex items-center gap-3 transition-colors ${
+                                isSelected
+                                  ? 'bg-indigo-100 dark:bg-indigo-900/50'
+                                  : 'hover:bg-slate-100 dark:hover:bg-slate-800'
+                              }`}
+                            >
+                              <div className="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-base font-bold shadow-md">
+                                {friend.full_name.charAt(0).toUpperCase()}
+                              </div>
+                              <span className="font-medium text-slate-900 dark:text-white text-left flex-1">
+                                {friend.full_name}
+                              </span>
+                              {isSelected && (
+                                <CheckCircleIcon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                              )}
+                            </button>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Question Text Section */}

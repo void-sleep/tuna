@@ -122,10 +122,10 @@ const APP_TYPE_CONFIG: Record<string, {
     borderLight: 'border-indigo-200/80',
     borderDark: 'dark:border-indigo-800/30',
     gradient: 'from-indigo-500 via-purple-500 to-pink-500',
-    buttonBg: 'bg-indigo-600',
-    buttonHover: 'hover:bg-indigo-500',
-    shadow: 'shadow-indigo-500/25',
-    glow: 'bg-indigo-500/20',
+    buttonBg: 'bg-violet-600',
+    buttonHover: 'hover:bg-violet-500',
+    shadow: 'shadow-violet-500/25',
+    glow: 'bg-violet-500/20',
   },
 };
 
