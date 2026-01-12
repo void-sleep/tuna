@@ -8,6 +8,13 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { updateSearchableStatusAction } from '@/app/actions/friends';
 import type { UserProfile } from '@/lib/types/doyouagree';
+import {
+  UserIcon,
+  ShieldCheckIcon,
+  EyeIcon,
+  EyeSlashIcon,
+  SparklesIcon
+} from '@heroicons/react/24/outline';
 
 interface SettingsPageClientProps {
   profile: UserProfile | null;
@@ -35,56 +42,152 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
   };
 
   return (
-    <div className="container max-w-2xl py-8 space-y-8">
-      {/* Header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('title')}</h1>
-        <p className="text-slate-600 dark:text-slate-400">
-          {t('subtitle')}
-        </p>
-      </div>
-
-      {/* Privacy Settings */}
-      <Card className="p-6 space-y-6">
-        <div>
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-            {t('privacy.title')}
-          </h2>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex-1 space-y-1">
-                <Label htmlFor="searchable" className="text-base font-medium">
-                  {t('privacy.searchable.label')}
-                </Label>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  {t('privacy.searchable.description')}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/30 to-purple-50/30 dark:from-slate-950 dark:via-violet-950/10 dark:to-purple-950/10">
+      <div className="container max-w-4xl py-12 space-y-8">
+        {/* Header with Icon */}
+        <div className="relative">
+          <div className="absolute -top-4 -left-4 w-24 h-24 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-full blur-3xl" />
+          <div className="relative space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/25">
+                <SparklesIcon className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 bg-clip-text text-transparent">
+                  {t('title')}
+                </h1>
+                <p className="text-slate-600 dark:text-slate-400 mt-1">
+                  {t('subtitle')}
                 </p>
               </div>
-              <Switch
-                id="searchable"
-                checked={searchable}
-                onCheckedChange={handleSearchableChange}
-                disabled={loading}
-              />
             </div>
           </div>
         </div>
-      </Card>
 
-      {/* Account Info */}
-      <Card className="p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-          {t('account.title')}
-        </h2>
-        <div className="space-y-3">
-          {profile?.full_name && (
-            <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{t('account.displayName')}</p>
-              <p className="font-medium">{profile.full_name}</p>
+        {/* Account Info Card */}
+        <Card className="p-8 border-2 border-violet-100 dark:border-violet-900/50 bg-gradient-to-br from-white via-violet-50/30 to-purple-50/30 dark:from-slate-900 dark:via-violet-950/20 dark:to-purple-950/20 shadow-xl shadow-violet-500/5 relative overflow-hidden">
+          {/* Background decoration */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-violet-500/10 to-purple-500/10 rounded-full blur-3xl -z-10" />
+
+          <div className="flex items-start gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-violet-500/25">
+              <UserIcon className="h-7 w-7 text-white" />
             </div>
-          )}
-        </div>
-      </Card>
+            <div className="flex-1 space-y-4">
+              <div>
+                <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
+                  {t('account.title')}
+                </h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  您的个人信息和账户详情
+                </p>
+              </div>
+
+              {profile?.full_name && (
+                <div className="p-4 rounded-xl bg-gradient-to-br from-slate-50 to-violet-50/50 dark:from-slate-800 dark:to-violet-900/20 border border-violet-100 dark:border-violet-900/30">
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">
+                    {t('account.displayName')}
+                  </p>
+                  <p className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                    {profile.full_name}
+                    {profile.avatar_url && (
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400">
+                        已验证
+                      </span>
+                    )}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </Card>
+
+        {/* Privacy Settings Card */}
+        <Card className="p-8 border-2 border-purple-100 dark:border-purple-900/50 bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 dark:from-slate-900 dark:via-purple-950/20 dark:to-pink-950/20 shadow-xl shadow-purple-500/5 relative overflow-hidden">
+          {/* Background decoration */}
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-purple-500/10 to-pink-500/10 rounded-full blur-3xl -z-10" />
+
+          <div className="space-y-6">
+            <div className="flex items-start gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/25">
+                <ShieldCheckIcon className="h-7 w-7 text-white" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-1">
+                  {t('privacy.title')}
+                </h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  管理您的隐私设置和可见性选项
+                </p>
+              </div>
+            </div>
+
+            {/* Privacy Toggle */}
+            <div className="p-6 rounded-2xl bg-gradient-to-br from-white to-purple-50/50 dark:from-slate-800 dark:to-purple-900/20 border-2 border-purple-100 dark:border-purple-900/30 hover:border-purple-200 dark:hover:border-purple-800/50 transition-all duration-200">
+              <div className="flex items-center justify-between gap-6">
+                <div className="flex items-start gap-4 flex-1">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
+                    searchable
+                      ? 'bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg shadow-green-500/25'
+                      : 'bg-gradient-to-br from-slate-400 to-slate-500 shadow-lg shadow-slate-500/25'
+                  }`}>
+                    {searchable ? (
+                      <EyeIcon className="h-6 w-6 text-white" />
+                    ) : (
+                      <EyeSlashIcon className="h-6 w-6 text-white" />
+                    )}
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <Label
+                      htmlFor="searchable"
+                      className="text-base font-semibold text-slate-900 dark:text-white cursor-pointer"
+                    >
+                      {t('privacy.searchable.label')}
+                    </Label>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                      {t('privacy.searchable.description')}
+                    </p>
+                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${
+                      searchable
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-400'
+                    }`}>
+                      <div className={`w-2 h-2 rounded-full ${searchable ? 'bg-green-500' : 'bg-slate-400'}`} />
+                      {searchable ? '对所有人可见' : '仅对好友可见'}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex-shrink-0">
+                  <Switch
+                    id="searchable"
+                    checked={searchable}
+                    onCheckedChange={handleSearchableChange}
+                    disabled={loading}
+                    className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-green-500 data-[state=checked]:to-emerald-600"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Privacy Tips */}
+            <div className="p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border border-blue-200 dark:border-blue-900/30">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
+                  <SparklesIcon className="h-4 w-4 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-1">
+                    隐私提示
+                  </p>
+                  <p className="text-xs text-blue-700 dark:text-blue-400">
+                    关闭搜索功能后，其他用户将无法在好友搜索中找到您，但您已经添加的好友仍然可以看到您。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 }
