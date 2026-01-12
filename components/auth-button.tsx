@@ -15,9 +15,12 @@ export function AuthButton() {
     const supabase = createClient();
 
     // Helper function to fetch user data with proper priority
-    const fetchUserData = async (session: any) => {
+    const fetchUserData = async (session: any, shouldSetLoading = false) => {
       if (!session?.user) {
         setUser(null);
+        if (shouldSetLoading) {
+          setLoading(false);
+        }
         return;
       }
 
@@ -37,12 +40,15 @@ export function AuthButton() {
         avatar_url: avatarUrl,
         full_name: fullName,
       });
+
+      if (shouldSetLoading) {
+        setLoading(false);
+      }
     };
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      fetchUserData(session);
-      setLoading(false);
+      fetchUserData(session, true);
     });
 
     // Listen for auth changes
