@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -206,9 +207,14 @@ export function AgreeQuestionRunner({
                     {/* Friends List */}
                     <div className="max-h-80 overflow-y-auto">
                       {friends.length === 0 ? (
-                        <div className="p-8 text-center">
+                        <div className="p-8 text-center space-y-3">
                           <div className="text-4xl mb-3">👥</div>
                           <p className="text-sm text-slate-500 dark:text-slate-400">暂无好友，请先添加好友</p>
+                          <Link href="/apps/friends">
+                            <Button size="sm" className="bg-indigo-600 hover:bg-indigo-500 text-white">
+                              前往好友管理
+                            </Button>
+                          </Link>
                         </div>
                       ) : filteredFriends.length === 0 ? (
                         <div className="p-8 text-center">
