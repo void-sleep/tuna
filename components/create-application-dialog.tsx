@@ -51,19 +51,20 @@ const APP_TYPES = [
     shadow: 'shadow-sky-500/20',
     textColor: 'text-sky-600 dark:text-sky-400',
   },
-  {
-    value: 'agree_question' as ApplicationType,
-    icon: '💭',
-    labelKey: 'agree_question',
-    bgLight: 'bg-indigo-50',
-    bgDark: 'dark:bg-indigo-950/30',
-    borderLight: 'border-indigo-200',
-    borderDark: 'dark:border-indigo-800/50',
-    gradient: 'from-indigo-500 via-purple-500 to-pink-500',
-    selectedBorder: 'border-indigo-500',
-    shadow: 'shadow-indigo-500/20',
-    textColor: 'text-indigo-600 dark:text-indigo-400',
-  },
+  // Temporarily hidden - Do You Agree
+  // {
+  //   value: 'agree_question' as ApplicationType,
+  //   icon: '💭',
+  //   labelKey: 'agree_question',
+  //   bgLight: 'bg-indigo-50',
+  //   bgDark: 'dark:bg-indigo-950/30',
+  //   borderLight: 'border-indigo-200',
+  //   borderDark: 'dark:border-indigo-800/50',
+  //   gradient: 'from-indigo-500 via-purple-500 to-pink-500',
+  //   selectedBorder: 'border-indigo-500',
+  //   shadow: 'shadow-indigo-500/20',
+  //   textColor: 'text-indigo-600 dark:text-indigo-400',
+  // },
 ];
 
 export function CreateApplicationDialog({ children }: CreateApplicationDialogProps) {
