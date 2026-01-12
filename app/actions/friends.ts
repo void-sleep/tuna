@@ -397,22 +397,32 @@ export async function uploadAvatarAction(formData: FormData): Promise<{ success:
     return { success: false, error: '图片大小不能超过2MB' };
   }
 
-  // Generate unique filename
+  // Generate unique filename with user folder structure
   const fileExt = file.name.split('.').pop();
-  const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-  const filePath = `avatars/${fileName}`;
+  const fileName = `${Date.now()}.${fileExt}`;
+  const filePath = `${user.id}/${fileName}`;
+
+  // Delete old avatar files for this user (cleanup)
+  const { data: existingFiles } = await supabase.storage
+    .from('avatars')
+    .list(user.id);
+
+  if (existingFiles && existingFiles.length > 0) {
+    const filesToDelete = existingFiles.map(file => `${user.id}/${file.name}`);
+    await supabase.storage.from('avatars').remove(filesToDelete);
+  }
 
   // Upload to Supabase Storage
   const { error: uploadError } = await supabase.storage
     .from('avatars')
     .upload(filePath, file, {
       cacheControl: '3600',
-      upsert: false
+      upsert: true
     });
 
   if (uploadError) {
     console.error('Error uploading avatar:', uploadError);
-    return { success: false, error: '上传失败，请重试' };
+    return { success: false, error: `上传失败: ${uploadError.message}` };
   }
 
   // Get public URL
@@ -430,7 +440,7 @@ export async function uploadAvatarAction(formData: FormData): Promise<{ success:
     console.error('Error updating profile:', updateError);
     // Try to delete the uploaded file if profile update fails
     await supabase.storage.from('avatars').remove([filePath]);
-    return { success: false, error: '更新头像失败' };
+    return { success: false, error: `更新头像失败: ${updateError.message}` };
   }
 
   return { success: true, avatarUrl: publicUrl };
