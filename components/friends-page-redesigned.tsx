@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import type { FriendWithUser } from '@/lib/types/doyouagree';
 import { UnifiedFriendsList } from '@/components/friends-list-unified';
 import { UserSearchInput } from '@/components/user-search-input';
@@ -11,7 +12,6 @@ import {
   UsersIcon,
   BellAlertIcon,
   PaperAirplaneIcon,
-  SparklesIcon
 } from '@heroicons/react/24/outline';
 
 interface FriendsPageRedesignedProps {
@@ -22,8 +22,13 @@ interface FriendsPageRedesignedProps {
 
 export function FriendsPageRedesigned({ friends, receivedRequests, sentRequests }: FriendsPageRedesignedProps) {
   const t = useTranslations('friends');
+  const router = useRouter();
 
   const totalCount = friends.length + receivedRequests.length + sentRequests.length;
+
+  const handleRequestSent = () => {
+    router.refresh();
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/30 dark:from-slate-950 dark:via-blue-950/10 dark:to-indigo-950/10">
@@ -107,30 +112,13 @@ export function FriendsPageRedesigned({ friends, receivedRequests, sentRequests 
                   搜索新好友
                 </h2>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
-                  通过名称或邮箱查找并添加好友
+                  通过名称或邮箱查找并添加好友。只有开启了可搜索设置的用户才会出现在搜索结果中
                 </p>
               </div>
             </div>
 
             <div className="relative">
-              <UserSearchInput />
-            </div>
-
-            {/* Search Tips */}
-            <div className="p-4 rounded-xl bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/20 dark:to-purple-950/20 border border-violet-200 dark:border-violet-900/30">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-violet-500 flex items-center justify-center flex-shrink-0">
-                  <SparklesIcon className="h-4 w-4 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-violet-900 dark:text-violet-300 mb-1">
-                    搜索提示
-                  </p>
-                  <p className="text-xs text-violet-700 dark:text-violet-400">
-                    输入好友的完整名称或邮箱地址即可搜索。只有开启了可搜索设置的用户才会出现在搜索结果中。
-                  </p>
-                </div>
-              </div>
+              <UserSearchInput onRequestSent={handleRequestSent} />
             </div>
           </div>
         </Card>
