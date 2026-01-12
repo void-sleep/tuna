@@ -11,7 +11,6 @@ import {
   MagnifyingGlassIcon,
   UsersIcon,
   BellAlertIcon,
-  PaperAirplaneIcon,
 } from '@heroicons/react/24/outline';
 
 interface FriendsPageRedesignedProps {
