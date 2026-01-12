@@ -43,12 +43,12 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/30 to-purple-50/30 dark:from-slate-950 dark:via-violet-950/10 dark:to-purple-950/10">
-      <div className="container max-w-4xl py-12 space-y-8">
+      <div className="container max-w-4xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6 sm:space-y-8">
         {/* Header with Icon */}
-        <div className="relative">
+        <div className="relative px-2">
           <div className="absolute -top-4 -left-4 w-24 h-24 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-full blur-3xl" />
           <div className="relative space-y-3">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 sm:gap-4">
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/25">
                 <SparklesIcon className="h-6 w-6 text-white" />
               </div>
@@ -65,7 +65,7 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
         </div>
 
         {/* Account Info Card */}
-        <Card className="p-8 border-2 border-violet-100 dark:border-violet-900/50 bg-gradient-to-br from-white via-violet-50/30 to-purple-50/30 dark:from-slate-900 dark:via-violet-950/20 dark:to-purple-950/20 shadow-xl shadow-violet-500/5 relative overflow-hidden">
+        <Card className="p-6 sm:p-8 border-2 border-violet-100 dark:border-violet-900/50 bg-gradient-to-br from-white via-violet-50/30 to-purple-50/30 dark:from-slate-900 dark:via-violet-950/20 dark:to-purple-950/20 shadow-xl shadow-violet-500/5 relative overflow-hidden">
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-violet-500/10 to-purple-500/10 rounded-full blur-3xl -z-10" />
 
@@ -103,7 +103,7 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
         </Card>
 
         {/* Privacy Settings Card */}
-        <Card className="p-8 border-2 border-purple-100 dark:border-purple-900/50 bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 dark:from-slate-900 dark:via-purple-950/20 dark:to-pink-950/20 shadow-xl shadow-purple-500/5 relative overflow-hidden">
+        <Card className="p-6 sm:p-8 border-2 border-purple-100 dark:border-purple-900/50 bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 dark:from-slate-900 dark:via-purple-950/20 dark:to-pink-950/20 shadow-xl shadow-purple-500/5 relative overflow-hidden">
           {/* Background decoration */}
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-purple-500/10 to-pink-500/10 rounded-full blur-3xl -z-10" />
 
@@ -123,8 +123,8 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
             </div>
 
             {/* Privacy Toggle */}
-            <div className="p-6 rounded-2xl bg-gradient-to-br from-white to-purple-50/50 dark:from-slate-800 dark:to-purple-900/20 border-2 border-purple-100 dark:border-purple-900/30 hover:border-purple-200 dark:hover:border-purple-800/50 transition-all duration-200">
-              <div className="flex items-center justify-between gap-6">
+            <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-white to-purple-50/50 dark:from-slate-800 dark:to-purple-900/20 border-2 border-purple-100 dark:border-purple-900/30 hover:border-purple-200 dark:hover:border-purple-800/50 transition-all duration-200">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
                 <div className="flex items-start gap-4 flex-1">
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
                     searchable
