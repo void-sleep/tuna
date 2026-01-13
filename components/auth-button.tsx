@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Squares2X2Icon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import type { Session } from "@supabase/supabase-js";
 
 export function AuthButton() {
   const t = useTranslations('auth.button');
@@ -14,44 +15,76 @@ export function AuthButton() {
   useEffect(() => {
     const supabase = createClient();
 
+    // Helper function to fetch user data with proper priority
+    const fetchUserData = async (session: Session | null, shouldSetLoading = false) => {
+      if (!session?.user) {
+        setUser(null);
+        if (shouldSetLoading) {
+          setLoading(false);
+        }
+        return;
+      }
+
+      // Fetch profile data (highest priority for avatar)
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('avatar_url, full_name')
+        .eq('id', session.user.id)
+        .single();
+
+      // Priority order: profile.avatar_url > metadata.avatar_url > undefined
+      const avatarUrl = profile?.avatar_url || session.user.user_metadata?.avatar_url;
+      const fullName = profile?.full_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name;
+
+      setUser({
+        email: session.user.email,
+        avatar_url: avatarUrl,
+        full_name: fullName,
+      });
+
+      if (shouldSetLoading) {
+        setLoading(false);
+      }
+    };
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setUser({
-          email: session.user.email,
-          avatar_url: session.user.user_metadata?.avatar_url,
-          full_name: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
-        });
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
+      fetchUserData(session, true);
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUser({
-          email: session.user.email,
-          avatar_url: session.user.user_metadata?.avatar_url,
-          full_name: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
-        });
-      } else {
-        setUser(null);
-      }
+      fetchUserData(session);
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
+    // Listen for custom avatar update events
+    const handleAvatarUpdate = () => {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        fetchUserData(session);
+      });
+    };
+    window.addEventListener('avatar-updated', handleAvatarUpdate);
 
-  if (loading) {
-    return <div className="h-9 w-16" />;
-  }
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener('avatar-updated', handleAvatarUpdate);
+    };
+  }, []);
 
   const appsHref = user ? "/apps" : "/auth/login";
 
+  // Skeleton loading state - prevents layout shift
+  if (loading) {
+    return (
+      <div className="flex items-center gap-1.5">
+        <div className="h-9 px-3 rounded-xl bg-accent/50 animate-pulse w-24" />
+        <div className="h-9 w-9 rounded-full bg-accent/50 animate-pulse" />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1.5 animate-in fade-in duration-300">
       <Button
         asChild
         variant="ghost"

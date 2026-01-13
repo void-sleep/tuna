@@ -6,27 +6,33 @@ import { UseCases } from "@/components/use-cases";
 import { Stats } from "@/components/stats";
 import { CTASection } from "@/components/cta-section";
 import { Footer } from "@/components/footer";
+import { getLocale, getTranslations } from "next-intl/server";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.voidsleep.com";
 
-export const metadata: Metadata = {
-  title: "Tuna - When in doubt, ask Zhuang Zhou",
-  description: "Use AI, big data, and cloud computing to solve 'How to choose Y under X conditions' problems. A modern AI-powered decision-making application.",
-  alternates: {
-    canonical: baseUrl,
-    languages: {
-      "en": baseUrl,
-      "zh-CN": `${baseUrl}/zh`,
-      "x-default": baseUrl,
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = await getTranslations({ locale, namespace: 'meta' });
+
+  return {
+    title: t('title'),
+    description: t('description'),
+    alternates: {
+      canonical: baseUrl,
+      languages: {
+        "en": baseUrl,
+        "zh-CN": `${baseUrl}/zh`,
+        "x-default": baseUrl,
+      },
     },
-  },
-  openGraph: {
-    title: "Tuna - When in doubt, ask Zhuang Zhou",
-    description: "Use AI, big data, and cloud computing to solve 'How to choose Y under X conditions' problems.",
-    locale: "en_US",
-    alternateLocale: ["zh_CN"],
-  },
-};
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      locale: locale === 'zh-CN' ? 'zh_CN' : 'en_US',
+      alternateLocale: locale === 'zh-CN' ? ['en_US'] : ['zh_CN'],
+    },
+  };
+}
 
 export default function Home() {
   return (

@@ -28,6 +28,7 @@ import {
   EllipsisHorizontalIcon,
   PencilSquareIcon,
   TrashIcon,
+  ClipboardDocumentListIcon,
 } from "@heroicons/react/24/outline";
 
 interface ApplicationCardProps {
@@ -106,6 +107,21 @@ const APP_TYPE_CONFIG: Record<string, {
     borderLight: 'border-sky-200/80',
     borderDark: 'dark:border-sky-800/30',
     gradient: 'from-sky-500 via-blue-500 to-indigo-500',
+    buttonBg: 'bg-violet-600',
+    buttonHover: 'hover:bg-violet-500',
+    shadow: 'shadow-violet-500/25',
+    glow: 'bg-violet-500/20',
+  },
+  agree_question: {
+    icon: '💭',
+    label: 'Do You Agree',
+    bgLight: 'bg-indigo-50',
+    bgDark: 'dark:bg-indigo-950/30',
+    accentLight: 'bg-indigo-100',
+    accentDark: 'dark:bg-indigo-900/40',
+    borderLight: 'border-indigo-200/80',
+    borderDark: 'dark:border-indigo-800/30',
+    gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     buttonBg: 'bg-violet-600',
     buttonHover: 'hover:bg-violet-500',
     shadow: 'shadow-violet-500/25',
@@ -241,6 +257,14 @@ export function ApplicationCard({ application, index = 0 }: ApplicationCardProps
                     {t('actions.edit')}
                   </Link>
                 </DropdownMenuItem>
+                {application.type === 'agree_question' && (
+                  <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
+                    <Link href={`/apps/questions?app=${application.id}`}>
+                      <ClipboardDocumentListIcon className="h-4 w-4 mr-2" />
+                      {t('actions.viewRecords')}
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem
                   className="text-red-600 focus:text-red-600 dark:text-red-400 rounded-lg cursor-pointer"
                   onClick={() => setIsDeleteDialogOpen(true)}

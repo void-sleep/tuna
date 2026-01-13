@@ -68,9 +68,66 @@ DROP FUNCTION IF EXISTS sync_user_id_from_application() CASCADE;
 DROP FUNCTION IF EXISTS sync_owner_id_from_application() CASCADE;
 
 -- =============================================================================
+-- DoYouAgree Application - Cleanup
+-- =============================================================================
+
+-- 删除 RLS 策略
+-- profiles 表的策略
+DROP POLICY IF EXISTS profiles_select ON profiles;
+DROP POLICY IF EXISTS profiles_select_public ON profiles;
+DROP POLICY IF EXISTS profiles_select_own ON profiles;
+DROP POLICY IF EXISTS profiles_select_friends ON profiles;
+DROP POLICY IF EXISTS profiles_update_own ON profiles;
+DROP POLICY IF EXISTS profiles_insert_own ON profiles;
+
+-- friends 表的策略
+DROP POLICY IF EXISTS friends_select ON friends;
+DROP POLICY IF EXISTS friends_insert ON friends;
+DROP POLICY IF EXISTS friends_update ON friends;
+DROP POLICY IF EXISTS friends_delete ON friends;
+
+-- agree_questions 表的策略
+DROP POLICY IF EXISTS agree_questions_select ON agree_questions;
+DROP POLICY IF EXISTS agree_questions_insert ON agree_questions;
+DROP POLICY IF EXISTS agree_questions_update ON agree_questions;
+DROP POLICY IF EXISTS agree_questions_delete ON agree_questions;
+
+-- notifications 表的策略
+DROP POLICY IF EXISTS notifications_select ON notifications;
+DROP POLICY IF EXISTS notifications_update ON notifications;
+DROP POLICY IF EXISTS notifications_delete ON notifications;
+
+-- 删除触发器
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+DROP TRIGGER IF EXISTS profiles_updated_at ON profiles;
+DROP TRIGGER IF EXISTS friends_updated_at ON friends;
+
+-- 删除索引
+DROP INDEX IF EXISTS idx_profiles_email;
+DROP INDEX IF EXISTS idx_profiles_searchable_email;
+DROP INDEX IF EXISTS idx_friends_user_id;
+DROP INDEX IF EXISTS idx_friends_friend_id;
+DROP INDEX IF EXISTS idx_friends_status;
+DROP INDEX IF EXISTS idx_agree_questions_from_user;
+DROP INDEX IF EXISTS idx_agree_questions_to_user;
+DROP INDEX IF EXISTS idx_agree_questions_status;
+DROP INDEX IF EXISTS idx_agree_questions_app_id;
+DROP INDEX IF EXISTS idx_notifications_user_id;
+
+-- 删除表（CASCADE 会自动删除依赖的对象）
+DROP TABLE IF EXISTS notifications CASCADE;
+DROP TABLE IF EXISTS agree_questions CASCADE;
+DROP TABLE IF EXISTS friends CASCADE;
+DROP TABLE IF EXISTS profiles CASCADE;
+
+-- 删除函数
+DROP FUNCTION IF EXISTS handle_new_user() CASCADE;
+DROP FUNCTION IF EXISTS accept_friend_request_tx(UUID) CASCADE;
+
+-- =============================================================================
 -- Cleanup Complete
 -- =============================================================================
 --
--- 现在可以执行 00_initial_schema.sql 来重新初始化数据库
+-- 现在可以执行所有迁移文件来重新初始化数据库
 --
 -- =============================================================================

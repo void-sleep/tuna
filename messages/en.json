@@ -1,12 +1,15 @@
 {
   "common": {
-    "language": "Language"
+    "language": "Language",
+    "appName": "Tuna"
   },
   "nav": {
     "home": "Home",
     "apps": "My Apps",
     "profile": "Profile",
-    "settings": "Settings"
+    "settings": "Settings",
+    "features": "Features",
+    "pricing": "Pricing"
   },
   "hero": {
     "badge": "AI-powered Decision Assistant",
@@ -207,13 +210,61 @@
     },
     "userMenu": {
       "apps": "My Apps",
-      "logout": "Logout"
+      "logout": "Logout",
+      "friends": "Friends",
+      "questions": "Friend Q&A",
+      "settings": "Settings"
     },
     "errors": {
       "passwordMismatch": "Passwords do not match",
       "generic": "An error occurred",
       "invalidEmail": "Invalid email address"
     }
+  },
+  "friends": {
+    "title": "Friends",
+    "myFriends": "My Friends",
+    "received": "Received",
+    "sent": "Sent",
+    "search": "Search by name or email...",
+    "addFriend": "Add Friend",
+    "accept": "Accept",
+    "reject": "Reject",
+    "noFriends": "No friends yet",
+    "deleteFriend": "Delete Friend",
+    "confirmDelete": "Are you sure you want to delete this friend?"
+  },
+  "questions": {
+    "title": "Questions",
+    "myQuestions": "My Questions",
+    "received": "Received",
+    "sent": "Sent",
+    "createQuestion": "Create Question",
+    "askFriend": "Ask Friend",
+    "selectFriend": "Select Friend",
+    "questionText": "Question",
+    "questionPlaceholder": "Enter your question...",
+    "options": "Answer Options",
+    "optionPlaceholder": "Option {number}",
+    "addOption": "Add Option",
+    "removeOption": "Remove Option",
+    "send": "Send Question",
+    "sending": "Sending...",
+    "answer": "Answer",
+    "answering": "Answering...",
+    "answered": "Answered",
+    "pending": "Pending",
+    "expired": "Expired",
+    "from": "From",
+    "to": "To",
+    "askedAt": "Asked at",
+    "answeredAt": "Answered at",
+    "noQuestions": "No questions yet",
+    "noReceivedQuestions": "No received questions",
+    "noSentQuestions": "No sent questions",
+    "viewDetail": "View Detail",
+    "yourAnswer": "Your Answer",
+    "theirAnswer": "Their Answer"
   },
   "protected": {
     "title": "Profile",
@@ -235,13 +286,15 @@
       "coin": "Coin Flip",
       "wheel": "Wheel",
       "counter": "Counter",
-      "math_flash": "Math Flash"
+      "math_flash": "Math Flash",
+      "agree_question": "Do You Agree"
     },
     "actions": {
       "view": "View",
       "edit": "Edit",
       "delete": "Delete",
-      "run": "Run"
+      "run": "Run",
+      "viewRecords": "View Records"
     },
     "createDialog": {
       "title": "Create New Application",
@@ -475,5 +528,153 @@
       "edit": "Edit",
       "fullscreen": "Fullscreen"
     }
+  },
+  "agreeQuestion": {
+    "sidebar": {
+      "title": "Pending Questions",
+      "empty": "All done!",
+      "emptyDescription": "No pending questions right now",
+      "close": "Close",
+      "confirm": "Confirm Answer",
+      "submitting": "Submitting...",
+      "answered": "Answered",
+      "viewHistory": "View our complete history →",
+      "justNow": "just now",
+      "minutesAgo": "{count}m ago",
+      "hoursAgo": "{count}h ago",
+      "daysAgo": "{count}d ago"
+    },
+    "timeline": {
+      "title": "Our Questions",
+      "friend": "Friend",
+      "interactions": "interactions",
+      "noInteractions": "No interactions yet",
+      "youAsked": "You asked",
+      "theyAsked": "{name} asked",
+      "answered": "answered",
+      "waitingAnswer": "Waiting for answer",
+      "askQuestion": "Ask {name} a question",
+      "pendingQuestions": "pending",
+      "lastInteraction": "Last: {time}",
+      "neverInteracted": "Never interacted"
+    },
+    "edit": {
+      "title": "Edit Agreement Question",
+      "subtitle": "Configure your question application",
+      "infoTitle": "Agreement Question App",
+      "infoDescription": "Create an application to ask friends questions and let them choose to agree or disagree. You can customize default questions and options.",
+      "defaultQuestion": {
+        "label": "Default Question Template",
+        "description": "Set a default question template that can be modified when used",
+        "placeholder": "e.g., What do you think about this idea?"
+      },
+      "defaultOptions": {
+        "label": "Default Options",
+        "description": "Set default answer options (up to 2 options)",
+        "option": "Option"
+      },
+      "guide": {
+        "title": "Usage Guide",
+        "step1": "Set a default question template for quick questioning",
+        "step2": "Configure default options like 'Agree', 'Disagree', etc.",
+        "step3": "You can modify questions and options anytime when running the app"
+      },
+      "buttons": {
+        "save": "Save Settings",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "backToApps": "Back to Apps",
+        "preview": "Preview"
+      }
+    },
+    "guide": {
+      "backToList": "Back to Questions",
+      "title": "Ask Your Friends",
+      "description": "Send questions to your friends through the Do You Agree app and learn their true thoughts",
+      "steps": {
+        "step": "Step",
+        "create": {
+          "title": "Create App",
+          "description": "Create a Do You Agree app and set up your questions"
+        },
+        "run": {
+          "title": "Run App",
+          "description": "Click the run button, select a friend and send questions"
+        },
+        "wait": {
+          "title": "Wait for Answer",
+          "description": "Your friend will receive a notification and can choose an answer to reply"
+        }
+      },
+      "actions": {
+        "quickCreate": "Quick Create & Start Asking",
+        "creating": "Creating...",
+        "goToApps": "Go to App List to Customize"
+      },
+      "tips": {
+        "title": "💡 Tips",
+        "tip1": "You can create multiple apps, each with different default questions and options",
+        "tip2": "You can customize question content and options when sending",
+        "tip3": "All Q&A records will be saved in the Friend Q&A page"
+      },
+      "toast": {
+        "createSuccess": "App created successfully!",
+        "createError": "Failed to create app, please try again"
+      }
+    },
+    "run": {
+      "sendQuestion": {
+        "title": "Send Question",
+        "selectFriend": "Select Friend",
+        "selectFriendPlaceholder": "Please select a friend to ask",
+        "question": "Question Content",
+        "questionPlaceholder": "Enter your question...",
+        "options": "Answer Options",
+        "option": "Option",
+        "addOption": "Add Option",
+        "send": "Send",
+        "sending": "Sending..."
+      },
+      "history": {
+        "title": "Question History",
+        "sent": "Sent by Me",
+        "received": "Received by Me",
+        "to": "Asked to",
+        "from": "From",
+        "answer": "Answer",
+        "yourAnswer": "Your Answer",
+        "empty": "No questions yet"
+      },
+      "errors": {
+        "noFriend": "Please select a friend to ask",
+        "noQuestion": "Please enter a question",
+        "notEnoughOptions": "At least 2 options required",
+        "sendFailed": "Failed to send, please try again"
+      },
+      "success": "Question sent successfully",
+      "exit": "Exit",
+      "edit": "Edit",
+      "fullscreen": "Fullscreen",
+      "locale": "en-US"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account settings and privacy preferences",
+    "privacy": {
+      "title": "Privacy Settings",
+      "searchable": {
+        "label": "Allow others to find me",
+        "description": "When disabled, other users will not be able to find you in friend search"
+      }
+    },
+    "account": {
+      "title": "Account Information",
+      "displayName": "Display Name"
+    },
+    "success": "Updated successfully",
+    "error": "Update failed",
+    "updateFailed": "Update failed, please try again",
+    "searchableUpdated": "Search settings updated"
   }
 }

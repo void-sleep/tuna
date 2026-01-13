@@ -6,27 +6,33 @@ import { UseCases } from "@/components/use-cases";
 import { Stats } from "@/components/stats";
 import { CTASection } from "@/components/cta-section";
 import { Footer } from "@/components/footer";
+import { getLocale, getTranslations } from "next-intl/server";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.voidsleep.com";
 
-export const metadata: Metadata = {
-  title: "Tuna - 万事不决问庄周",
-  description: "利用 AI、大数据、云计算等技术解决 X 条件下如何选择 Y 的问题。一个现代化的 AI 驱动随机决策应用。",
-  alternates: {
-    canonical: `${baseUrl}/zh`,
-    languages: {
-      "en": baseUrl,
-      "zh-CN": `${baseUrl}/zh`,
-      "x-default": baseUrl,
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = await getTranslations({ locale, namespace: 'meta' });
+
+  return {
+    title: t('title'),
+    description: t('description'),
+    alternates: {
+      canonical: `${baseUrl}/zh`,
+      languages: {
+        "en": baseUrl,
+        "zh-CN": `${baseUrl}/zh`,
+        "x-default": baseUrl,
+      },
     },
-  },
-  openGraph: {
-    title: "Tuna - 万事不决问庄周",
-    description: "利用 AI、大数据、云计算等技术解决 X 条件下如何选择 Y 的问题。",
-    locale: "zh_CN",
-    alternateLocale: ["en_US"],
-  },
-};
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      locale: "zh_CN",
+      alternateLocale: ["en_US"],
+    },
+  };
+}
 
 export default function ZhHomePage() {
   return (

@@ -7,11 +7,14 @@ import { AuthButton } from "./auth-button";
 import { LanguageSwitcher } from "./language-switcher";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
+  const t = useTranslations('nav');
+  const tCommon = useTranslations('common');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,7 +43,7 @@ export function Navbar() {
               <div className="absolute -inset-1 bg-gradient-to-r from-violet-500/20 to-purple-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <Image
                 src="/logo.png"
-                alt="Tuna"
+                alt={tCommon('appName')}
                 width={32}
                 height={32}
                 className="relative h-8 w-8 rounded-lg object-contain transition-transform duration-300 group-hover:scale-110"
@@ -48,15 +51,15 @@ export function Navbar() {
               />
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent group-hover:from-violet-600 group-hover:to-purple-600 transition-all duration-300">
-              Tuna
+              {tCommon('appName')}
             </span>
           </Link>
 
           {/* Center Navigation - Only on home page, hidden on mobile */}
           {isHomePage && (
             <div className="hidden md:flex items-center gap-1">
-              <NavLink href="#use-cases">Features</NavLink>
-              <NavLink href="/pricing">Pricing</NavLink>
+              <NavLink href="#use-cases">{t('features')}</NavLink>
+              <NavLink href="/pricing">{t('pricing')}</NavLink>
               <NavLink href="https://blog.voidsleep.com" external>Blog</NavLink>
               <NavLink href="https://github.com/l10178/tuna" external>GitHub</NavLink>
             </div>

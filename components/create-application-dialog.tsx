@@ -51,6 +51,19 @@ const APP_TYPES = [
     shadow: 'shadow-sky-500/20',
     textColor: 'text-sky-600 dark:text-sky-400',
   },
+  {
+    value: 'agree_question' as ApplicationType,
+    icon: '💭',
+    labelKey: 'agree_question',
+    bgLight: 'bg-indigo-50',
+    bgDark: 'dark:bg-indigo-950/30',
+    borderLight: 'border-indigo-200',
+    borderDark: 'dark:border-indigo-800/50',
+    gradient: 'from-indigo-500 via-purple-500 to-pink-500',
+    selectedBorder: 'border-indigo-500',
+    shadow: 'shadow-indigo-500/20',
+    textColor: 'text-indigo-600 dark:text-indigo-400',
+  },
 ];
 
 export function CreateApplicationDialog({ children }: CreateApplicationDialogProps) {
@@ -115,7 +128,7 @@ export function CreateApplicationDialog({ children }: CreateApplicationDialogPro
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[540px] rounded-2xl overflow-hidden p-0 bg-white dark:bg-slate-900">
+      <DialogContent className="sm:max-w-[680px] rounded-2xl overflow-hidden p-0 bg-white dark:bg-slate-900">
         {/* Header */}
         <div className="relative p-6 pb-4 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-start gap-4">
@@ -136,14 +149,14 @@ export function CreateApplicationDialog({ children }: CreateApplicationDialogPro
             {/* Type Selection - Card based */}
             <div className="space-y-3">
               <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">{t('form.type')}</Label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-2.5">
                 {APP_TYPES.map((type) => (
                   <button
                     key={type.value}
                     type="button"
                     onClick={() => setFormData({ ...formData, type: type.value })}
                     className={`
-                      relative p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer
+                      relative p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer
                       ${type.bgLight} ${type.bgDark}
                       ${formData.type === type.value
                         ? `${type.selectedBorder} ${type.shadow} shadow-lg scale-[1.02]`
@@ -159,10 +172,10 @@ export function CreateApplicationDialog({ children }: CreateApplicationDialogPro
                     )}
 
                     {/* Icon */}
-                    <div className="text-3xl mb-2">{type.icon}</div>
+                    <div className="text-2xl mb-1.5">{type.icon}</div>
 
                     {/* Label - i18n */}
-                    <div className={`text-xs font-semibold ${type.textColor}`}>
+                    <div className={`text-xs font-semibold ${type.textColor} leading-tight`}>
                       {tTypes(type.labelKey)}
                     </div>
                   </button>

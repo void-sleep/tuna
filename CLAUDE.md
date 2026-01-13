@@ -84,11 +84,87 @@ npm run lint      # 代码检查
 3. **认证**: 通过 Supabase Auth，中间件保护路由
 4. **样式**: Tailwind CSS，遵循 utility-first 原则
 5. **类型**: TypeScript 严格模式，确保类型安全
-6. **国际化**: 页面支持国际化多语
+6. **国际化**: 所有页面和组件必须支持国际化多语
+
+### 国际化规范
+
+**强制要求**: 所有新创建的页面和组件必须完整实现多语支持，不允许硬编码文本。
+
+#### 实施要点
+
+1. **页面组件**:
+   - 使用 `useTranslations` hook 获取翻译函数
+   - 所有用户可见的文本必须通过翻译键获取
+   - 翻译键应具有清晰的层级结构
+
+   ```typescript
+   import { useTranslations } from 'next-intl';
+
+   export default function MyPage() {
+     const t = useTranslations('myFeature.myPage');
+     return <h1>{t('title')}</h1>;
+   }
+   ```
+
+2. **翻译文件管理**:
+   - 中文翻译: `messages/zh-CN.json`
+   - 英文翻译: `messages/en.json`
+   - 保持两个文件的键结构完全一致
+   - 使用有意义的层级命名: `feature.component.element`
+
+3. **翻译键命名规范**:
+   ```json
+   {
+     "featureName": {
+       "componentName": {
+         "title": "标题",
+         "description": "描述",
+         "actions": {
+           "save": "保存",
+           "cancel": "取消"
+         },
+         "errors": {
+           "required": "此字段必填"
+         }
+       }
+     }
+   }
+   ```
+
+4. **常见错误与避免**:
+   - ❌ **错误**: 直接在 JSX 中写中文或英文文本
+     ```typescript
+     <button>保存</button>  // 错误
+     ```
+   - ✅ **正确**: 使用翻译键
+     ```typescript
+     <button>{t('actions.save')}</button>  // 正确
+     ```
+
+5. **特殊场景处理**:
+   - **动态内容**: 使用插值 `{name}` 在翻译字符串中
+     ```json
+     "greeting": "你好，{name}！"
+     ```
+     ```typescript
+     t('greeting', { name: userName })
+     ```
+   - **复数形式**: 使用 ICU 消息格式
+   - **日期/数字**: 使用 next-intl 的格式化工具
+
+6. **代码审查检查点**:
+   - [ ] 是否所有文本都通过翻译键获取？
+   - [ ] 中英文翻译文件是否同步更新？
+   - [ ] 翻译键命名是否符合层级规范？
+   - [ ] 是否测试了语言切换功能？
 
 ## 数据库设计规范
 
 **数据库技术**: 使用 Supabase PostgreSQL，强制实施行级安全策略
+
+### 基本要求
+
+- SQL 语句可使用英文、下划线，不要包含中文或特殊字符
 
 ### 权限安全核心原则
 

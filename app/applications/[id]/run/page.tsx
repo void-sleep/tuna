@@ -7,9 +7,12 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { BinaryChoiceRunner } from "@/components/binary-choice-runner";
 import { MathFlashRunner } from "@/components/math-flash-runner";
+import { AgreeQuestionRunner } from "@/components/agree-question-runner";
 import type { BinaryChoiceConfig } from "@/components/binary-choice-editor";
 import type { MathFlashConfig } from "@/components/math-flash-editor";
 import { DEFAULT_MATH_FLASH_CONFIG } from "@/components/math-flash-editor";
+import type { AgreeQuestionConfig } from "@/components/agree-question-editor";
+import { DEFAULT_AGREE_QUESTION_CONFIG } from "@/components/agree-question-editor";
 import type { Application, ApplicationType } from "@/lib/supabase/applications";
 import type { ApplicationItem } from "@/lib/supabase/application-items";
 import { ArrowLeftIcon, PencilIcon, XMarkIcon, ArrowsPointingOutIcon, ArrowsPointingInIcon } from "@heroicons/react/24/outline";
@@ -34,6 +37,7 @@ const APP_TYPE_STYLES: Record<ApplicationType, { bgGradient: string; icon: strin
   math_flash: { bgGradient: 'from-slate-900 via-orange-950/50 to-slate-900', icon: '🧮' },
   wheel: { bgGradient: 'from-slate-900 via-amber-950/50 to-slate-900', icon: '🎡' },
   counter: { bgGradient: 'from-slate-900 via-sky-950/50 to-slate-900', icon: '🔢' },
+  agree_question: { bgGradient: 'from-slate-900 via-indigo-950/50 to-slate-900', icon: '💭' },
 };
 
 export default function RunApplicationPage({
@@ -44,18 +48,20 @@ export default function RunApplicationPage({
   const { id } = use(params);
   const tBinary = useTranslations('binaryChoice.run');
   const tMath = useTranslations('mathFlash.run');
+  const tAgree = useTranslations('agreeQuestion.run');
   const router = useRouter();
 
   const [application, setApplication] = useState<Application | null>(null);
   const [binaryConfig, setBinaryConfig] = useState<BinaryChoiceConfig>(DEFAULT_BINARY_CONFIG);
   const [mathConfig, setMathConfig] = useState<MathFlashConfig>(DEFAULT_MATH_FLASH_CONFIG);
+  const [agreeConfig, setAgreeConfig] = useState<AgreeQuestionConfig>(DEFAULT_AGREE_QUESTION_CONFIG);
   const [isLoading, setIsLoading] = useState(true);
   const [hasItems, setHasItems] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const appType = application?.type || 'coin';
   const styles = APP_TYPE_STYLES[appType];
-  const t = appType === 'math_flash' ? tMath : tBinary;
+  const t = appType === 'math_flash' ? tMath : (appType === 'agree_question' ? tAgree : tBinary);
 
   // Exit fullscreen when leaving the page
   const exitFullscreen = useCallback(() => {
@@ -127,6 +133,15 @@ export default function RunApplicationPage({
             });
           }
           setHasItems(true); // Math flash doesn't need items
+        } else if (data.type === 'agree_question') {
+          // Load agree question config from application.config
+          if (data.config && Object.keys(data.config).length > 0) {
+            setAgreeConfig({
+              defaultQuestion: (data.config.defaultQuestion as string) || DEFAULT_AGREE_QUESTION_CONFIG.defaultQuestion,
+              defaultOptions: (data.config.defaultOptions as string[]) || DEFAULT_AGREE_QUESTION_CONFIG.defaultOptions,
+            });
+          }
+          setHasItems(true); // Agree question doesn't need items
         } else if (data.type === 'coin') {
           // Fetch application items for binary choice
           const itemsResponse = await fetch(`/api/applications/${id}/items`);
@@ -246,7 +261,7 @@ export default function RunApplicationPage({
     );
   }
 
-  const colorClass = appType === 'math_flash' ? 'orange' : 'violet';
+  const colorClass = appType === 'math_flash' ? 'orange' : (appType === 'agree_question' ? 'indigo' : 'violet');
 
   // Main fullscreen runner
   return (
@@ -255,6 +270,12 @@ export default function RunApplicationPage({
       <div className="absolute inset-0 z-0">
         {appType === 'math_flash' ? (
           <MathFlashRunner config={mathConfig} applicationId={id} fullscreen={true} />
+        ) : appType === 'agree_question' ? (
+          <AgreeQuestionRunner
+            applicationId={id}
+            defaultQuestion={agreeConfig.defaultQuestion}
+            defaultOptions={agreeConfig.defaultOptions}
+          />
         ) : (
           <BinaryChoiceRunner config={binaryConfig} applicationId={id} fullscreen={true} />
         )}

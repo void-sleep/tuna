@@ -68,6 +68,25 @@ export function UserMenu({ userEmail, avatarUrl, fullName }: UserMenuProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
+          onClick={() => router.push('/apps/friends')}
+          className="cursor-pointer"
+        >
+          {t('friends')}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => router.push('/apps/questions')}
+          className="cursor-pointer"
+        >
+          {t('questions')}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => router.push('/apps/settings')}
+          className="cursor-pointer"
+        >
+          {t('settings')}
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
           onClick={logout}
           className="cursor-pointer text-destructive focus:text-destructive"
         >
