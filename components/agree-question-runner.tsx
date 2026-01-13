@@ -33,7 +33,6 @@ export function AgreeQuestionRunner({
   const [questionText, setQuestionText] = useState(defaultQuestion);
   const [options, setOptions] = useState<string[]>(defaultOptions);
   const [isLoading, setIsLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -59,7 +58,7 @@ export function AgreeQuestionRunner({
   };
 
   const filteredFriends = friends.filter(f =>
-    f.friend.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+    (f.friend.full_name || f.friend.email || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleAddOption = () => {
@@ -86,11 +85,6 @@ export function AgreeQuestionRunner({
       return;
     }
 
-    if (!questionText.trim()) {
-      toast.error(t('errors.noQuestion'));
-      return;
-    }
-
     const validOptions = options.filter(opt => opt.trim());
     if (validOptions.length < 2) {
       toast.error(t('errors.notEnoughOptions'));
@@ -106,19 +100,13 @@ export function AgreeQuestionRunner({
     });
 
     if (result.success) {
-      setShowSuccess(true);
       toast.success(t('success'));
-      // Redirect to apps page after 1.5 seconds
-      setTimeout(() => {
-        router.push('/apps');
-      }, 1500);
+      router.push('/apps');
     } else {
       toast.error(result.error || t('errors.sendFailed'));
       setIsLoading(false);
     }
   };
-
-  const selectedFriend = friends.find(f => f.friend.id === selectedFriendId)?.friend;
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-indigo-950/50 to-slate-900 flex items-center justify-center p-4 overflow-auto">
@@ -127,21 +115,6 @@ export function AgreeQuestionRunner({
         <div className="absolute top-20 left-20 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl" />
         <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
       </div>
-
-      {/* Success overlay */}
-      {showSuccess && (
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-300">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 max-w-sm mx-4 text-center shadow-2xl animate-in zoom-in duration-300">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-              <CheckCircleIcon className="h-10 w-10 text-white" />
-            </div>
-            <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white">发送成功！</h3>
-            <p className="text-slate-600 dark:text-slate-400">
-              你的问题已经发送给 <span className="font-semibold text-indigo-600 dark:text-indigo-400">{selectedFriend?.full_name}</span>
-            </p>
-          </div>
-        </div>
-      )}
 
       <div className="relative w-full max-w-2xl">
         {/* Header */}
@@ -177,10 +150,10 @@ export function AgreeQuestionRunner({
                   {selectedFriendId ? (
                     <div className="flex items-center gap-3">
                       <div className="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-base font-bold shadow-md">
-                        {friends.find(f => f.friend.id === selectedFriendId)?.friend.full_name.charAt(0).toUpperCase()}
+                        {(friends.find(f => f.friend.id === selectedFriendId)?.friend.full_name || friends.find(f => f.friend.id === selectedFriendId)?.friend.email || '?').charAt(0).toUpperCase()}
                       </div>
                       <span className="font-medium text-lg">
-                        {friends.find(f => f.friend.id === selectedFriendId)?.friend.full_name}
+                        {friends.find(f => f.friend.id === selectedFriendId)?.friend.full_name || friends.find(f => f.friend.id === selectedFriendId)?.friend.email}
                       </span>
                     </div>
                   ) : (
@@ -243,10 +216,10 @@ export function AgreeQuestionRunner({
                               }`}
                             >
                               <div className="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-base font-bold shadow-md">
-                                {friend.full_name.charAt(0).toUpperCase()}
+                                {(friend.full_name || friend.email || '?').charAt(0).toUpperCase()}
                               </div>
                               <span className="font-medium text-slate-900 dark:text-white text-left flex-1">
-                                {friend.full_name}
+                                {friend.full_name || friend.email}
                               </span>
                               {isSelected && (
                                 <CheckCircleIcon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />

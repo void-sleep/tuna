@@ -209,6 +209,7 @@
       "apps": "我的应用",
       "logout": "退出登录",
       "friends": "好友管理",
+      "questions": "好友问答",
       "settings": "设置"
     },
     "errors": {
@@ -244,7 +245,8 @@
       "view": "查看",
       "edit": "编辑",
       "delete": "删除",
-      "run": "运行"
+      "run": "运行",
+      "viewRecords": "查看记录"
     },
     "createDialog": {
       "title": "创建新应用",
@@ -480,6 +482,34 @@
     }
   },
   "agreeQuestion": {
+    "sidebar": {
+      "title": "待回答",
+      "empty": "全部处理完毕",
+      "emptyDescription": "暂时没有待回答的问题",
+      "close": "关闭",
+      "confirm": "确认回答",
+      "submitting": "提交中...",
+      "answered": "已回答",
+      "viewHistory": "查看我们的完整历史 →",
+      "justNow": "刚刚",
+      "minutesAgo": "{count}分钟前",
+      "hoursAgo": "{count}小时前",
+      "daysAgo": "{count}天前"
+    },
+    "timeline": {
+      "title": "我们的问答",
+      "friend": "好友",
+      "interactions": "次互动",
+      "noInteractions": "还没有互动过",
+      "youAsked": "你问",
+      "theyAsked": "{name}问",
+      "answered": "答",
+      "waitingAnswer": "等待回答",
+      "askQuestion": "向 {name} 提问",
+      "pendingQuestions": "条待回答",
+      "lastInteraction": "上次：{time}",
+      "neverInteracted": "还没互动过"
+    },
     "edit": {
       "title": "编辑同意问题",
       "subtitle": "配置你的提问应用",

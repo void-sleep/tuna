@@ -16,8 +16,9 @@ export interface Friend {
 // User profile (for display in friend lists)
 export interface UserProfile {
   id: string;
-  full_name: string; // Always provided: real name or email prefix
-  avatar_url?: string;
+  email?: string; // Email address (optional for privacy)
+  full_name: string | null; // Display name (may be null)
+  avatar_url?: string | null;
   searchable?: boolean;
 }
 

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getFriendsAction, getReceivedFriendRequestsAction, getSentFriendRequestsAction } from "@/app/actions/friends";
+import { getFriendInteractionStatsObjectAction } from "@/app/actions/agree-questions";
 import { FriendsPageRedesigned } from "@/components/friends-page-redesigned";
 
 export default async function FriendsPage() {
@@ -11,10 +12,11 @@ export default async function FriendsPage() {
     redirect("/auth/login");
   }
 
-  const [friends, receivedRequests, sentRequests] = await Promise.all([
+  const [friends, receivedRequests, sentRequests, interactionStats] = await Promise.all([
     getFriendsAction(),
     getReceivedFriendRequestsAction(),
     getSentFriendRequestsAction(),
+    getFriendInteractionStatsObjectAction(),
   ]);
 
   return (
@@ -22,6 +24,7 @@ export default async function FriendsPage() {
       friends={friends}
       receivedRequests={receivedRequests}
       sentRequests={sentRequests}
+      interactionStats={interactionStats}
     />
   );
 }

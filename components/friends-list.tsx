@@ -62,12 +62,12 @@ export function FriendsList({ friends, onFriendDeleted }: FriendsListProps) {
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-violet-100 dark:bg-violet-900 flex items-center justify-center">
                   <span className="text-lg font-medium text-violet-600 dark:text-violet-400">
-                    {friend.full_name[0].toUpperCase()}
+                    {(friend.full_name || friend.email || '?')[0].toUpperCase()}
                   </span>
                 </div>
                 <div>
                   <p className="font-medium text-slate-900 dark:text-white">
-                    {friend.full_name}
+                    {friend.full_name || friend.email}
                   </p>
                 </div>
               </div>

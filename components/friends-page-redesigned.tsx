@@ -13,13 +13,19 @@ import {
   BellAlertIcon,
 } from '@heroicons/react/24/outline';
 
+interface InteractionStats {
+  pendingCount: number;
+  lastInteraction: string | null;
+}
+
 interface FriendsPageRedesignedProps {
   friends: FriendWithUser[];
   receivedRequests: FriendWithUser[];
   sentRequests: FriendWithUser[];
+  interactionStats?: Record<string, InteractionStats>;
 }
 
-export function FriendsPageRedesigned({ friends, receivedRequests, sentRequests }: FriendsPageRedesignedProps) {
+export function FriendsPageRedesigned({ friends, receivedRequests, sentRequests, interactionStats }: FriendsPageRedesignedProps) {
   const t = useTranslations('friends');
   const router = useRouter();
 
@@ -94,6 +100,7 @@ export function FriendsPageRedesigned({ friends, receivedRequests, sentRequests 
                 friends={friends}
                 receivedRequests={receivedRequests}
                 sentRequests={sentRequests}
+                interactionStats={interactionStats}
               />
             </Card>
           ) : (

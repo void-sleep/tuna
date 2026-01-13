@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/navbar";
+import { FloatingBubble } from "@/components/floating-bubble";
 
 export default function DashboardLayout({
   children,
@@ -11,6 +12,7 @@ export default function DashboardLayout({
       <main className="flex-1 pt-16">
         {children}
       </main>
+      <FloatingBubble />
     </div>
   );
 }

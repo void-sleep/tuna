@@ -74,6 +74,12 @@ export function UserMenu({ userEmail, avatarUrl, fullName }: UserMenuProps) {
           {t('friends')}
         </DropdownMenuItem>
         <DropdownMenuItem
+          onClick={() => router.push('/apps/questions')}
+          className="cursor-pointer"
+        >
+          {t('questions')}
+        </DropdownMenuItem>
+        <DropdownMenuItem
           onClick={() => router.push('/apps/settings')}
           className="cursor-pointer"
         >

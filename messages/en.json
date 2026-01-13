@@ -209,6 +209,7 @@
       "apps": "My Apps",
       "logout": "Logout",
       "friends": "Friends",
+      "questions": "Friend Q&A",
       "settings": "Settings"
     },
     "errors": {
@@ -289,7 +290,8 @@
       "view": "View",
       "edit": "Edit",
       "delete": "Delete",
-      "run": "Run"
+      "run": "Run",
+      "viewRecords": "View Records"
     },
     "createDialog": {
       "title": "Create New Application",
@@ -525,6 +527,34 @@
     }
   },
   "agreeQuestion": {
+    "sidebar": {
+      "title": "Pending Questions",
+      "empty": "All done!",
+      "emptyDescription": "No pending questions right now",
+      "close": "Close",
+      "confirm": "Confirm Answer",
+      "submitting": "Submitting...",
+      "answered": "Answered",
+      "viewHistory": "View our complete history →",
+      "justNow": "just now",
+      "minutesAgo": "{count}m ago",
+      "hoursAgo": "{count}h ago",
+      "daysAgo": "{count}d ago"
+    },
+    "timeline": {
+      "title": "Our Questions",
+      "friend": "Friend",
+      "interactions": "interactions",
+      "noInteractions": "No interactions yet",
+      "youAsked": "You asked",
+      "theyAsked": "{name} asked",
+      "answered": "answered",
+      "waitingAnswer": "Waiting for answer",
+      "askQuestion": "Ask {name} a question",
+      "pendingQuestions": "pending",
+      "lastInteraction": "Last: {time}",
+      "neverInteracted": "Never interacted"
+    },
     "edit": {
       "title": "Edit Agreement Question",
       "subtitle": "Configure your question application",

@@ -1,5 +1,10 @@
 -- =============================================================================
--- DoYouAgree Application - Complete Database Schema
+-- DoYouAgree Application - Combined Database Schema
+-- =============================================================================
+-- This is a combined migration from:
+-- - 20260111_doyouagree_complete.sql
+-- - 20260112_setup_avatars_storage.sql
+-- - 20260112_fix_avatars_storage.sql
 -- =============================================================================
 --
 -- Tables:
@@ -7,6 +12,7 @@
 -- 2. friends - Bilateral friendship management
 -- 3. agree_questions - Questions and answers records
 -- 4. notifications - In-app notification system
+-- 5. Storage bucket: avatars - User avatar images
 --
 -- =============================================================================
 
@@ -169,7 +175,7 @@ CREATE TABLE IF NOT EXISTS agree_questions (
   application_id UUID NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
   from_user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   to_user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  question_text TEXT NOT NULL,
+  question_text TEXT NULL,
   options JSONB NOT NULL,
   answer TEXT NULL,
   status TEXT NOT NULL,
@@ -183,6 +189,11 @@ CREATE INDEX IF NOT EXISTS idx_agree_questions_from_user ON agree_questions(from
 CREATE INDEX IF NOT EXISTS idx_agree_questions_to_user ON agree_questions(to_user_id);
 CREATE INDEX IF NOT EXISTS idx_agree_questions_status ON agree_questions(status);
 CREATE INDEX IF NOT EXISTS idx_agree_questions_app_id ON agree_questions(application_id);
+
+-- Additional indexes for new query patterns (bilateral timeline, pending questions)
+CREATE INDEX IF NOT EXISTS idx_aq_to_user_pending ON agree_questions(to_user_id, status) WHERE status = 'pending';
+CREATE INDEX IF NOT EXISTS idx_aq_user_pair_time ON agree_questions(LEAST(from_user_id, to_user_id), GREATEST(from_user_id, to_user_id), created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_aq_app_time ON agree_questions(application_id, created_at DESC);
 
 -- =============================================================================
 -- RLS Policies: agree_questions
@@ -203,9 +214,15 @@ CREATE POLICY agree_questions_insert ON agree_questions
   );
 
 -- Only recipient can update (answer question), and only once
+-- USING: controls which rows can be selected for update
+-- WITH CHECK: controls what values are allowed after update
 CREATE POLICY agree_questions_update ON agree_questions
-  FOR UPDATE USING (
+  FOR UPDATE
+  USING (
     auth.uid() = to_user_id AND status = 'pending' AND answer IS NULL
+  )
+  WITH CHECK (
+    auth.uid() = to_user_id AND status = 'answered' AND answer IS NOT NULL
   );
 
 -- Questioner can delete unanswered questions
@@ -291,3 +308,54 @@ EXCEPTION
     RETURN jsonb_build_object('success', false, 'error', 'Operation failed');
 END;
 $$;
+
+-- =============================================================================
+-- Storage: Avatars Bucket
+-- =============================================================================
+
+-- Drop existing policies if any (for idempotency)
+DROP POLICY IF EXISTS "Users can upload their own avatar" ON storage.objects;
+DROP POLICY IF EXISTS "Anyone can view avatars" ON storage.objects;
+DROP POLICY IF EXISTS "Users can update their own avatar" ON storage.objects;
+DROP POLICY IF EXISTS "Users can delete their own avatar" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated users can upload avatars" ON storage.objects;
+DROP POLICY IF EXISTS "Public can read avatars" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated users can update avatars" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated users can delete avatars" ON storage.objects;
+
+-- Create avatars bucket (public for avatar display)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('avatars', 'avatars', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- Enable RLS on storage.objects
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+
+-- Policy: Allow authenticated users to upload to avatars bucket
+CREATE POLICY "Authenticated users can upload avatars"
+ON storage.objects
+FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id = 'avatars');
+
+-- Policy: Allow everyone to read avatars (public bucket)
+CREATE POLICY "Public can read avatars"
+ON storage.objects
+FOR SELECT
+TO public
+USING (bucket_id = 'avatars');
+
+-- Policy: Allow authenticated users to update files in avatars bucket
+CREATE POLICY "Authenticated users can update avatars"
+ON storage.objects
+FOR UPDATE
+TO authenticated
+USING (bucket_id = 'avatars')
+WITH CHECK (bucket_id = 'avatars');
+
+-- Policy: Allow authenticated users to delete files in avatars bucket
+CREATE POLICY "Authenticated users can delete avatars"
+ON storage.objects
+FOR DELETE
+TO authenticated
+USING (bucket_id = 'avatars');

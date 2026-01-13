@@ -26,15 +26,26 @@ import { createAgreeQuestionAction } from '@/app/actions/agree-questions';
 import { toast } from 'sonner';
 
 interface CreateQuestionDialogProps {
-  friends: FriendWithUser[];
+  friends?: FriendWithUser[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreated?: () => void;
+  /** Alias for onCreated */
+  onSuccess?: () => void;
+  /** Pre-select a specific friend (bypasses friend list requirement) */
+  preselectedFriendId?: string;
 }
 
-export function CreateQuestionDialog({ friends, open, onOpenChange, onCreated }: CreateQuestionDialogProps) {
+export function CreateQuestionDialog({
+  friends,
+  open,
+  onOpenChange,
+  onCreated,
+  onSuccess,
+  preselectedFriendId,
+}: CreateQuestionDialogProps) {
   const t = useTranslations('questions');
-  const [selectedFriendId, setSelectedFriendId] = useState<string>('');
+  const [selectedFriendId, setSelectedFriendId] = useState<string>(preselectedFriendId || '');
   const [questionText, setQuestionText] = useState('');
   const [options, setOptions] = useState<string[]>(['', '']);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -88,7 +99,7 @@ export function CreateQuestionDialog({ friends, open, onOpenChange, onCreated }:
       return;
     }
 
-    const { application } = await appResponse.json();
+    const application = await appResponse.json();
 
     const result = await createAgreeQuestionAction({
       applicationId: application.id,
@@ -104,6 +115,7 @@ export function CreateQuestionDialog({ friends, open, onOpenChange, onCreated }:
       onOpenChange(false);
       resetForm();
       onCreated?.();
+      onSuccess?.();
     } else {
       toast.error(result.error || '发送失败');
     }
@@ -124,25 +136,27 @@ export function CreateQuestionDialog({ friends, open, onOpenChange, onCreated }:
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Select Friend */}
-          <div className="space-y-2">
-            <Label>{t('selectFriend')}</Label>
-            <Select value={selectedFriendId} onValueChange={setSelectedFriendId}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('selectFriend')} />
-              </SelectTrigger>
-              <SelectContent>
-                {friends.map((friendship) => {
-                  const friend = friendship.friend;
-                  return (
-                    <SelectItem key={friend.id} value={friend.id}>
-                      {friend.full_name}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Select Friend - only show if not preselected */}
+          {!preselectedFriendId && friends && friends.length > 0 && (
+            <div className="space-y-2">
+              <Label>{t('selectFriend')}</Label>
+              <Select value={selectedFriendId} onValueChange={setSelectedFriendId}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t('selectFriend')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {(friends ?? []).map((friendship) => {
+                    const friend = friendship.friend;
+                    return (
+                      <SelectItem key={friend.id} value={friend.id}>
+                        {friend.full_name || friend.email || friend.id}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {/* Question Text */}
           <div className="space-y-2">

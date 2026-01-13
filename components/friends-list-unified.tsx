@@ -16,23 +16,30 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { CheckIcon, XMarkIcon, UserMinusIcon, ClockIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
+import { CheckIcon, XMarkIcon, UserMinusIcon, ClockIcon, PaperAirplaneIcon, ChatBubbleLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { acceptFriendRequestAction, rejectFriendRequestAction, deleteFriendAction } from '@/app/actions/friends';
 import type { FriendWithUser } from '@/lib/types/doyouagree';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+interface InteractionStats {
+  pendingCount: number;
+  lastInteraction: string | null;
+}
 
 interface UnifiedFriendsListProps {
   friends: FriendWithUser[];
   receivedRequests: FriendWithUser[];
   sentRequests: FriendWithUser[];
+  interactionStats?: Record<string, InteractionStats>;
 }
 
 type FriendItem = FriendWithUser & {
   itemType: 'friend' | 'received' | 'sent';
 };
 
-export function UnifiedFriendsList({ friends, receivedRequests, sentRequests }: UnifiedFriendsListProps) {
+export function UnifiedFriendsList({ friends, receivedRequests, sentRequests, interactionStats }: UnifiedFriendsListProps) {
   const t = useTranslations('friends');
   const router = useRouter();
   const [processingId, setProcessingId] = useState<string | null>(null);
@@ -180,46 +187,98 @@ export function UnifiedFriendsList({ friends, receivedRequests, sentRequests }: 
     );
   }
 
+  // Helper to format relative time
+  const formatRelativeTime = (dateStr: string | null) => {
+    if (!dateStr) return null;
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffDays === 0) return '今天';
+    if (diffDays === 1) return '昨天';
+    if (diffDays < 7) return `${diffDays}天前`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)}周前`;
+    return `${Math.floor(diffDays / 30)}月前`;
+  };
+
   return (
     <>
       <div className="grid gap-3">
         {allItems.map((item) => {
           const displayUser = getDisplayUser(item);
-          return (
-            <Card key={`${item.itemType}-${item.id}`} className="overflow-hidden hover:shadow-md transition-all duration-200">
-              <div className="p-4 flex items-center justify-between gap-4">
-                {/* User Info */}
-                <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden">
-                    {displayUser.avatar_url ? (
-                      <Image
-                        src={displayUser.avatar_url}
-                        alt={displayUser.full_name || 'User avatar'}
-                        width={48}
-                        height={48}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-lg font-semibold text-white">
-                        {displayUser.full_name[0].toUpperCase()}
+          const displayName = displayUser.full_name || displayUser.email || '用户';
+          const initial = displayName[0]?.toUpperCase() || '?';
+          const stats = item.itemType === 'friend' ? interactionStats?.[displayUser.id] : null;
+
+          // Wrap friend items with Link for timeline navigation
+          const cardContent = (
+            <div className="p-4 flex items-center justify-between gap-4">
+              {/* User Info */}
+              <div className="flex items-center gap-4 flex-1 min-w-0">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden">
+                  {displayUser.avatar_url ? (
+                    <Image
+                      src={displayUser.avatar_url}
+                      alt={displayName}
+                      width={48}
+                      height={48}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-lg font-semibold text-white">
+                      {initial}
+                    </span>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-slate-900 dark:text-white truncate">
+                      {displayName}
+                    </p>
+                    {getStatusBadge(item.itemType)}
+                    {/* Pending questions badge */}
+                    {stats && stats.pendingCount > 0 && (
+                      <span className="flex items-center gap-1 px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium rounded-full">
+                        <ChatBubbleLeftIcon className="w-3 h-3" />
+                        {stats.pendingCount}
                       </span>
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold text-slate-900 dark:text-white truncate">
-                        {displayUser.full_name}
-                      </p>
-                      {getStatusBadge(item.itemType)}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex-shrink-0">
-                  {renderActions(item)}
+                  {/* Last interaction time */}
+                  {item.itemType === 'friend' && (
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      {stats?.lastInteraction
+                        ? `上次互动: ${formatRelativeTime(stats.lastInteraction)}`
+                        : '还没互动过'}
+                    </p>
+                  )}
                 </div>
               </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {renderActions(item)}
+                {item.itemType === 'friend' && (
+                  <ChevronRightIcon className="w-5 h-5 text-slate-400" />
+                )}
+              </div>
+            </div>
+          );
+
+          if (item.itemType === 'friend') {
+            return (
+              <Link key={`${item.itemType}-${item.id}`} href={`/apps/friends/${displayUser.id}`}>
+                <Card className="overflow-hidden hover:shadow-md hover:border-violet-300 dark:hover:border-violet-700 transition-all duration-200 cursor-pointer">
+                  {cardContent}
+                </Card>
+              </Link>
+            );
+          }
+
+          return (
+            <Card key={`${item.itemType}-${item.id}`} className="overflow-hidden hover:shadow-md transition-all duration-200">
+              {cardContent}
             </Card>
           );
         })}
@@ -231,7 +290,7 @@ export function UnifiedFriendsList({ friends, receivedRequests, sentRequests }: 
           <AlertDialogHeader>
             <AlertDialogTitle>删除好友</AlertDialogTitle>
             <AlertDialogDescription>
-              确定要删除好友 {deletingItem && getDisplayUser(deletingItem).full_name} 吗？
+              确定要删除好友 {deletingItem && (getDisplayUser(deletingItem).full_name || getDisplayUser(deletingItem).email || '此用户')} 吗？
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

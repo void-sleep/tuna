@@ -76,12 +76,12 @@ export function UserSearchInput({ onRequestSent }: UserSearchInputProps) {
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900 flex items-center justify-center">
                     <span className="text-sm font-medium text-violet-600 dark:text-violet-400">
-                      {user.full_name[0].toUpperCase()}
+                      {(user.full_name || user.email || '?')[0].toUpperCase()}
                     </span>
                   </div>
                   <div>
                     <p className="font-medium text-slate-900 dark:text-white">
-                      {user.full_name}
+                      {user.full_name || user.email}
                     </p>
                   </div>
                 </div>

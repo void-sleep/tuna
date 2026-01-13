@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getMyQuestionsAction } from "@/app/actions/agree-questions";
-import { getFriendsAction } from "@/app/actions/friends";
 import { QuestionsPageClient } from "@/components/questions-page-client";
 
 export default async function QuestionsPage({
@@ -33,16 +32,12 @@ export default async function QuestionsPage({
     }
   }
 
-  const [{ sent, received }, friends] = await Promise.all([
-    getMyQuestionsAction(applicationId),
-    getFriendsAction(),
-  ]);
+  const { sent, received } = await getMyQuestionsAction(applicationId);
 
   return (
     <QuestionsPageClient
       sentQuestions={sent}
       receivedQuestions={received}
-      friends={friends}
       applicationTitle={applicationTitle}
     />
   );
