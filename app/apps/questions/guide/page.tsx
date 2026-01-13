@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -16,6 +17,7 @@ import {
 import { toast } from 'sonner';
 
 export default function QuestionGuidePage() {
+  const t = useTranslations('agreeQuestion.guide');
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
 
@@ -38,12 +40,12 @@ export default function QuestionGuidePage() {
       }
 
       const application = await response.json();
-      toast.success('应用创建成功！');
+      toast.success(t('toast.createSuccess'));
 
       // Navigate to run the app
       router.push(`/applications/${application.id}/run`);
     } catch {
-      toast.error('创建应用失败，请重试');
+      toast.error(t('toast.createError'));
       setIsCreating(false);
     }
   };
@@ -51,20 +53,20 @@ export default function QuestionGuidePage() {
   const steps = [
     {
       icon: SparklesIcon,
-      title: '创建应用',
-      description: '创建一个"你同意吗"应用，设置你想问的问题',
+      title: t('steps.create.title'),
+      description: t('steps.create.description'),
       color: 'indigo',
     },
     {
       icon: RocketLaunchIcon,
-      title: '运行应用',
-      description: '点击运行按钮，选择好友并发送问题',
+      title: t('steps.run.title'),
+      description: t('steps.run.description'),
       color: 'violet',
     },
     {
       icon: ChatBubbleLeftRightIcon,
-      title: '等待回答',
-      description: '好友收到通知后可以选择答案回复你',
+      title: t('steps.wait.title'),
+      description: t('steps.wait.description'),
       color: 'purple',
     },
   ];
@@ -81,7 +83,7 @@ export default function QuestionGuidePage() {
         >
           <Link href="/apps/questions">
             <ArrowLeftIcon className="h-4 w-4" />
-            返回问答列表
+            {t('backToList')}
           </Link>
         </Button>
 
@@ -91,10 +93,10 @@ export default function QuestionGuidePage() {
             <ChatBubbleLeftRightIcon className="h-10 w-10 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">
-            向好友提问
+            {t('title')}
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-            通过你同意吗应用向好友发送问题，了解他们的真实想法
+            {t('description')}
           </p>
         </div>
 
@@ -112,7 +114,7 @@ export default function QuestionGuidePage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <span className={`text-xs font-semibold text-${step.color}-600 dark:text-${step.color}-400 bg-${step.color}-100 dark:bg-${step.color}-900/30 px-2 py-0.5 rounded-full`}>
-                      步骤 {index + 1}
+                      {t('steps.step')} {index + 1}
                     </span>
                   </div>
                   <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">
@@ -141,12 +143,12 @@ export default function QuestionGuidePage() {
             {isCreating ? (
               <>
                 <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                创建中...
+                {t('actions.creating')}
               </>
             ) : (
               <>
                 <CheckCircleIcon className="h-5 w-5" />
-                快速创建并开始提问
+                {t('actions.quickCreate')}
               </>
             )}
           </Button>
@@ -158,7 +160,7 @@ export default function QuestionGuidePage() {
           >
             <Link href="/apps">
               <SparklesIcon className="h-5 w-5" />
-              前往应用列表自定义
+              {t('actions.goToApps')}
             </Link>
           </Button>
         </div>
@@ -166,20 +168,20 @@ export default function QuestionGuidePage() {
         {/* Tips */}
         <div className="mt-12 p-6 rounded-2xl bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
           <h3 className="font-semibold text-slate-900 dark:text-white mb-3">
-            💡 小提示
+            {t('tips.title')}
           </h3>
           <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
             <li className="flex items-start gap-2">
               <span className="text-indigo-500">•</span>
-              你可以创建多个应用，每个应用可以有不同的默认问题和选项
+              {t('tips.tip1')}
             </li>
             <li className="flex items-start gap-2">
               <span className="text-violet-500">•</span>
-              发送问题时可以自定义问题内容和选项
+              {t('tips.tip2')}
             </li>
             <li className="flex items-start gap-2">
               <span className="text-purple-500">•</span>
-              所有问答记录都会保存在好友问答页面中
+              {t('tips.tip3')}
             </li>
           </ul>
         </div>

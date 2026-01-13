@@ -584,6 +584,41 @@
         "preview": "Preview"
       }
     },
+    "guide": {
+      "backToList": "Back to Questions",
+      "title": "Ask Your Friends",
+      "description": "Send questions to your friends through the Do You Agree app and learn their true thoughts",
+      "steps": {
+        "step": "Step",
+        "create": {
+          "title": "Create App",
+          "description": "Create a Do You Agree app and set up your questions"
+        },
+        "run": {
+          "title": "Run App",
+          "description": "Click the run button, select a friend and send questions"
+        },
+        "wait": {
+          "title": "Wait for Answer",
+          "description": "Your friend will receive a notification and can choose an answer to reply"
+        }
+      },
+      "actions": {
+        "quickCreate": "Quick Create & Start Asking",
+        "creating": "Creating...",
+        "goToApps": "Go to App List to Customize"
+      },
+      "tips": {
+        "title": "💡 Tips",
+        "tip1": "You can create multiple apps, each with different default questions and options",
+        "tip2": "You can customize question content and options when sending",
+        "tip3": "All Q&A records will be saved in the Friend Q&A page"
+      },
+      "toast": {
+        "createSuccess": "App created successfully!",
+        "createError": "Failed to create app, please try again"
+      }
+    },
     "run": {
       "sendQuestion": {
         "title": "Send Question",

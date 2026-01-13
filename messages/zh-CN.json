@@ -539,6 +539,41 @@
         "preview": "预览"
       }
     },
+    "guide": {
+      "backToList": "返回问答列表",
+      "title": "向好友提问",
+      "description": "通过你同意吗应用向好友发送问题，了解他们的真实想法",
+      "steps": {
+        "step": "步骤",
+        "create": {
+          "title": "创建应用",
+          "description": "创建一个你同意吗应用，设置你想问的问题"
+        },
+        "run": {
+          "title": "运行应用",
+          "description": "点击运行按钮，选择好友并发送问题"
+        },
+        "wait": {
+          "title": "等待回答",
+          "description": "好友收到通知后可以选择答案回复你"
+        }
+      },
+      "actions": {
+        "quickCreate": "快速创建并开始提问",
+        "creating": "创建中...",
+        "goToApps": "前往应用列表自定义"
+      },
+      "tips": {
+        "title": "💡 小提示",
+        "tip1": "你可以创建多个应用，每个应用可以有不同的默认问题和选项",
+        "tip2": "发送问题时可以自定义问题内容和选项",
+        "tip3": "所有问答记录都会保存在好友问答页面中"
+      },
+      "toast": {
+        "createSuccess": "应用创建成功！",
+        "createError": "创建应用失败，请重试"
+      }
+    },
     "run": {
       "sendQuestion": {
         "title": "发送问题",
