@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Squares2X2Icon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import type { Session } from "@supabase/supabase-js";
 
 export function AuthButton() {
   const t = useTranslations('auth.button');
@@ -15,7 +16,7 @@ export function AuthButton() {
     const supabase = createClient();
 
     // Helper function to fetch user data with proper priority
-    const fetchUserData = async (session: any, shouldSetLoading = false) => {
+    const fetchUserData = async (session: Session | null, shouldSetLoading = false) => {
       if (!session?.user) {
         setUser(null);
         if (shouldSetLoading) {

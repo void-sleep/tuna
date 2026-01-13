@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -191,9 +192,11 @@ export function UnifiedFriendsList({ friends, receivedRequests, sentRequests }: 
                 <div className="flex items-center gap-4 flex-1 min-w-0">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden">
                     {displayUser.avatar_url ? (
-                      <img
+                      <Image
                         src={displayUser.avatar_url}
                         alt={displayUser.full_name || 'User avatar'}
+                        width={48}
+                        height={48}
                         className="w-full h-full object-cover"
                       />
                     ) : (

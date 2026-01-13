@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -132,9 +133,11 @@ export function SettingsPageClient({ profile }: SettingsPageClientProps) {
               <div className="relative group">
                 <div className="w-20 h-20 rounded-xl bg-violet-600 flex items-center justify-center flex-shrink-0 overflow-hidden">
                   {profile?.avatar_url ? (
-                    <img
+                    <Image
                       src={profile.avatar_url}
                       alt={profile.full_name || 'User avatar'}
+                      width={80}
+                      height={80}
                       className="w-full h-full object-cover"
                     />
                   ) : (
