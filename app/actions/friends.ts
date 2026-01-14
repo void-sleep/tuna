@@ -254,15 +254,24 @@ export async function rejectFriendRequestAction(requestId: string): Promise<{ su
     return { success: false, error: '请先登录' };
   }
 
-  const { error } = await supabase
+  // Direct update with proper error handling
+  const { data, error } = await supabase
     .from('friends')
     .update({ status: 'rejected' })
     .eq('id', requestId)
-    .eq('friend_id', user.id);
+    .eq('friend_id', user.id)
+    .eq('status', 'pending') // Ensure we only update pending requests
+    .select();
 
   if (error) {
     console.error('Error rejecting friend request:', error);
-    return { success: false, error: '拒绝好友请求失败' };
+    return { success: false, error: `拒绝好友请求失败: ${error.message}` };
+  }
+
+  // Check if any row was actually updated
+  if (!data || data.length === 0) {
+    console.warn('No rows updated when rejecting friend request:', { requestId, userId: user.id });
+    return { success: false, error: '未找到待处理的好友请求，可能已被处理或不存在' };
   }
 
   return { success: true };
@@ -459,4 +468,36 @@ export async function uploadAvatarAction(formData: FormData): Promise<{ success:
   }
 
   return { success: true, avatarUrl: publicUrl };
+}
+
+export async function updateDisplayNameAction(displayName: string): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { success: false, error: '请先登录' };
+  }
+
+  // 验证输入
+  const trimmedName = displayName.trim();
+  if (!trimmedName) {
+    return { success: false, error: '显示名称不能为空' };
+  }
+
+  // 验证长度
+  if (trimmedName.length > 50) {
+    return { success: false, error: '显示名称不能超过50个字符' };
+  }
+
+  // 更新 Supabase Auth 的 user_metadata
+  const { error } = await supabase.auth.updateUser({
+    data: { display_name: trimmedName }
+  });
+
+  if (error) {
+    console.error('Error updating display name:', error);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
 }

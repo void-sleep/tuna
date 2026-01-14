@@ -670,11 +670,19 @@
     },
     "account": {
       "title": "Account Information",
-      "displayName": "Display Name"
+      "displayName": "Display Name",
+      "displayNamePlaceholder": "Enter display name",
+      "noDisplayName": "Not set",
+      "setDisplayName": "Set Display Name"
     },
     "success": "Updated successfully",
     "error": "Update failed",
     "updateFailed": "Update failed, please try again",
-    "searchableUpdated": "Search settings updated"
+    "searchableUpdated": "Search settings updated",
+    "displayNameUpdated": "Display name updated",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "saving": "Saving..."
   }
 }

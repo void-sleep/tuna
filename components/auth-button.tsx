@@ -34,7 +34,11 @@ export function AuthButton() {
 
       // Priority order: profile.avatar_url > metadata.avatar_url > undefined
       const avatarUrl = profile?.avatar_url || session.user.user_metadata?.avatar_url;
-      const fullName = profile?.full_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name;
+      // Priority order: metadata.display_name > metadata.full_name > metadata.name > profile.full_name
+      const fullName = session.user.user_metadata?.display_name 
+        || session.user.user_metadata?.full_name 
+        || session.user.user_metadata?.name 
+        || profile?.full_name;
 
       setUser({
         email: session.user.email,
@@ -64,10 +68,19 @@ export function AuthButton() {
       });
     };
     window.addEventListener('avatar-updated', handleAvatarUpdate);
+    
+    // Listen for custom display name update events
+    const handleDisplayNameUpdate = () => {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        fetchUserData(session);
+      });
+    };
+    window.addEventListener('display-name-updated', handleDisplayNameUpdate);
 
     return () => {
       subscription.unsubscribe();
       window.removeEventListener('avatar-updated', handleAvatarUpdate);
+      window.removeEventListener('display-name-updated', handleDisplayNameUpdate);
     };
   }, []);
 

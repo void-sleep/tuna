@@ -12,6 +12,9 @@ export default async function SettingsPage() {
   }
 
   const profile = await getCurrentUserProfileAction();
+  
+  // Get current display name from user metadata
+  const currentDisplayName = user.user_metadata?.display_name || null;
 
-  return <SettingsPageClient profile={profile} />;
+  return <SettingsPageClient profile={profile} currentDisplayName={currentDisplayName} />;
 }

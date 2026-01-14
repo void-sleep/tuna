@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
@@ -44,16 +44,35 @@ export function UnifiedFriendsList({ friends, receivedRequests, sentRequests, in
   const router = useRouter();
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [deletingItem, setDeletingItem] = useState<FriendItem | null>(null);
+  
+  // Local state for optimistic updates
+  const [localReceivedRequests, setLocalReceivedRequests] = useState(receivedRequests);
+  const [localFriends, setLocalFriends] = useState(friends);
+  const [localSentRequests, setLocalSentRequests] = useState(sentRequests);
+
+  // Update local state when props change (but only if not processing)
+  useEffect(() => {
+    if (!processingId) {
+      setLocalReceivedRequests(receivedRequests);
+      setLocalFriends(friends);
+      setLocalSentRequests(sentRequests);
+    }
+  }, [receivedRequests, friends, sentRequests, processingId]);
 
   // Combine all items with type
   const allItems: FriendItem[] = [
-    ...receivedRequests.map(r => ({ ...r, itemType: 'received' as const })),
-    ...friends.map(f => ({ ...f, itemType: 'friend' as const })),
-    ...sentRequests.map(s => ({ ...s, itemType: 'sent' as const })),
+    ...localReceivedRequests.map(r => ({ ...r, itemType: 'received' as const })),
+    ...localFriends.map(f => ({ ...f, itemType: 'friend' as const })),
+    ...localSentRequests.map(s => ({ ...s, itemType: 'sent' as const })),
   ];
 
   const handleAccept = async (requestId: string) => {
     setProcessingId(requestId);
+    
+    // Optimistic update: remove from received requests immediately
+    const acceptedRequest = localReceivedRequests.find(r => r.id === requestId);
+    setLocalReceivedRequests(prev => prev.filter(r => r.id !== requestId));
+    
     const result = await acceptFriendRequestAction(requestId);
     setProcessingId(null);
 
@@ -61,12 +80,21 @@ export function UnifiedFriendsList({ friends, receivedRequests, sentRequests, in
       toast.success('已接受好友请求');
       router.refresh();
     } else {
+      // Revert optimistic update on error
+      if (acceptedRequest) {
+        setLocalReceivedRequests(prev => [...prev, acceptedRequest]);
+      }
       toast.error(result.error || '操作失败');
     }
   };
 
   const handleReject = async (requestId: string) => {
     setProcessingId(requestId);
+    
+    // Optimistic update: remove from local state immediately
+    const rejectedRequest = localReceivedRequests.find(r => r.id === requestId);
+    setLocalReceivedRequests(prev => prev.filter(r => r.id !== requestId));
+    
     const result = await rejectFriendRequestAction(requestId);
     setProcessingId(null);
 
@@ -74,20 +102,33 @@ export function UnifiedFriendsList({ friends, receivedRequests, sentRequests, in
       toast.success('已拒绝好友请求');
       router.refresh();
     } else {
+      // Revert optimistic update on error
+      if (rejectedRequest) {
+        setLocalReceivedRequests(prev => [...prev, rejectedRequest]);
+      }
       toast.error(result.error || '操作失败');
     }
   };
 
   const handleDelete = async (friendId: string) => {
     setProcessingId(friendId);
+    
+    // Optimistic update: remove from friends list immediately
+    const deletedFriend = localFriends.find(f => f.friend.id === friendId);
+    setLocalFriends(prev => prev.filter(f => f.friend.id !== friendId));
+    setDeletingItem(null);
+    
     const result = await deleteFriendAction(friendId);
     setProcessingId(null);
-    setDeletingItem(null);
 
     if (result.success) {
       toast.success('已删除好友');
       router.refresh();
     } else {
+      // Revert optimistic update on error
+      if (deletedFriend) {
+        setLocalFriends(prev => [...prev, deletedFriend]);
+      }
       toast.error(result.error || '删除失败');
     }
   };

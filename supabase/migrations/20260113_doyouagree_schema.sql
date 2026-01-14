@@ -155,9 +155,13 @@ CREATE POLICY friends_insert ON friends
   );
 
 -- Can only update friend requests sent to themselves (accept/reject)
-CREATE POLICY friends_update ON friends
-  FOR UPDATE USING (
-    auth.uid() = friend_id AND status = 'pending'
+CREATE POLICY friends_update ON friends FOR
+UPDATE USING (
+    auth.uid() = friend_id
+    AND status = 'pending'
+  ) WITH CHECK (
+    auth.uid() = friend_id
+    AND status IN ('accepted', 'rejected')
   );
 
 -- Can delete friendships initiated or received by themselves
