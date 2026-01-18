@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { BinaryChoiceRunner } from "@/components/binary-choice-runner";
 import { MathFlashRunner } from "@/components/math-flash-runner";
 import { AgreeQuestionRunner } from "@/components/agree-question-runner";
+import { FamilyTreeRunner } from "@/components/family-tree-runner";
 import type { BinaryChoiceConfig } from "@/components/binary-choice-editor";
 import type { MathFlashConfig } from "@/components/math-flash-editor";
 import { DEFAULT_MATH_FLASH_CONFIG } from "@/components/math-flash-editor";
@@ -38,6 +39,7 @@ const APP_TYPE_STYLES: Record<ApplicationType, { bgGradient: string; icon: strin
   wheel: { bgGradient: 'from-slate-900 via-amber-950/50 to-slate-900', icon: '🎡' },
   counter: { bgGradient: 'from-slate-900 via-sky-950/50 to-slate-900', icon: '🔢' },
   agree_question: { bgGradient: 'from-slate-900 via-indigo-950/50 to-slate-900', icon: '💭' },
+  family_tree: { bgGradient: 'from-slate-900 via-amber-950/50 to-slate-900', icon: '🌳' },
 };
 
 export default function RunApplicationPage({
@@ -49,6 +51,7 @@ export default function RunApplicationPage({
   const tBinary = useTranslations('binaryChoice.run');
   const tMath = useTranslations('mathFlash.run');
   const tAgree = useTranslations('agreeQuestion.run');
+  const tFamilyTree = useTranslations('familyTree.run');
   const router = useRouter();
 
   const [application, setApplication] = useState<Application | null>(null);
@@ -61,7 +64,7 @@ export default function RunApplicationPage({
 
   const appType = application?.type || 'coin';
   const styles = APP_TYPE_STYLES[appType];
-  const t = appType === 'math_flash' ? tMath : (appType === 'agree_question' ? tAgree : tBinary);
+  const t = appType === 'math_flash' ? tMath : appType === 'agree_question' ? tAgree : appType === 'family_tree' ? tFamilyTree : tBinary;
 
   // Exit fullscreen when leaving the page
   const exitFullscreen = useCallback(() => {
@@ -142,6 +145,9 @@ export default function RunApplicationPage({
             });
           }
           setHasItems(true); // Agree question doesn't need items
+        } else if (data.type === 'family_tree') {
+          // Family tree loads its own data from the family API
+          setHasItems(true);
         } else if (data.type === 'coin') {
           // Fetch application items for binary choice
           const itemsResponse = await fetch(`/api/applications/${id}/items`);
@@ -261,7 +267,7 @@ export default function RunApplicationPage({
     );
   }
 
-  const colorClass = appType === 'math_flash' ? 'orange' : (appType === 'agree_question' ? 'indigo' : 'violet');
+  const colorClass = appType === 'math_flash' ? 'orange' : appType === 'agree_question' ? 'indigo' : appType === 'family_tree' ? 'amber' : 'violet';
 
   // Main fullscreen runner
   return (
@@ -276,71 +282,76 @@ export default function RunApplicationPage({
             defaultQuestion={agreeConfig.defaultQuestion}
             defaultOptions={agreeConfig.defaultOptions}
           />
+        ) : appType === 'family_tree' ? (
+          <FamilyTreeRunner applicationId={id} />
         ) : (
           <BinaryChoiceRunner config={binaryConfig} applicationId={id} fullscreen={true} />
         )}
       </div>
 
-      {/* Top bar - above runner */}
-      <div className="absolute top-0 left-0 right-0 z-50 p-4 flex items-center justify-between pointer-events-auto">
-        {/* Exit button - clickable */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleExit}
-          className={`gap-2 text-white bg-${colorClass}-500/30 hover:bg-${colorClass}-500/50 border border-${colorClass}-400/40 rounded-xl px-4 pointer-events-auto backdrop-blur-sm`}
-        >
-          <XMarkIcon className="h-5 w-5" />
-          <span className="text-sm font-medium">{t('exit')}</span>
-        </Button>
+      {/* Top bar - above runner (hidden for family_tree which has its own header) */}
+      {appType !== 'family_tree' && (
+        <div className="absolute top-0 left-0 right-0 z-50 p-4 flex items-center justify-between pointer-events-auto">
+          {/* Exit button - clickable */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleExit}
+            className={`gap-2 text-white bg-${colorClass}-500/30 hover:bg-${colorClass}-500/50 border border-${colorClass}-400/40 rounded-xl px-4 pointer-events-auto backdrop-blur-sm`}
+          >
+            <XMarkIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">{t('exit')}</span>
+          </Button>
 
-        {/* Application title */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-3 pointer-events-none">
-          <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-${colorClass}-500/10 border border-${colorClass}-500/20 text-${colorClass}-300 text-sm font-medium backdrop-blur-sm`}>
-            <span className="text-lg">{styles.icon}</span>
-            {application.title}
+          {/* Application title - only show app name, not type */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-3 pointer-events-none">
+            <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-${colorClass}-500/10 border border-${colorClass}-500/20 text-${colorClass}-300 text-sm font-medium backdrop-blur-sm`}>
+              {application.title}
+            </span>
+          </div>
+
+          {/* Right buttons */}
+          <div className="flex items-center gap-2">
+            {/* Fullscreen toggle button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleFullscreen}
+              className={`gap-2 text-white bg-${colorClass}-500/30 hover:bg-${colorClass}-500/50 border border-${colorClass}-400/40 rounded-xl px-4 pointer-events-auto backdrop-blur-sm`}
+            >
+              {isFullscreen ? (
+                <ArrowsPointingInIcon className="h-4 w-4" />
+              ) : (
+                <ArrowsPointingOutIcon className="h-4 w-4" />
+              )}
+              <span className="text-sm font-medium">{t('fullscreen')}</span>
+            </Button>
+
+            {/* Edit button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className={`gap-2 text-white bg-${colorClass}-500/30 hover:bg-${colorClass}-500/50 border border-${colorClass}-400/40 rounded-xl px-4 pointer-events-auto backdrop-blur-sm`}
+            >
+              <Link href={`/apps/applications/${id}/edit`}>
+                <PencilIcon className="h-4 w-4" />
+                <span className="text-sm font-medium">{t('edit')}</span>
+              </Link>
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Keyboard hint (hidden for family_tree which has its own hints) */}
+      {appType !== 'family_tree' && (
+        <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 z-50 text-${colorClass}-300/40 text-sm flex items-center gap-4 pointer-events-none`}>
+          <span className="flex items-center gap-1">
+            <kbd className={`px-2 py-0.5 rounded bg-${colorClass}-500/10 border border-${colorClass}-500/20 text-xs`}>ESC</kbd>
+            <span>{t('exit')}</span>
           </span>
         </div>
-
-        {/* Right buttons */}
-        <div className="flex items-center gap-2">
-          {/* Fullscreen toggle button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleFullscreen}
-            className={`gap-2 text-white bg-${colorClass}-500/30 hover:bg-${colorClass}-500/50 border border-${colorClass}-400/40 rounded-xl px-4 pointer-events-auto backdrop-blur-sm`}
-          >
-            {isFullscreen ? (
-              <ArrowsPointingInIcon className="h-4 w-4" />
-            ) : (
-              <ArrowsPointingOutIcon className="h-4 w-4" />
-            )}
-            <span className="text-sm font-medium">{t('fullscreen')}</span>
-          </Button>
-
-          {/* Edit button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            asChild
-            className={`gap-2 text-white bg-${colorClass}-500/30 hover:bg-${colorClass}-500/50 border border-${colorClass}-400/40 rounded-xl px-4 pointer-events-auto backdrop-blur-sm`}
-          >
-            <Link href={`/apps/applications/${id}/edit`}>
-              <PencilIcon className="h-4 w-4" />
-              <span className="text-sm font-medium">{t('edit')}</span>
-            </Link>
-          </Button>
-        </div>
-      </div>
-
-      {/* Keyboard hint */}
-      <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 z-50 text-${colorClass}-300/40 text-sm flex items-center gap-4 pointer-events-none`}>
-        <span className="flex items-center gap-1">
-          <kbd className={`px-2 py-0.5 rounded bg-${colorClass}-500/10 border border-${colorClass}-500/20 text-xs`}>ESC</kbd>
-          <span>{t('exit')}</span>
-        </span>
-      </div>
+      )}
     </div>
   );
 }

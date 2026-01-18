@@ -287,7 +287,8 @@
       "wheel": "Wheel",
       "counter": "Counter",
       "math_flash": "Math Flash",
-      "agree_question": "Do You Agree"
+      "agree_question": "Do You Agree",
+      "family_tree": "Who Is Ta"
     },
     "actions": {
       "view": "View",
@@ -656,6 +657,121 @@
       "edit": "Edit",
       "fullscreen": "Fullscreen",
       "locale": "en-US"
+    }
+  },
+  "familyTree": {
+    "edit": {
+      "title": "Edit Family Tree",
+      "subtitle": "Manage your family relationship graph",
+      "addSelf": "Add Myself",
+      "addSelfDescription": "First add 'Me' as the center of your family tree",
+      "addMember": "Add Member",
+      "memberList": "Member List",
+      "noMembers": "No members yet",
+      "noMembersDescription": "Click the button above to add family members",
+      "form": {
+        "nickname": "Nickname/Title",
+        "nicknamePlaceholder": "e.g., Dad, Uncle",
+        "realName": "Real Name",
+        "realNamePlaceholder": "Optional",
+        "gender": "Gender",
+        "male": "Male",
+        "female": "Female",
+        "birthDate": "Birth Date",
+        "avatar": "Avatar",
+        "notes": "Notes",
+        "notesPlaceholder": "Optional notes",
+        "relation": "Relation To",
+        "relationType": "Relation Type",
+        "selectMember": "Select Member",
+        "selectRelation": "Select Relation"
+      },
+      "relations": {
+        "father": "Father",
+        "mother": "Mother",
+        "son": "Son",
+        "daughter": "Daughter",
+        "spouse": "Spouse",
+        "elder_brother": "Elder Brother",
+        "younger_brother": "Younger Brother",
+        "elder_sister": "Elder Sister",
+        "younger_sister": "Younger Sister"
+      },
+      "avatarTypes": {
+        "elder_male": "Elder Male",
+        "elder_female": "Elder Female",
+        "adult_male": "Adult Male",
+        "adult_female": "Adult Female",
+        "youth_male": "Youth Male",
+        "youth_female": "Youth Female",
+        "child": "Child"
+      },
+      "buttons": {
+        "save": "Save",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "backToApps": "Back to Apps",
+        "preview": "Preview"
+      },
+      "success": {
+        "memberCreated": "Member added successfully",
+        "memberUpdated": "Member updated successfully",
+        "memberDeleted": "Member deleted successfully",
+        "relationCreated": "Relation added successfully"
+      },
+      "errors": {
+        "nicknamRequired": "Please enter a nickname",
+        "genderRequired": "Please select a gender",
+        "memberRequired": "Please select a member",
+        "relationRequired": "Please select a relation type"
+      }
+    },
+    "run": {
+      "title": "Who Is Ta",
+      "subtitle": "Chinese Family Relationship Guide",
+      "exit": "Exit",
+      "edit": "Edit",
+      "fullscreen": "Fullscreen",
+      "viewMode": {
+        "radial": "Radial View",
+        "tree": "Tree View"
+      },
+      "quickSearch": "Quick Search",
+      "clickToViewRelation": "Click to view relationship",
+      "noData": {
+        "title": "No family tree data",
+        "description": "Please edit the app to add your family members",
+        "addMembers": "Add Members"
+      },
+      "detail": {
+        "iCallThem": "I call them",
+        "theyCallMe": "They call me",
+        "relationPath": "Relation Path",
+        "dialectVariant": "Dialect Variants",
+        "editMember": "Edit Member",
+        "deleteMember": "Delete Member"
+      },
+      "pathPicker": {
+        "title": "Quick Search",
+        "description": "Select relation path to get the title",
+        "start": "Start from Me",
+        "selectRelation": "Select Relation",
+        "result": "Result",
+        "addToFamily": "Add to Family",
+        "close": "Close"
+      },
+      "relations": {
+        "father": "'s Father",
+        "mother": "'s Mother",
+        "son": "'s Son",
+        "daughter": "'s Daughter",
+        "spouse": "'s Spouse",
+        "elder_brother": "'s Elder Brother",
+        "younger_brother": "'s Younger Brother",
+        "elder_sister": "'s Elder Sister",
+        "younger_sister": "'s Younger Sister"
+      }
     }
   },
   "settings": {

@@ -64,6 +64,19 @@ const APP_TYPES = [
     shadow: 'shadow-indigo-500/20',
     textColor: 'text-indigo-600 dark:text-indigo-400',
   },
+  {
+    value: 'family_tree' as ApplicationType,
+    icon: '🌳',
+    labelKey: 'family_tree',
+    bgLight: 'bg-amber-50',
+    bgDark: 'dark:bg-amber-950/30',
+    borderLight: 'border-amber-200',
+    borderDark: 'dark:border-amber-800/50',
+    gradient: 'from-amber-500 via-orange-500 to-rose-500',
+    selectedBorder: 'border-amber-500',
+    shadow: 'shadow-amber-500/20',
+    textColor: 'text-amber-600 dark:text-amber-400',
+  },
 ];
 
 export function CreateApplicationDialog({ children }: CreateApplicationDialogProps) {
@@ -149,7 +162,7 @@ export function CreateApplicationDialog({ children }: CreateApplicationDialogPro
             {/* Type Selection - Card based */}
             <div className="space-y-3">
               <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">{t('form.type')}</Label>
-              <div className="grid grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 {APP_TYPES.map((type) => (
                   <button
                     key={type.value}

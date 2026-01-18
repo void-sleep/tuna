@@ -1,6 +1,6 @@
 import { createClient } from "./server";
 
-export type ApplicationType = 'coin' | 'wheel' | 'counter' | 'math_flash' | 'agree_question';
+export type ApplicationType = 'coin' | 'wheel' | 'counter' | 'math_flash' | 'agree_question' | 'family_tree';
 
 export interface Application {
   id: string;

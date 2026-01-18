@@ -190,6 +190,35 @@ export const APP_TYPE_COLORS: Record<ApplicationType, AppTypeColorConfig> = {
     primary: 'indigo-600',
     primaryRgb: '79, 70, 229',
   },
+
+  family_tree: {
+    // Family Tree - Amber/Orange theme (warmth, family, connection)
+    gradient: 'from-amber-500 via-orange-500 to-rose-500',
+    gradientHover: 'from-amber-400 via-orange-400 to-rose-400',
+
+    shadow: 'shadow-amber-500/30',
+    shadowHover: 'shadow-amber-500/50',
+    glow: 'bg-amber-500/20',
+    glowIntense: 'bg-amber-500/40',
+
+    bgLight: 'bg-amber-50',
+    bgDark: 'dark:bg-amber-950/30',
+    bgMuted: 'bg-amber-500/10',
+
+    text: 'text-amber-600 dark:text-amber-400',
+    textMuted: 'text-amber-500/70',
+
+    border: 'border-amber-500/30',
+    borderHover: 'border-amber-500/50',
+
+    button: 'bg-amber-600 hover:bg-amber-500',
+    buttonHover: 'hover:bg-amber-500',
+
+    neonAnimation: 'animate-neon-amber',
+
+    primary: 'amber-600',
+    primaryRgb: '245, 158, 11',
+  },
 };
 
 /**
@@ -252,6 +281,14 @@ export const APP_TYPES: AppTypeMetadata[] = [
     description: 'Ask friends questions and let them choose to agree or disagree',
     available: true,
     colors: APP_TYPE_COLORS.agree_question,
+  },
+  {
+    value: 'family_tree',
+    icon: '🌳',
+    label: 'Family Tree',
+    description: 'Manage family relationships and look up Chinese kinship terms',
+    available: true,
+    colors: APP_TYPE_COLORS.family_tree,
   },
 ];
 

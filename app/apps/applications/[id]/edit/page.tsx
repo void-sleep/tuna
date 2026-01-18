@@ -59,6 +59,12 @@ const APP_TYPE_CONFIG: Record<ApplicationType, { icon: string; colorClass: strin
     bgClass: 'bg-indigo-500/10',
     borderClass: 'border-indigo-500/20',
   },
+  family_tree: {
+    icon: '🌳',
+    colorClass: 'text-amber-600 dark:text-amber-400',
+    bgClass: 'bg-amber-500/10',
+    borderClass: 'border-amber-500/20',
+  },
 };
 
 export default function EditApplicationPage({
@@ -81,7 +87,8 @@ export default function EditApplicationPage({
   const appType = application?.type || 'coin';
   const typeConfig = APP_TYPE_CONFIG[appType];
   const tAgree = useTranslations('agreeQuestion.edit');
-  const t = appType === 'math_flash' ? tMath : (appType === 'agree_question' ? tAgree : tBinary);
+  const tFamilyTree = useTranslations('familyTree.edit');
+  const t = appType === 'math_flash' ? tMath : appType === 'agree_question' ? tAgree : appType === 'family_tree' ? tFamilyTree : tBinary;
 
   useEffect(() => {
     async function fetchApplication() {
@@ -92,6 +99,12 @@ export default function EditApplicationPage({
         }
         const data: Application = await response.json();
         setApplication(data);
+
+        // Family tree is edited directly in run mode
+        if (data.type === 'family_tree') {
+          router.replace(`/applications/${id}/run`);
+          return;
+        }
 
         if (data.type === 'math_flash') {
           // Load math flash config from application.config
@@ -304,7 +317,18 @@ export default function EditApplicationPage({
         </div>
 
         {/* Editor - Conditional based on type */}
-        {appType === 'math_flash' ? (
+        {/* Note: family_tree redirects to run page, so show nothing here */}
+        {appType === 'family_tree' ? (
+          <div className="flex flex-col items-center justify-center py-24">
+            <div className="relative mb-8">
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-full blur-2xl" />
+              <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-2 border-amber-500/30 flex items-center justify-center animate-pulse">
+                <span className="text-4xl">🌳</span>
+              </div>
+            </div>
+            <p className="text-lg text-muted-foreground">正在跳转到运行页面...</p>
+          </div>
+        ) : appType === 'math_flash' ? (
           <MathFlashEditor config={mathConfig} onChange={setMathConfig} />
         ) : appType === 'agree_question' ? (
           <AgreeQuestionEditor config={agreeConfig} onChange={setAgreeConfig} />
@@ -312,25 +336,27 @@ export default function EditApplicationPage({
           <BinaryChoiceEditor config={binaryConfig} onChange={setBinaryConfig} />
         )}
 
-        {/* Actions */}
-        <div className="flex justify-end gap-4 mt-10 pt-8 border-t">
-          <Button
-            variant="outline"
-            asChild
-            disabled={isSaving}
-            className="rounded-xl px-6"
-          >
-            <Link href="/apps">{t('buttons.cancel')}</Link>
-          </Button>
-          <Button
-            onClick={handleSave}
-            disabled={isSaving}
-            className={`gap-2 rounded-xl px-8 text-white shadow-lg ${buttonColorClass}`}
-          >
-            <CheckIcon className="h-4 w-4" />
-            {isSaving ? t('buttons.saving') : t('buttons.save')}
-          </Button>
-        </div>
+        {/* Actions - hidden for family_tree which handles its own saving */}
+        {appType !== 'family_tree' && (
+          <div className="flex justify-end gap-4 mt-10 pt-8 border-t">
+            <Button
+              variant="outline"
+              asChild
+              disabled={isSaving}
+              className="rounded-xl px-6"
+            >
+              <Link href="/apps">{t('buttons.cancel')}</Link>
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={isSaving}
+              className={`gap-2 rounded-xl px-8 text-white shadow-lg ${buttonColorClass}`}
+            >
+              <CheckIcon className="h-4 w-4" />
+              {isSaving ? t('buttons.saving') : t('buttons.save')}
+            </Button>
+          </div>
+        )}
       </PageContent>
     </PageWrapper>
   );

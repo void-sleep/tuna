@@ -242,7 +242,8 @@
       "wheel": "转盘",
       "counter": "计数器",
       "math_flash": "闪念数学",
-      "agree_question": "你同意吗"
+      "agree_question": "你同意吗",
+      "family_tree": "Ta是谁"
     },
     "actions": {
       "view": "查看",
@@ -657,6 +658,121 @@
     "viewDetail": "查看详情",
     "yourAnswer": "你的回答",
     "theirAnswer": "对方的回答"
+  },
+  "familyTree": {
+    "edit": {
+      "title": "编辑家谱",
+      "subtitle": "管理您的亲属关系图",
+      "addSelf": "添加自己",
+      "addSelfDescription": "首先添加「我」作为家谱的中心",
+      "addMember": "添加成员",
+      "memberList": "成员列表",
+      "noMembers": "暂无成员",
+      "noMembersDescription": "点击上方按钮添加家庭成员",
+      "form": {
+        "nickname": "称呼/昵称",
+        "nicknamePlaceholder": "如：爸爸、大伯",
+        "realName": "真实姓名",
+        "realNamePlaceholder": "可选",
+        "gender": "性别",
+        "male": "男",
+        "female": "女",
+        "birthDate": "出生日期",
+        "avatar": "头像",
+        "notes": "备注",
+        "notesPlaceholder": "可选备注信息",
+        "relation": "与谁的关系",
+        "relationType": "关系类型",
+        "selectMember": "选择成员",
+        "selectRelation": "选择关系"
+      },
+      "relations": {
+        "father": "父亲",
+        "mother": "母亲",
+        "son": "儿子",
+        "daughter": "女儿",
+        "spouse": "配偶",
+        "elder_brother": "哥哥",
+        "younger_brother": "弟弟",
+        "elder_sister": "姐姐",
+        "younger_sister": "妹妹"
+      },
+      "avatarTypes": {
+        "elder_male": "老年男性",
+        "elder_female": "老年女性",
+        "adult_male": "中年男性",
+        "adult_female": "中年女性",
+        "youth_male": "青年男性",
+        "youth_female": "青年女性",
+        "child": "儿童"
+      },
+      "buttons": {
+        "save": "保存",
+        "saving": "保存中...",
+        "cancel": "取消",
+        "delete": "删除",
+        "backToApps": "返回应用列表",
+        "preview": "预览"
+      },
+      "success": {
+        "memberCreated": "成员添加成功",
+        "memberUpdated": "成员更新成功",
+        "memberDeleted": "成员删除成功",
+        "relationCreated": "关系添加成功"
+      },
+      "errors": {
+        "nicknamRequired": "请输入称呼",
+        "genderRequired": "请选择性别",
+        "memberRequired": "请选择成员",
+        "relationRequired": "请选择关系类型"
+      }
+    },
+    "run": {
+      "title": "Ta是谁",
+      "subtitle": "中国亲戚关系与称呼指南",
+      "exit": "退出",
+      "edit": "编辑",
+      "fullscreen": "全屏",
+      "viewMode": {
+        "radial": "放射图",
+        "tree": "树状图"
+      },
+      "quickSearch": "快速查称呼",
+      "clickToViewRelation": "点击查看关系称呼",
+      "noData": {
+        "title": "还没有家谱数据",
+        "description": "请先编辑应用，添加您的家庭成员",
+        "addMembers": "添加成员"
+      },
+      "detail": {
+        "iCallThem": "我叫Ta",
+        "theyCallMe": "Ta叫我",
+        "relationPath": "关系路径",
+        "dialectVariant": "方言变体",
+        "editMember": "编辑成员",
+        "deleteMember": "删除成员"
+      },
+      "pathPicker": {
+        "title": "快速查称呼",
+        "description": "选择关系路径，快速获取称呼",
+        "start": "从我开始",
+        "selectRelation": "选择关系",
+        "result": "查询结果",
+        "addToFamily": "添加到家谱",
+        "close": "关闭"
+      },
+      "relations": {
+        "father": "的父亲",
+        "mother": "的母亲",
+        "son": "的儿子",
+        "daughter": "的女儿",
+        "spouse": "的配偶",
+        "elder_brother": "的哥哥",
+        "younger_brother": "的弟弟",
+        "elder_sister": "的姐姐",
+        "younger_sister": "的妹妹"
+      }
+    }
   },
   "settings": {
     "title": "设置",

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createApplication, type CreateApplicationInput } from "@/lib/supabase/applications";
+import { createFamilyMember } from "@/lib/supabase/family-tree";
 
 export async function GET() {
   try {
@@ -47,6 +48,22 @@ export async function POST(request: NextRequest) {
 
     // Create application (without default items)
     const application = await createApplication(body);
+
+    // For family_tree applications, automatically create a default "我" member
+    if (body.type === 'family_tree') {
+      try {
+        await createFamilyMember({
+          nickname: '我',
+          gender: 'male',
+          avatar_type: 'adult_male',
+          is_self: true,
+          application_id: application.id,
+        });
+      } catch (memberError) {
+        console.error('Error creating default self member:', memberError);
+        // Don't fail the application creation if member creation fails
+      }
+    }
 
     // Revalidate the apps page cache
     revalidatePath('/apps');
