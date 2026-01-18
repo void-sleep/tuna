@@ -62,10 +62,16 @@ export const KINSHIP_TERMS: KinshipTermData[] = [
 
   // ============ 兄弟姐妹 ============
 
-  // 父亲的子女（同父）
+  // 直接兄弟姐妹关系（带年龄区分）
+  { relation_path: 'elder_brother', gender: 'male', term_standard: '哥哥', term_reverse: '弟弟/妹妹', region: 'default', priority: 100 },
+  { relation_path: 'younger_brother', gender: 'male', term_standard: '弟弟', term_reverse: '哥哥/姐姐', region: 'default', priority: 100 },
+  { relation_path: 'elder_sister', gender: 'female', term_standard: '姐姐', term_reverse: '弟弟/妹妹', region: 'default', priority: 100 },
+  { relation_path: 'younger_sister', gender: 'female', term_standard: '妹妹', term_reverse: '哥哥/姐姐', region: 'default', priority: 100 },
+
+  // 父亲的子女（同父）- 用于通过父亲查找兄弟姐妹
   { relation_path: 'father.son', gender: 'male', term_standard: '哥哥/弟弟', term_reverse: '哥哥/弟弟/姐姐/妹妹', region: 'default', priority: 90 },
   { relation_path: 'father.daughter', gender: 'female', term_standard: '姐姐/妹妹', term_reverse: '哥哥/弟弟/姐姐/妹妹', region: 'default', priority: 90 },
-  // 母亲的子女（同母）
+  // 母亲的子女（同母）- 用于通过母亲查找兄弟姐妹
   { relation_path: 'mother.son', gender: 'male', term_standard: '哥哥/弟弟', term_reverse: '哥哥/弟弟/姐姐/妹妹', region: 'default', priority: 90 },
   { relation_path: 'mother.daughter', gender: 'female', term_standard: '姐姐/妹妹', term_reverse: '哥哥/弟弟/姐姐/妹妹', region: 'default', priority: 90 },
 
